@@ -7,9 +7,9 @@ Penn Haptics team's repository for BOLT related work
 --Notes for getting started--
 
 --Cheetah USB Driver--
-wget http://www.totalphase.com/download/zip/tp-usb-drivers-v2.10.zip
-unzip tp-usb-drivers-v2.10.zip
-sudo cp tp-usb-drivers-v2.10/linux/99-totalphase.rules /etc/udev/rules.d/
+- wget http://www.totalphase.com/download/zip/tp-usb-drivers-v2.10.zip
+- unzip tp-usb-drivers-v2.10.zip
+- sudo cp tp-usb-drivers-v2.10/linux/99-totalphase.rules /etc/udev/rules.d/
 
 --Electrical Connections--
 (Try for this order, but it doesn't really matter)
@@ -19,7 +19,7 @@ sudo cp tp-usb-drivers-v2.10/linux/99-totalphase.rules /etc/udev/rules.d/
 - Plug the Cheetah's USB into your computer's USB port
 
 --Software Setup--
-In your .bashrc.ros:
+- In your .bashrc.ros:
 ROS_PACKAGE_PATH=~/path_to_biotac_stack:$ROS_PACKAGE_PATH
 
 rosmake biotac_stack

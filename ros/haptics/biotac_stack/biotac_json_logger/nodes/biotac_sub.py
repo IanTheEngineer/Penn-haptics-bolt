@@ -29,10 +29,10 @@ class BioTacListener:
     self.frame_count += 1
 
   #Check if directory exits & create it
-  def check_dir(f):
-    d = os.path.dirname(f)
-    if not os.path.exists(d):
-      os.makedirs(d)
+  def check_dir(self, f):
+    #d = os.path.dirname(f)
+    if not os.path.exists(f):
+      os.makedirs(f)
 
   # Setup the subscriber Node
   def listener(self):
@@ -45,7 +45,7 @@ class BioTacListener:
     # Grab directory
     self.package_dir = roslib.packages.get_pkg_dir('biotac_json_logger')
     # Check for a 'data' directory
-    self.check_dir(self.package_dir + '/data')
+    self.check_dir( self.package_dir + '/data' )
     # Set output filename
     self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.txt')
     # Create initial file - delete existing file with same name 
