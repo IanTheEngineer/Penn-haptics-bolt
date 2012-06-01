@@ -1,0 +1,7 @@
+#Git ignores for the Cheetah library
+*.swn     # ignore all swo files
+*.swo     # ignore all swn files
+*.swp     # ignore all swp files
+lib/      # ignore all files in the lib/ directory
+build/    # ignore all files in the build/ directory
+ROS_NOBUILD # ignore the rosmake touch to prevent rebuilding

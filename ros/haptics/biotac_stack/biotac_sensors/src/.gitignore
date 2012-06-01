@@ -1,0 +1,5 @@
+#Git ignores for the Cheetah library
+*.swn     # ignore all swn files
+*.swo     # ignore all swo files
+*.swp     # ignore all swp files
+biotac_sensors/

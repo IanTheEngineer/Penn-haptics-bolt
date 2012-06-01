@@ -1,0 +1,10 @@
+<stack>
+  <description brief="biotac_stack">biotac_stack</description>
+  <author>Maintained by Ian McMahon</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/biotac_stack</url>
+  <depend stack="ros" />
+  <depend stack="rosjson" />
+
+</stack>

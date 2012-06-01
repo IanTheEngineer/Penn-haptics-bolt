@@ -1,0 +1,15 @@
+<package>
+  <description brief="biotac_sensors">
+
+     biotac_sensors
+
+  </description>
+  <author>Ian McMahon</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/biotac_sensors</url>
+  <depend package="roscpp"/>
+  <depend package="cheetah_lib"/>
+</package>
+
+

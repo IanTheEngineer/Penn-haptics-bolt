@@ -1,0 +1,17 @@
+<package>
+  <description brief="cheetah_lib">
+
+     This is a ROS wrapper package for the library provided by Total Phase for the Cheetah SPI module.
+
+  </description>
+  <author>Ian McMahon</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cheetah_lib</url>
+  <export>
+    <cpp cflags="-I${prefix}/include"  lflags="-L${prefix}/lib" />
+  </export>
+
+</package>
+
+
