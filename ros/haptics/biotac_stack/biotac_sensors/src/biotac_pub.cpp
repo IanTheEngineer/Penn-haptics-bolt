@@ -8,7 +8,7 @@ using namespace biotac;
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "biotac_pub");
+  ros::init(argc, argv, "biotac_pub", ros::init_options::AnonymousName);
   ros::NodeHandle n;
   ros::Rate loop_rate(100);
   ros::Publisher biotac_pub = n.advertise<biotac_sensors::BioTacHand>("biotac_pub", 1000);

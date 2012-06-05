@@ -2,7 +2,7 @@
 import roslib; roslib.load_manifest('biotac_logger')
 import rospy
 import os
-import rosjson
+import rosjson_time
 
 from std_msgs.msg import String
 from biotac_sensors.msg import BioTacHand
@@ -21,7 +21,7 @@ class BioTacListener:
     data.header.frame_id = self.frame_count
 
     # Uses rosjson to convert message to JSON 
-    toWrite = rosjson.ros_message_to_json(data) + '\n'
+    toWrite = rosjson_time.ros_message_to_json(data) + '\n'
     fout.write(toWrite); 
     fout.close()
        
@@ -30,7 +30,6 @@ class BioTacListener:
 
   #Check if directory exits & create it
   def check_dir(self, f):
-    #d = os.path.dirname(f)
     if not os.path.exists(f):
       os.makedirs(f)
       return True
@@ -49,7 +48,7 @@ class BioTacListener:
     # Check for a 'data' directory
     dir_status = self.check_dir( self.package_dir + '/data' )
     if dir_status:
-      rospy.loginfo('The ''data'' directory was created!')
+      rospy.loginfo('The ''data'' directory was successfully created.')
     # Set output filename
     self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
     # Create initial file - delete existing file with same name 

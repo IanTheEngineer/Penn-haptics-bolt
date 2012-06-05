@@ -1,0 +1,20 @@
+<package>
+  <description brief="rosjson_time">
+
+     rosjson_time is a Python library for converting ROS messages to JSON
+     (JavaScript Object Notation) representation.
+
+  </description>
+  <author>Ken Conley/kwc@willowgarage.com</author>
+  <license>BSD</license>
+  <review status="experimental" notes=""/>
+  <url>http://ros.org/wiki/rosjson_time</url>
+  <depend package="rospy"/>
+  <depend package="roslib"/>
+
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
+</package>
+
+
