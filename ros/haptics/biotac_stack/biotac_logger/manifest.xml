@@ -1,0 +1,17 @@
+<package>
+  <description brief="biotac_logger">
+
+     biotac_logger
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/biotac_logger</url>
+  <depend package="rospy"/>
+  <depend package="biotac_sensors"/>
+  <depend package="rosjson"/>
+
+</package>
+
+
