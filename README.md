@@ -31,4 +31,4 @@ Check to make sure your sensors are working:
 rostopic echo biotac_pub
 
 Then to log some data in JSON form:
-rosrun biotac_json_logger biotac_sub.py _filename:=trial_one.json
+rosrun biotac_logger biotac_json_logger.py _filename:=trial_001.json
