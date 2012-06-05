@@ -1,4 +1,0 @@
-#Git ignores for the Cheetah library
-*.swo     # ignore all swo files
-*.swn     # ignore all swn files
-*.swp     # ignore all swp files
