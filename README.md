@@ -32,3 +32,8 @@ rostopic echo biotac_pub
 
 Then to log some data in JSON form:
 rosrun biotac_logger biotac_json_logger.py _filename:=trial_001.json
+
+--Matlab GUI--
+Please see the Penn Bolt Wiki for instructions on how to use the GUI
+
+http://bolt-haptics.seas.upenn.edu/index.php/Software/MatlabGUI
