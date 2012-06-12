@@ -6,6 +6,7 @@
 | Authors : Gary Lin (gary.lin@syntouchllc.com)
 |			Tomonori Yamamoto (tomonori.yamamoto@syntouchllc.com)
 |			Jeremy Fishel (jeremy.fishel@syntouchllc.com)
+| Modified: Ian McMahon (University of Pennsylvania)
 |--------------------------------------------------------------------------
 | Function: BioTac-Cheetah communication functions
 |--------------------------------------------------------------------------

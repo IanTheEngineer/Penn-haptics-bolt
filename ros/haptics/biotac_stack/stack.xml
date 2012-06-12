@@ -1,10 +1,9 @@
 <stack>
-  <description brief="biotac_stack">biotac_stack</description>
+  <description brief="biotac_stack">This stack contains the necessary libraries for reading, publishing and logging data from the SynTouch BioTac sensors.</description>
   <author>Maintained by Ian McMahon</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/biotac_stack</url>
   <depend stack="ros" />
-  <depend stack="rosjson" />
 
 </stack>

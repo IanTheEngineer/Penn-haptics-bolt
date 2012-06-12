@@ -1,3 +1,40 @@
+/*********************************************************************
+*
+* Software License Agreement (BSD License)
+*
+*  Copyright (c) 2012, University of Pennsylvania
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of University of Pennsylvania nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+* Author: Ian McMahon (imcmahon@grasp.upenn.edu)
+*********************************************************************/
+
 #include <biotac_hand_class.h>
 #include <stdio.h>
 #include <iostream>
@@ -26,7 +63,9 @@ static const unsigned char parity_values[] = \
 
 using namespace biotac;
 
-
+//========================================================
+//BioTacHand Class constructor populating default values
+//========================================================
 BioTacHandClass::BioTacHandClass(string hand_id)
 {
   hand_id_ = hand_id;
@@ -216,13 +255,14 @@ BioTac BioTacHandClass::configureBatch()
 biotac_sensors::BioTacHand BioTacHandClass::collectBatch()
 {
   int i, j;
-  int byte_shift = 2 + MAX_BIOTACS_PER_CHEETAH*2;			// 2 bytes of command + 2 bytes per BioTac data
+  int byte_shift = 2 + MAX_BIOTACS_PER_CHEETAH*2;  // 2 bytes of command + 2 bytes per BioTac data
   int spi_data_len;
   int number_of_samples_in_batch;
   static u08 *bt_raw_data;
   unsigned int channel_id;
   int finger_vector_pos;
 
+  //Query the Cheetah for data, and push out a new request, save off frame end time
   spi_data_len = ch_spi_batch_length(ch_handle_);
   bt_raw_data = (u08*) malloc(spi_data_len * sizeof *bt_raw_data);
   ch_spi_async_collect(ch_handle_, spi_data_len, bt_raw_data);
@@ -231,8 +271,9 @@ biotac_sensors::BioTacHand BioTacHandClass::collectBatch()
 
   number_of_samples_in_batch = spi_data_len/byte_shift;
 
-  
+  //Begin constructing the BioTacHand message
   bt_hand_msg_.hand_id = hand_id_;
+  //Calculate Timestamps
   bt_hand_msg_.header.stamp = frame_end_time;
   bt_hand_msg_.bt_time.frame_start_time = frame_start_time_;
   bt_hand_msg_.bt_time.frame_end_time = frame_end_time;
@@ -241,6 +282,7 @@ biotac_sensors::BioTacHand BioTacHandClass::collectBatch()
   unsigned int time_step = (unsigned int)((sample_total_time / number_of_samples_in_batch) * 1000000.0);
   frame_start_time_ = frame_end_time;
 
+  //Store off the serial number and biotac position
   for(unsigned int k = 0; k < biotac_serial_no_info_.size(); k++)
   {
     bt_hand_msg_.bt_data[k].bt_position = biotac_serial_no_info_[k].finger_position;

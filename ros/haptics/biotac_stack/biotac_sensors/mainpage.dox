@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b biotac_sensors is ... 
+\b biotac_sensors is a wrapper package for the BioTac / Cheetah C libraries to collect and publish data read from the BioTac sensors through the Cheetah USB/SPI device. 
 
 <!-- 
 Provide an overview of your package.

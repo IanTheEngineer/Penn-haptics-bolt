@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cheetah_lib</url>
   <export>
-    <cpp cflags="-I${prefix}/include"  lflags="-L${prefix}/lib" />
+    <cpp lflags="-L${prefix}/lib" />
   </export>
 
 </package>
