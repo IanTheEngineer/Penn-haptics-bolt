@@ -1,7 +1,7 @@
 <package>
   <description brief="biotac_logger">
 
-     biotac_logger
+     This package subscribes to BioTac data published on the biotac_pub topic and logs the collected data in a text file.
 
   </description>
   <author>Vivian Chu</author>

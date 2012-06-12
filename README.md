@@ -20,7 +20,7 @@ Penn Haptics team's repository for BOLT related work
 
 --Software Setup--
 - In your .bashrc.ros:
-ROS_PACKAGE_PATH=~/path_to_biotac_stack:$ROS_PACKAGE_PATH
+ROS_PACKAGE_PATH=~/your/path/to/biotac_stack:$ROS_PACKAGE_PATH
 
 rosmake biotac_stack
 

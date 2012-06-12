@@ -2,7 +2,9 @@
   <description brief="rosjson_time">
 
      rosjson_time is a Python library for converting ROS messages to JSON
-     (JavaScript Object Notation) representation.
+     (JavaScript Object Notation) representation. This is essentially the
+     same as the rosjson package, but modified so that time is not rounded.
+     - Ian McMahon/imcmahon@grasp.upenn.edu
 
   </description>
   <author>Ken Conley/kwc@willowgarage.com</author>
