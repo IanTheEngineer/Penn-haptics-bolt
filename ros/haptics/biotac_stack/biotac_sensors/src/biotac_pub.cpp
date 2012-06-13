@@ -52,18 +52,36 @@ int main(int argc, char** argv)
   ros::Rate loop_rate(100);
   //Advertise on "biotac_pub" topic
   ros::Publisher biotac_pub = n.advertise<biotac_sensors::BioTacHand>("biotac_pub", 1000);
-  //Name the BioTac hand that will be published
-  BioTacHandClass left_hand("left_hand");
-  //Connect to and configure the sensors
-  left_hand.initBioTacSensors();
   //Create a blank message to publish
   biotac_sensors::BioTacHand bt_hand_msg;
+  //Check if a null_message parameter was set & publish zero data if so
+  if(n.hasParam(ros::this_node::getName() + "/null_msg"))
+  {
+    biotac_sensors::BioTacData biotac_finger;
+    bt_hand_msg.bt_data.push_back(biotac_finger);
+    bt_hand_msg.bt_data[0].bt_serial = "Foo";
+    bt_hand_msg.bt_data.push_back(biotac_finger);
+    bt_hand_msg.bt_data[1].bt_serial = "Bar";
+    bt_hand_msg.hand_id = "Null_Data";
+    while(ros::ok())
+    {
+      biotac_pub.publish(bt_hand_msg);
+      loop_rate.sleep();
+    }
+  }
+  else //Start the node normally
+  {
+    //Name the BioTac hand that will be published
+    BioTacHandClass left_hand("left_hand");
+    //Connect to and configure the sensors
+    left_hand.initBioTacSensors();
 
-  while(ros::ok())
-  { //Collect a batch of data
-    bt_hand_msg = left_hand.collectBatch();
-    biotac_pub.publish(bt_hand_msg);
-    loop_rate.sleep();
+    while(ros::ok())
+    { //Collect a batch of data
+      bt_hand_msg = left_hand.collectBatch();
+      biotac_pub.publish(bt_hand_msg);
+      loop_rate.sleep();
+    }
   }
   return 0;
 }
