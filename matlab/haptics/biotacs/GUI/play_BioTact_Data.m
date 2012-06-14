@@ -82,10 +82,16 @@ axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(a
 if (val1_graph == 23)
     allValues = [all_data(channel_display).electrodes(:); all_data(channel_display).pdc(:); all_data(channel_display).pac(:)];
     axis(handles.Select_Val1,[start_time end_time*22 min(min(allValues),-100) max(max(allValues),100)]);
+elseif (val1_graph > 19)
+    allValues = [all_data(channel_display).tac(:); all_data(channel_display).pdc(:); all_data(channel_display).tdc(:)];
+    axis(handles.Select_Val1,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
 end
 if (val2_graph == 23)
     allValues = [all_data(channel_display).electrodes(:); all_data(channel_display).pdc(:); all_data(channel_display).pac(:)];
     axis(handles.Select_Val2,[start_time end_time*22 min(min(allValues),-100) max(max(allValues),100)]);
+elseif (val2_graph > 19)
+    allValues = [all_data(channel_display).tac(:); all_data(channel_display).pdc(:); all_data(channel_display).tdc(:)];
+    axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
 end
 
 % Size of plot
@@ -151,6 +157,7 @@ else
                 toPlot = all_data(channel_display).pac(stepT,:);
                 t = ((stepT-1)*22+1:stepT*22);
             else
+                t = stepT:endTime;
                 endTime = min(stepT+1,min(end_time,data_length));
                 if (val1_graph < 20)
                     toPlot = all_data(channel_display).electrodes(stepT:endTime,val1_graph);
@@ -174,6 +181,7 @@ else
                 toPlot = all_data(channel_display).pac(stepT,:);
                 t = ((stepT-1)*22+1:stepT*22);
             else
+                t = stepT:endTime;
                 endTime = min(stepT+1,min(end_time,data_length));
                 if (val2_graph < 20)
                     %toPlot = 6.083./(all_data(1).electrodes(stepT:endTime,val2_graph)+1.976);

@@ -12,6 +12,12 @@ function [loaded_data] = load_data_from_file()
 % Website: http://www.bolt-haptics.seas.upenn.edu
 % June 2012; Last revision: 12-June-2012
 
+% Add to path JSON library
+if ispc()
+    javaaddpath(strcat(pwd,'\json-smart-1.1.1.jar')); 
+else
+    javaaddpath(strcat(pwd,'/json-smart-1.1.1.jar'));
+end
 
 [filename, pathname, filterindex] = uigetfile('*.json;*.txt', 'Pick a file');
     
@@ -27,7 +33,7 @@ end
 fileID = fopen(strcat(pathname,filename));
 
 if (sum(strfind(filename, '.json')) > 0)
-    [all_data, number_fingers] = process_json_file(fileID);
+    [all_data, number_fingers] = process_json_file_fast(fileID);
 else
     [all_data, number_fingers] = process_txt_file(fileID);
 end
