@@ -42,19 +42,33 @@ class BioTacListener:
 
   def __init__(self):
     self.frame_count = 1;
+    rospy.init_node('biotac_json_logger', anonymous=True)
+   
+    # FILE WRITING SETUP 
+    # Find Node Parameter Name
+    self.file_param = rospy.get_name() + '/filename'
+    # Grab directory
+    self.package_dir = roslib.packages.get_pkg_dir('biotac_logger')
+    # Check for a 'data' directory
+    dir_status = self.check_dir( self.package_dir + '/data' )
+    if dir_status:
+      rospy.loginfo('The ''data'' directory was successfully created.')
+    # Set output filename
+    self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
+    # Create initial file - delete existing file with same name 
+    self.fout = open(self.fileName,'w')
+    self.fout.write("[\n")
+    
   # Called each time there is a new message
   def biotacCallback(self,data):
     rospy.loginfo(rospy.get_name()+' FRAME ID: %d',self.frame_count)
-    # Open existing file and append to it 
-    fout = open(self.fileName,"a")
 
     # Stores the frame count into the message
     data.header.frame_id = self.frame_count
 
     # Uses rosjson to convert message to JSON 
     toWrite = rosjson_time.ros_message_to_json(data) + '\n'
-    fout.write(toWrite); 
-    fout.close()
+    self.fout.write(toWrite); 
        
     # Move to next frame 
     self.frame_count += 1
@@ -68,25 +82,13 @@ class BioTacListener:
 
   # Setup the subscriber Node
   def listener(self):
-    # Initialize Node 
-    rospy.init_node('biotac_json_logger', anonymous=True)
     rospy.Subscriber('biotac_pub', BioTacHand, self.biotacCallback,queue_size=1000)
-
-    # Find Node Parameter Name
-    self.file_param = rospy.get_name() + '/filename'
-    # Grab directory
-    self.package_dir = roslib.packages.get_pkg_dir('biotac_logger')
-    # Check for a 'data' directory
-    dir_status = self.check_dir( self.package_dir + '/data' )
-    if dir_status:
-      rospy.loginfo('The ''data'' directory was successfully created.')
-    # Set output filename
-    self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
-    # Create initial file - delete existing file with same name 
-    fout = open(self.fileName,'w');
-    fout.close();
- 
     rospy.spin()
+
+  def __del__(self):
+    self.fout.write("]")
+    self.fout.close()
+
 
 if __name__ == '__main__':
 
