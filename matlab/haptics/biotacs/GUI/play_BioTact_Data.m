@@ -112,7 +112,7 @@ else
         % 'none' the points don't need to be replotted each step
         % Plots to the large graph
         endTime = min(stepT+1,min(end_time,data_length));
-        toPlot = all_data(1).electrodes(stepT:endTime,[all_vals_graph]);
+        toPlot = all_data(channel_display).electrodes(stepT:endTime,[all_vals_graph]);
         t = stepT:endTime;
         [maxElectrodeVal, maxElectrode] = max(toPlot(1,:));
         plot(handles.All_Values, t,toPlot, 'erasemode','none');
@@ -122,9 +122,12 @@ else
 
         % Compute force in each direction (x,y,z) - using default gain
         % Method from Syntouch
-        f_x_sum = sum(n_x.*toPlot(1,:));
-        f_y_sum = sum(n_y.*toPlot(1,:));
-        f_z_sum = sum(n_z.*toPlot(1,:));
+        
+        electrodes_values = all_data(channel_display).electrodes(stepT:endTime,:);
+        
+        f_x_sum = sum(n_x.*electrodes_values(1,:));
+        f_y_sum = sum(n_y.*electrodes_values(1,:));
+        f_z_sum = sum(n_z.*electrodes_values(1,:));
         
         f_x = x_gain*f_x_sum;
         f_y = y_gain*f_y_sum;
