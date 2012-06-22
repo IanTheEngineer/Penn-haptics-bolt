@@ -50,7 +50,8 @@ for i = 1:number_fingers
     % Processed Data
     all_data(i).electrodes = -bsxfun(@minus, all_data(i).raw_electrodes,mean(all_data(i).raw_electrodes(1:10,:)));
     all_data(i).pdc = all_data(i).raw_pdc - mean(all_data(i).raw_pdc(1:10));
-    all_data(i).tac = all_data(i).raw_tac - mean(all_data(i).raw_tac(1:10));
+    % Add a negative because Syntouch's filter inverts the TAC signal
+    all_data(i).tac = -(all_data(i).raw_tac - mean(all_data(i).raw_tac(1:10)));
     all_data(i).tdc =  all_data(i).raw_tdc - mean(all_data(i).raw_tdc(1:10));
     % Add a negative because Syntouch's filter inverts the PAC signal
     all_data(i).pac = -bsxfun(@minus, all_data(i).raw_pac,mean(all_data(i).raw_pac(1:10,:)));

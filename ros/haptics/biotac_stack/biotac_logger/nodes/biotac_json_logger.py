@@ -42,36 +42,9 @@ class BioTacListener:
 
   def __init__(self):
     self.frame_count = 1;
-  # Called each time there is a new message
-  def biotacCallback(self,data):
-    rospy.loginfo(rospy.get_name()+' FRAME ID: %d',self.frame_count)
-    # Open existing file and append to it 
-    fout = open(self.fileName,"a")
-
-    # Stores the frame count into the message
-    data.header.frame_id = self.frame_count
-
-    # Uses rosjson to convert message to JSON 
-    toWrite = rosjson_time.ros_message_to_json(data) + '\n'
-    fout.write(toWrite); 
-    fout.close()
-       
-    # Move to next frame 
-    self.frame_count += 1
-
-  #Check if directory exits & create it
-  def check_dir(self, f):
-    if not os.path.exists(f):
-      os.makedirs(f)
-      return True
-    return False
-
-  # Setup the subscriber Node
-  def listener(self):
-    # Initialize Node 
     rospy.init_node('biotac_json_logger', anonymous=True)
-    rospy.Subscriber('biotac_pub', BioTacHand, self.biotacCallback,queue_size=1000)
-
+   
+    # FILE WRITING SETUP 
     # Find Node Parameter Name
     self.file_param = rospy.get_name() + '/filename'
     # Grab directory
@@ -85,10 +58,39 @@ class BioTacListener:
     if not self.fileName.endswith('.json'):
       self.fileName = self.fileName + '.json'
     # Create initial file - delete existing file with same name 
-    fout = open(self.fileName,'w');
-    fout.close();
- 
+    self.fout = open(self.fileName,'w')
+    self.fout.write("[\n")
+    
+  # Called each time there is a new message
+  def biotacCallback(self,data):
+    rospy.loginfo(rospy.get_name()+' FRAME ID: %d',self.frame_count)
+
+    # Stores the frame count into the message
+    data.header.frame_id = self.frame_count
+
+    # Uses rosjson to convert message to JSON 
+    toWrite = rosjson_time.ros_message_to_json(data) + '\n'
+    self.fout.write(toWrite); 
+       
+    # Move to next frame 
+    self.frame_count += 1
+
+  #Check if directory exits & create it
+  def check_dir(self, f):
+    if not os.path.exists(f):
+      os.makedirs(f)
+      return True
+    return False
+
+  # Setup the subscriber Node
+  def listener(self):
+    rospy.Subscriber('biotac_pub', BioTacHand, self.biotacCallback,queue_size=1000)
     rospy.spin()
+
+  def __del__(self):
+    self.fout.write("]")
+    self.fout.close()
+
 
 if __name__ == '__main__':
 

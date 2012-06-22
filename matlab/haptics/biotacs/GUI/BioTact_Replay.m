@@ -69,7 +69,7 @@ function varargout = BioTact_Replay_OutputFcn(hObject, eventdata, handles)
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global jButtonArray electrode_points;
+global jButtonArray electrode_points
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
@@ -77,7 +77,6 @@ varargout{1} = handles.output;
 buttonNames = {'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','X1','X2','X3','X4'};
 jButtonArray = getJButtonHandles(buttonNames);
 
-% Store locations of the electrodes
 electrode_points = [13.84 16.23;          % 1
           3.46*3 (5.41*2)+1; % 2
           3.46*3   8.26;  % 3
@@ -97,7 +96,6 @@ electrode_points = [13.84 16.23;          % 1
           6.92 (5.41*2)+1;    % 17
           6.92 5.41;           % 18
           6.92 0];               % 19
-
 
 
 % BEGIN PERSONALIZATION EDITS %
@@ -153,7 +151,7 @@ function browse_file_btn_Callback(hObject, eventdata, handles)
     fileID = fopen(strcat(pathname,filename));
     
     if (sum(strfind(filename, '.json')) > 0)
-        [all_data, number_fingers] = process_json_file(fileID);
+        [all_data, number_fingers] = process_json_file_fast(fileID);
     else
         [all_data, number_fingers] = process_txt_file(fileID);
     end
