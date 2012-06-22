@@ -82,6 +82,8 @@ class BioTacListener:
       rospy.loginfo('The ''data'' directory was successfully created.')
     # Set output filename
     self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
+    if not self.fileName.endswith('.json'):
+      self.fileName = self.fileName + '.json'
     # Create initial file - delete existing file with same name 
     fout = open(self.fileName,'w');
     fout.close();
