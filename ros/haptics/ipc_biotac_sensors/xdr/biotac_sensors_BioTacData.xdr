@@ -1,0 +1,91 @@
+%{
+#include <cstring>
+%}
+
+struct biotac_sensors_BioTacData
+{
+  string bt_serial<>;
+  unsigned int bt_position;
+  unsigned int tdc_data;
+  unsigned int tac_data;
+  unsigned int pdc_data;
+  unsigned int pac_data[22];
+  unsigned int electrode_data[19];
+
+%{
+  biotac_sensors_BioTacData() : bt_position(0), tdc_data(0),
+    tac_data(0), pdc_data(0)
+  {
+    bt_serial = new char[1];
+    bt_serial[0] = '\0';
+    memset(&pac_data, 0, 22*sizeof(unsigned int));
+    memset(&electrode_data, 0, 19*sizeof(unsigned int));
+  }
+
+  biotac_sensors_BioTacData(const biotac_sensors_BioTacData& msg) :
+    bt_position(msg.bt_position), tdc_data(msg.tdc_data),
+    tac_data(msg.tac_data), pdc_data(msg.pdc_data)
+  {
+    if(bt_serial != 0)
+      delete[] bt_serial;
+
+    if(msg.bt_serial == 0)
+    {
+      bt_serial = new char[1];
+      bt_serial[0] = '\0';
+    }
+    else
+    {
+      bt_serial = new char[strlen(msg.bt_serial) + 1];
+      strcpy(bt_serial, msg.bt_serial);
+    }
+    memcpy(&pac_data, &msg.pac_data, 22*sizeof(unsigned int));
+    memcpy(&electrode_data, &msg.electrode_data, 19*sizeof(unsigned int));
+  }
+
+  ~biotac_sensors_BioTacData()
+  {
+    if (bt_serial != 0)
+      delete[] bt_serial;
+  }
+
+  biotac_sensors_BioTacData& operator= (const biotac_sensors_BioTacData& msg)
+  {
+    if(bt_serial != 0)
+      delete[] bt_serial;
+
+    if(msg.bt_serial == 0)
+    {
+      bt_serial = new char[1];
+      bt_serial[0] = '\0';
+    }
+    else
+    {
+      bt_serial = new char[strlen(msg.bt_serial) + 1];
+      strcpy(bt_serial, msg.bt_serial);
+    }
+
+    bt_position = msg.bt_position;
+    tdc_data = msg.tdc_data;
+    tac_data = msg.tac_data;
+    pdc_data = msg.pdc_data;
+
+    memcpy(&pac_data, &msg.pac_data, 22*sizeof(unsigned int));
+    memcpy(&electrode_data, &msg.electrode_data, 19*sizeof(unsigned int));
+
+    return *this;
+  }
+%}
+};
+
+%{
+namespace ipc_bridge
+{
+    namespace biotac_sensors
+    {
+        typedef biotac_sensors_BioTacData BioTacData;
+    }
+}
+%}
+
+

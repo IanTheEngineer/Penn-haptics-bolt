@@ -47,7 +47,7 @@
 #include <Windows.h>
 #endif
 
-#include "biotac.h"
+#include "biotac_sensors/biotac.h"
 
 //=========================================================================
 // CONSTANTS

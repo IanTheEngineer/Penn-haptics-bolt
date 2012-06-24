@@ -1,0 +1,19 @@
+<package>
+  <description brief="ipc_biotac_sensors">
+
+     ipc_biotac_sensors
+
+  </description>
+  <author>Ian McMahon</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/ipc_biotac_sensors</url>
+  <depend package="biotac_sensors"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+
+</package>
+
+

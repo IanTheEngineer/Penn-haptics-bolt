@@ -53,7 +53,7 @@
 | INCLUDES
  ========================================================================*/
 /* This #include can be customized to conform to the user's build paths. */
-#include "cheetah.h"
+#include "biotac_sensors/cheetah.h"
 
 
 /*=========================================================================

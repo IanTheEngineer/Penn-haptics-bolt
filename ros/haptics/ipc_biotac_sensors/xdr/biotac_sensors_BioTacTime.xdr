@@ -1,0 +1,60 @@
+%{
+#include <cstring>
+%}
+
+struct biotac_sensors_BioTacTime
+{
+  double frame_start_time;
+  double frame_end_time;
+  unsigned int tdc_ns_offset;
+  unsigned int tac_ns_offset;
+  unsigned int pdc_ns_offset;
+  unsigned int pac_ns_offset[22];
+  unsigned int electrode_ns_offset[19];
+
+%{
+  biotac_sensors_BioTacTime() : frame_start_time(0), frame_end_time(0),
+    tdc_ns_offset(0), tac_ns_offset(0), pdc_ns_offset(0)
+  {
+    memset(&pac_ns_offset, 0, 22*sizeof(unsigned int));
+    memset(&electrode_ns_offset, 0, 19*sizeof(unsigned int));
+  }
+  biotac_sensors_BioTacTime(const biotac_sensors_BioTacTime& msg) :
+    frame_start_time(msg.frame_start_time), frame_end_time(msg.frame_end_time),
+    tdc_ns_offset(msg.tdc_ns_offset), tac_ns_offset(msg.tac_ns_offset), 
+    pdc_ns_offset(msg.pdc_ns_offset)
+  {
+    memcpy(&pac_ns_offset, &msg.pac_ns_offset, 22*sizeof(unsigned int));
+    memcpy(&electrode_ns_offset, &msg.electrode_ns_offset, 19*sizeof(unsigned int));
+  }
+  ~biotac_sensors_BioTacTime()
+  {
+  }
+  biotac_sensors_BioTacTime& operator= (const biotac_sensors_BioTacTime& msg)
+  {
+
+    frame_start_time = msg.frame_start_time;
+    frame_end_time = msg.frame_end_time;
+    tdc_ns_offset = msg.tdc_ns_offset;
+    tac_ns_offset = msg.tac_ns_offset;
+    pdc_ns_offset = msg.pdc_ns_offset;
+
+    memcpy(&pac_ns_offset, &msg.pac_ns_offset, 22*sizeof(unsigned int));
+    memcpy(&electrode_ns_offset, &msg.electrode_ns_offset, 19*sizeof(unsigned int));
+
+    return *this;
+  }
+%}
+};
+
+%{
+namespace ipc_bridge
+{
+    namespace biotac_sensors
+    {
+        typedef biotac_sensors_BioTacTime BioTacTime;
+    }
+}
+%}
+
+

@@ -1,0 +1,111 @@
+%{
+#include <ipc_bridge/msgs/rosgraph_msgs_Header.h>
+#include <ipc_bridge/msgs/biotac_sensors_BioTacData.h>
+#include <ipc_bridge/msgs/biotac_sensors_BioTacTime.h>
+%}
+
+ipc_type rosgraph_msgs_Header;
+ipc_type biotac_sensors_BioTacData;
+ipc_type biotac_sensors_BioTacTime;
+
+
+
+struct biotac_sensors_BioTacHand
+{
+   rosgraph_msgs_Header  header;
+   string hand_id<>;
+   unsigned int bt_data_length;
+   biotac_sensors_BioTacData bt_data<>;
+   biotac_sensors_BioTacTime bt_time;
+
+%{
+  biotac_sensors_BioTacHand() : 
+    bt_data_length(0), bt_data(0)
+  {
+    hand_id = new char[1];
+    hand_id[0] = '\0';
+  }
+  biotac_sensors_BioTacHand(const biotac_sensors_BioTacHand& msg):
+      header(msg.header), bt_data_length(msg.bt_data_length),
+      bt_time(msg.bt_time)
+  {
+    if(hand_id != 0)
+      delete[] hand_id;
+
+    if(msg.hand_id == 0)
+    {
+      hand_id = new char[1];
+      hand_id[0] = '\0';
+    }
+    else
+    {
+      hand_id = new char[strlen(msg.hand_id) + 1];
+      strcpy(hand_id, msg.hand_id);
+    }
+
+    if (bt_data != 0)
+      delete[] bt_data;
+
+    bt_data = 0;
+    if(msg.bt_data_length > 0)
+    {
+      bt_data = new biotac_sensors_BioTacData[bt_data_length];
+      for(unsigned int i = 0; i < bt_data_length; i++)
+        bt_data[i] = msg.bt_data[i];
+    }
+  }
+  ~biotac_sensors_BioTacHand()
+  {
+    if(hand_id != 0)
+      delete[] hand_id;
+
+    if(bt_data != 0)
+      delete[] bt_data;
+  }
+  biotac_sensors_BioTacHand& operator= (const biotac_sensors_BioTacHand& msg)
+  {
+    header = msg.header;
+    
+    bt_data_length = msg.bt_data_length;
+    bt_time = msg.bt_time;
+
+    if(hand_id != 0)
+      delete[] hand_id;
+
+    if(msg.hand_id == 0)
+    {
+      hand_id = new char[1];
+      hand_id[0] = '\0';
+    }
+    else
+    {
+      hand_id = new char[strlen(msg.hand_id) + 1];
+      strcpy(hand_id, msg.hand_id);
+    }
+
+    if(bt_data != 0)
+      delete[] bt_data;
+                          
+    bt_data = 0;
+    if (msg.bt_data_length > 0)
+    {   
+      bt_data = new biotac_sensors_BioTacData[bt_data_length];
+      for(unsigned int i = 0; i < bt_data_length; i++)
+        bt_data[i] = msg.bt_data[i];
+    }   
+
+    return *this;
+    }
+%}
+};
+
+%{
+  namespace ipc_bridge
+  {
+    namespace biotac_sensors
+    {
+      typedef biotac_sensors_BioTacHand BioTacHand;
+    }
+  }
+%}
+

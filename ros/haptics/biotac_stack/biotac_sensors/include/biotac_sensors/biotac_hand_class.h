@@ -49,7 +49,7 @@ using namespace std;
 namespace biotac {
 
 extern "C"{
-#include <biotac.h>
+#include <biotac_sensors/biotac.h>
 }
 
 struct finger_info {
