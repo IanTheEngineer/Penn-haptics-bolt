@@ -42,7 +42,7 @@ class BioTacListener:
 
   def __init__(self):
     self.frame_count = 1;
-    rospy.init_node('biotac_json_logger', anonymous=True)
+    rospy.init_node('biotac_json_logger')
    
     # FILE WRITING SETUP 
     # Find Node Parameter Name
@@ -58,10 +58,12 @@ class BioTacListener:
     # Create initial file - delete existing file with same name 
     self.fout = open(self.fileName,'w')
     self.fout.write("[\n")
+
+    rospy.loginfo(rospy.get_name()+' Starting to Log to file %s:',self.fileName);
     
   # Called each time there is a new message
   def biotacCallback(self,data):
-    rospy.loginfo(rospy.get_name()+' FRAME ID: %d',self.frame_count)
+    #rospy.loginfo(rospy.get_name()+' FRAME ID: %d',self.frame_count)
 
     # Stores the frame count into the message
     data.header.frame_id = self.frame_count

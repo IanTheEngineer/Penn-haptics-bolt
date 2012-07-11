@@ -1,0 +1,22 @@
+<package>
+  <description brief="biotac_simple_gripper">
+
+     biotac_simple_gripper
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/biotac_simple_gripper</url>
+  <depend package="roscpp"/>
+  <depend package="biotac_sensors"/>
+  <depend package="pr2_controllers_msgs"/>
+  <depend package="actionlib"/>
+  <depend package="arm_navigation_msgs"/>
+  <depend package="ee_cart_imped_action"/>
+  <depend package="ee_cart_imped_msgs"/>
+  <depend package="tf"/>
+
+</package>
+
+
