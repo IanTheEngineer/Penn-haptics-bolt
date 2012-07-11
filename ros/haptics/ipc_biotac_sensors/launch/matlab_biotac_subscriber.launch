@@ -1,0 +1,18 @@
+<launch>
+<!--
+  <node pkg="ipc"
+    name="central"
+    type="central"
+    output="screen"
+    args="-su">
+  </node>
+-->
+  <node pkg="ipc_biotac_sensors"
+    name="biotac_sensors_BioTacHand_publisher"
+    type="biotac_sensors_BioTacHand_publisher"
+    output="screen">
+    <remap from="~topic" to="/biotac_pub"/>
+    <param name="message" value="biotachand"/>
+  </node>
+
+</launch>

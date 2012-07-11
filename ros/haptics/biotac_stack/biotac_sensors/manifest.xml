@@ -10,6 +10,9 @@
   <url>http://ros.org/wiki/biotac_sensors</url>
   <depend package="roscpp"/>
   <depend package="cheetah_lib"/><!-- required to speak with the Cheetah USB module -->
+  <export>
+      <cpp cflags="-I${prefix}/include"/>
+  </export>
 </package>
 
 

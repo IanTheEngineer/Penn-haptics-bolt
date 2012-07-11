@@ -36,7 +36,7 @@
 *********************************************************************/
 
 #include <ros/ros.h>
-#include <biotac_hand_class.h>
+#include <biotac_sensors/biotac_hand_class.h>
 #include <biotac_sensors/BioTacHand.h>
 
 using namespace std;

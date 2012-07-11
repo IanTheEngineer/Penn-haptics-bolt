@@ -1,0 +1,15 @@
+<launch>
+  <!--example call: roslaunch log_json_and_rosbag.launch filename:=trial001 --> 
+  <!-- check filename for JSON and rosbag -->
+  <arg name="filename" default="default_trial" />
+
+  <!-- Spin up a rosbag recorder -->
+  <node pkg="rosbag" type="record" name="record" output="screen" args="-O $(find biotac_logger)/bag/$(arg filename).bag /biotac_pub"/>
+
+  <!-- Start the JSON data logger -->
+  <node name="biotac_logger" pkg="biotac_logger" type="biotac_json_logger.py"> 
+    <!-- declare JSON filename -->
+    <param name="filename" value="$(arg filename).json" />
+  </node>
+
+</launch> 

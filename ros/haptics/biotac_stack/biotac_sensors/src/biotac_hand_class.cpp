@@ -35,7 +35,7 @@
 * Author: Ian McMahon (imcmahon@grasp.upenn.edu)
 *********************************************************************/
 
-#include <biotac_hand_class.h>
+#include <biotac_sensors/biotac_hand_class.h>
 #include <stdio.h>
 #include <iostream>
 
