@@ -1,4 +1,30 @@
-#Git ignores for the Cheetah library
-*.swo     # ignore all swo files
-*.swn     # ignore all swn files
-*.swp     # ignore all swp files
+*~
+build/
+lib/
+bin/
+srv_gen/
+msg_gen/
+.project
+.pydevproject
+.cproject
+.DS_Store
+*.pyc
+*.dox
+*.o
+.settings
+uu-controllers/dynamic_window/cmake_install.cmake
+*.pos
+uu-controllers/schunk_gui/history
+uu-controllers/schunk_gui/gui2_altern.glade
+uu-controllers/schunk_gui/baks/
+*.lsa
+ROS_NOBUILD
+ignore/
+*.stack
+.idea/
+*ropeproject*
+*.swp
+_*
+!__init__.py
+*.wpr
+*.wpu
