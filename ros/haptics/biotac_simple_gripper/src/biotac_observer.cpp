@@ -39,9 +39,9 @@
 
 #include <biotac_simple_gripper/biotac_observer.h>
 
-//======================================================================
+//================================================================
 // BioTacObserver class constructor - setups flags and storage vects
-//======================================================================
+//================================================================
 biotacObserver::biotacObserver()
 {
   // Setup normalization flags and storage 
@@ -49,12 +49,12 @@ biotacObserver::biotacObserver()
   init_pressure_vect_.resize(NumberFingers);
 }
 
-//======================================================================
+//================================================================
 // Callback function for BioTac Sensors
-// Stores the pressure values to get ready to normalize.  When values
-// reach NumberNormalizeValues, the mean is computed and used to 
-// normalize the sensors
-//======================================================================
+// Stores the pressure values to get ready to normalize.  
+// When values reach NumberNormalizeValues, the mean is 
+// computed and used to normalize the sensors
+//================================================================
 void biotacObserver::bioTacCB(const biotac_sensors::BioTacHand::ConstPtr& msg)
 {
   // Store most current pressure value 
@@ -73,10 +73,10 @@ void biotacObserver::bioTacCB(const biotac_sensors::BioTacHand::ConstPtr& msg)
   }
 }
 
-//======================================================================
+//================================================================
 // Normalize Pressure From BioTacs
 // Where the mean and actual normalization is done
-//======================================================================
+//================================================================
 void biotacObserver::normalize_pressure()
 {
   // If the mean has never been set, then set the mean
@@ -108,9 +108,9 @@ void biotacObserver::normalize_pressure()
   pressure_normalized_[Right] = pressure_[Right] - pressure_mean_[Right];
 }
 
-//======================================================================
+//================================================================
 // Destructor - clear out vectors
-//======================================================================
+//================================================================
 biotacObserver::~biotacObserver()
 {
   init_pressure_vect_[Left].clear();

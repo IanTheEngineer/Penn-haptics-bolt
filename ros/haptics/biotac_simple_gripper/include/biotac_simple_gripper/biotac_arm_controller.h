@@ -43,9 +43,9 @@
 #ifndef _BIOTAC_ARM_CONTROLLER
 #define _BIOTAC_ARM_CONTROLLER
 
-//======================================================================
+//================================================================
 // BioTacArm Controller Class
-//======================================================================
+//================================================================
 class biotacArmController
 {
   private:
@@ -53,9 +53,9 @@ class biotacArmController
 
   public:
 
-    //======================================================================
+    //================================================================
     // Functions
-    //======================================================================
+    //================================================================
     biotacArmController();                                // Constructor
     ~biotacArmController();                               // Destructor
     void moveArmToStart();                                // Move arm to start position
@@ -63,9 +63,9 @@ class biotacArmController
     void getArmTransform();                               // Polls for arm transform
     double getTransform(char);                            // Returns the specified value
    
-    //====================================================================== 
+    //================================================================ 
     // Variables
-    //======================================================================
+    //================================================================
     tf::TransformListener *tf_listener;                   // Transform Listener
     tf::StampedTransform *store_transform;                // Store transform
 };

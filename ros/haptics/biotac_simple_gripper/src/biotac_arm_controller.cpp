@@ -39,9 +39,10 @@
 #include <biotac_simple_gripper/biotac_arm_controller.h>
 
 
-//======================================================================
-// BioTacArmController class constructor to startup impedance controller
-//======================================================================
+//================================================================
+// BioTacArmController class constructor to startup impedance 
+// controller
+//================================================================
 biotacArmController::biotacArmController()
 {
   arm_controller = new EECartImpedArm("l_arm_cart_imped_controller");
@@ -49,10 +50,10 @@ biotacArmController::biotacArmController()
   store_transform = new tf::StampedTransform();
 }
 
-//======================================================================
+//================================================================
 // Move arm downwards by the specified distance from the specified
 // x,y,z positions.  All in meters
-//======================================================================
+//================================================================
 void biotacArmController::slide_down(double x, double y, double z, double distance)
 {
   ee_cart_imped_msgs::EECartImpedGoal traj;
@@ -86,10 +87,10 @@ void biotacArmController::slide_down(double x, double y, double z, double distan
   arm_controller->startTrajectory(traj);
 }
 
-//======================================================================
+//================================================================
 // Move arm to the starting point to get object
 // This is specified in meters and from the torso_link_lift
-//======================================================================
+//================================================================
 void biotacArmController::moveArmToStart()
 {
   ee_cart_imped_msgs::EECartImpedGoal traj;
@@ -103,10 +104,10 @@ void biotacArmController::moveArmToStart()
   arm_controller->startTrajectory(traj);
 }
 
-//======================================================================
+//================================================================
 // Get current transform of the arm - from torso_lift_link
 // to the gripper tool frame using tf_listener
-//======================================================================
+//================================================================
 void biotacArmController::getArmTransform()
 {
   bool noTransform = true;
@@ -127,9 +128,10 @@ void biotacArmController::getArmTransform()
   }  
 }
 
-//======================================================================
-// Simple getter that grabs the transforms for the specified channel
-//======================================================================
+//================================================================
+// Simple getter that grabs the transforms for the specified 
+// channel
+//================================================================
 double biotacArmController::getTransform(char channel)
 {
   switch (channel)

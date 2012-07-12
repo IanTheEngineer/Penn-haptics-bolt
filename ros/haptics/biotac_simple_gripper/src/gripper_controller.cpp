@@ -46,9 +46,9 @@ class gripperController{
     ros::NodeHandle n;              // Ros Handle
     ros::Subscriber biotac_sub;     // biotac subscriber handle
 
-    //======================================================================
+    //================================================================
     // Constants
-    //======================================================================
+    //================================================================
     int Left;                        // These are defined in the BioTacObserver class
     int Right;
     static const int LightPressureContact = 50;         // Pressure value for light contacts
@@ -56,26 +56,26 @@ class gripperController{
     
   public:
 
-    //======================================================================
+    //================================================================
     // Constants
-    //======================================================================
+    //================================================================
     static const double MoveGripperSlowDistance = 0.00005;  // Distance in meters
     static const double MoveGripperFastDistance = 0.0005;   // Distance moved for fast movement
     static const int MoveGripperRate = 50;                  // In Hz
     static const double SlideArmDistance = 0.05;            // In meters
     static const double GripperMaxOpenPosition = 0.08;      // Also specified in biotac_simple_gripper.h
-    //======================================================================
+    //================================================================
     // Variables
-    //====================================================================== 
+    //================================================================ 
     biotacObserver *biotac_obs;
     biotacSimpleGripper *simple_gripper;
     biotacArmController *arm_controller;
     std::string fileName;                                   // Filename to log data into
 
-    //======================================================================
+    //================================================================
     // Gripper Constuctor
     // Instantiate all of the observer classes and setup subscribers
-    //======================================================================
+    //================================================================
     gripperController()
     {
       // Initialize Biotac Observer
@@ -96,12 +96,13 @@ class gripperController{
       Right = biotac_obs->Right;
     }
     
-    //======================================================================
+    //================================================================
     // Higher level motion to close gripper until contact is found
-    // Pass in the rate at which contact is closed at and the distance the gripper moves
-    // rate is in Hz, move_gripper_distance in meters
+    // Pass in the rate at which contact is closed at and the 
+    // distance the gripper moves rate is in Hz, 
+    // move_gripper_distance in meters
     // Velocity gripper moves is found by how much moved by what rate
-    //======================================================================
+    //================================================================
     void findContact(ros::Rate rate, double move_gripper_distance)
     {
       int pressure_max = 0;
@@ -116,11 +117,11 @@ class gripperController{
       }
     }
 
-    //======================================================================
+    //================================================================
     // Open gripper by the rate and position specified.
-    // This is necessary to keep opening the gripper until the bioTacs do 
-    // not report any pressure 
-    //======================================================================
+    // This is necessary to keep opening the gripper until 
+    // the bioTacs do not report any pressure 
+    //================================================================
     void openUntilNoContact(ros::Rate rate, double move_gripper_distance)
     {
       int pressure_max = LightPressureContact + 50;
@@ -136,10 +137,10 @@ class gripperController{
       }
     }
    
-    //====================================================================== 
-    // Closes the gripper until a pressure is achieved, then opens again 
-    // at the same rate the gripper closed at
-    //======================================================================
+    //================================================================ 
+    // Closes the gripper until a pressure is achieved, 
+    // then opens again at the same rate the gripper closed at
+    //================================================================
     void squeeze(ros::Rate rate, double move_gripper_distance)
     {
       int pressure_max = 0;
@@ -167,10 +168,10 @@ class gripperController{
       }
     }
 
-    //======================================================================
+    //================================================================
     // Start Biotac Logger
     // Just a system call 
-    //======================================================================
+    //================================================================
     void startLogger()
     {
       ROS_INFO("Start Logging");
@@ -181,22 +182,24 @@ class gripperController{
       if (success) ROS_INFO("Successfully Started"); 
     }
 
-    //======================================================================
+    //================================================================
     // Destructor
-    //======================================================================
+    //================================================================
     ~gripperController()
     {
+      delete biotac_obs;
+      delete simple_gripper;
     }
   };
 
-//======================================================================
+//================================================================
 // Main flow
-//======================================================================
+//================================================================
 int main(int argc, char* argv[])
 {
-  //====================================================================== 
+  //================================================================ 
   // Checks for place for data has been specified correctly 
-  //======================================================================
+  //================================================================
 
   // Checks if the filename is given 
   if (argc < 2)
@@ -216,9 +219,9 @@ int main(int argc, char* argv[])
     exit(0);
   }
 
-  //======================================================================
+  //================================================================
   // Start initializing controller
-  //======================================================================
+  //================================================================
   
   ROS_INFO("Initializing simple controller"); 
   ros::init(argc, argv, "gripper_controller");
@@ -238,13 +241,13 @@ int main(int argc, char* argv[])
   // Move hand every N seconds (in Hz)
   ros::Rate loop_rate(controller.MoveGripperRate);
 
-  //======================================================================
+  //================================================================
   // Movements start from here
-  //======================================================================
+  //================================================================
 
-  //======================================================================
+  //================================================================
   // Open gripper and perform first action - find object and hold
-  //======================================================================
+  //================================================================
 
   // Open the gripper
   ROS_INFO("Starting gripper movement");
@@ -279,9 +282,9 @@ int main(int argc, char* argv[])
   ros::Rate wait(0.1);
   wait.sleep();
 
-  //======================================================================
+  //================================================================
   // Start motion slide down
-  //======================================================================
+  //================================================================
 
   // Find position of arm
   controller.arm_controller->getArmTransform();
@@ -298,9 +301,9 @@ int main(int argc, char* argv[])
   // Wait for a small amount of time - 2 seconds
   waitNode.sleep();
 
-  //======================================================================
+  //================================================================
   // Start motion to squeeze
-  //====================================================================== 
+  //================================================================ 
 
   ROS_INFO("Starting Squeeze Motion"); 
   // Re-open gripper and find contact again - (from last position + 0.5cm)
@@ -313,9 +316,9 @@ int main(int argc, char* argv[])
   // Controller open all
   controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
 
-  //======================================================================
+  //================================================================
   // Destroy logger
-  //======================================================================
+  //================================================================
   int success = system("rosnode kill biotac_json_logger");
   if (success) ROS_INFO("Logger stopped");
   testThread.join();

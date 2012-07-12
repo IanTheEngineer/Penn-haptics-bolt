@@ -38,10 +38,10 @@
 //#include <biotac_simple_gripper/biotac_observer.h>
 #include <biotac_simple_gripper/biotac_simple_gripper.h>
 
-//======================================================================
+//================================================================
 // BioTacSimpleGripper class constructor
 // Initializes gripper action client
-//======================================================================
+//================================================================
 biotacSimpleGripper::biotacSimpleGripper()
 {
   // Initialize the left gripper client controller
@@ -54,17 +54,17 @@ biotacSimpleGripper::biotacSimpleGripper()
   }
 }
 
-//======================================================================
-// Destuctor
-//======================================================================
+//================================================================
+// Destructor
+//================================================================
 biotacSimpleGripper::~biotacSimpleGripper()
 {
   delete gripper_client_;
 }
 
-//======================================================================
+//================================================================
 // Open the gripper to the position specified in meters
-//======================================================================
+//================================================================
 void biotacSimpleGripper::open2Position(double open_pos)
 {
   pr2_controllers_msgs::Pr2GripperCommandGoal open;
@@ -92,12 +92,12 @@ void biotacSimpleGripper::open2Position(double open_pos)
   }
 }
 
-//======================================================================
+//================================================================
 // Open the gripper by a set amount in meters
-// This allows for slow or fast movements depending on how large of
-// a distance away from the last position the gripper was controlled to
-// move
-//======================================================================
+// This allows for slow or fast movements depending on how 
+// large of a distance away from the last position the gripper 
+// was controlled to move
+//================================================================
 void biotacSimpleGripper::openByAmount(double move_gripper_distance)
 {
   pr2_controllers_msgs::Pr2GripperCommandGoal open;
@@ -126,9 +126,9 @@ void biotacSimpleGripper::openByAmount(double move_gripper_distance)
   }
 }
 
-//======================================================================
+//================================================================
 // Close the gripper by a set amount in meters
-//======================================================================
+//================================================================
 void biotacSimpleGripper::closeByAmount(double move_gripper_distance)
 {
   pr2_controllers_msgs::Pr2GripperCommandGoal close;
@@ -159,10 +159,10 @@ void biotacSimpleGripper::closeByAmount(double move_gripper_distance)
   }
 }
 
-//======================================================================
+//================================================================
 // Returns last known gripper position
 // Gives access to the private variable that stored last position
-//======================================================================
+//================================================================
 double biotacSimpleGripper::getGripperLastPosition()
 {
   return last_position_;
