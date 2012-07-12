@@ -1,0 +1,17 @@
+<package>
+  <description brief="hdf5_log_parser">
+
+     hdf5_log_parser
+
+  </description>
+  <author>Lorenzo Riano</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hdf5_log_parser</url>
+  <depend package="biotac_sensors"/>
+  <depend package="rospy"/>
+  <depend package="rosjson_time"/>
+
+</package>
+
+
