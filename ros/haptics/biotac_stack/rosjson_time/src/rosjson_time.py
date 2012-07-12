@@ -64,7 +64,7 @@ def value_to_json(v):
     elif type(v) in (int, float, long):
         return "%s"%v
     elif type(v) in (list, tuple):
-        return '['+','.join([value_to_json(x) for x in v]) + ']'
+        return '['+', '.join([value_to_json(x) for x in v]) + ']'
     elif type(v) == bool:
         if v:
             return 'true'
@@ -72,11 +72,16 @@ def value_to_json(v):
             return 'false'
     elif isinstance(v, rospy.Message):
         return ros_message_to_json(v)
-    elif isinstance(v, (roslib.rostime.Time, roslib.rostime.Duration)):
+    elif isinstance(v, (rospy.Time, rospy.Duration)):
         #return v.to_sec()
         return ros_message_to_json(v)
+    elif hasattr(v, "to_sec"):
+        return v.to_sec()
+        #return ros_message_to_json(v)    
     else:
-        raise ROSJSONException("unknown type: %s"%type(v))
+        print isinstance(v, Time)
+        raise ROSJSONException("unknown type: %s"%(v.__class__.__name__ ))
+    
         
 ## Convert ROS message to JSON representation. JSON representation is
 ## a simple dictionary of dictionaries, where a dictionary represents
@@ -86,16 +91,16 @@ def value_to_json(v):
 ## @param msg rospy.Message: message instance to convert
 ## @throws ROSJSONException if \a msg cannot be converted to JSON
 def ros_message_to_json(msg):
-    if not isinstance(msg, (rospy.Message, roslib.rostime.Time, roslib.rostime.Duration)):
+    if not isinstance(msg, (rospy.Message, rospy.Time, rospy.Duration)):
         raise ROSJSONException("not a valid rospy Message instance: %s"%msg.__class__.__name__)
     buff = cStringIO.StringIO()
     buff.write('{')
-    buff.write(','.join(['"%s": %s'%(f, value_to_json(getattr(msg, f))) for f in msg.__slots__]))
+    buff.write(', '.join(['"%s": %s'%(f, value_to_json(getattr(msg, f))) for f in msg.__slots__]))
     buff.write('}')
     return buff.getvalue()
 
 def ros_time_to_json(msg):
-    if not isinstance(msg, (roslib.rostime.Time, roslib.rostime.Duration)):
+    if not isinstance(msg, (rospy.rostime.Time, rospy.rostime.Duration)):
         raise ROSJSONException("not a valid rospy Time instance: %s"%msg.__class__.__name__)
     buff = cStringIO.StringIO()
     buff.write('{')
