@@ -14,7 +14,9 @@ from pr2_arm_state_aggregator.msg import TransformVerbose
 class PR2BioTacLogger:
 
     def __init__(self, arm_name):
-        rospy.init_node('pr2_biotac_logger', anonymous=True)
+
+        # Initialize node
+        rospy.init_node('pr2_biotac_logger')
         rospy.loginfo('pr2_biotac_logger initializing...')
         self.arm_name = arm_name
         self.arm_side = arm_name[0]
@@ -23,6 +25,8 @@ class PR2BioTacLogger:
         rospy.loginfo('tf listener up and running...')
         self.joint_states = pr2_joint_states_listener.PR2JointStatesListener()
         rospy.loginfo('pr2 joint state listener up and running...')
+
+        # Setup which joints to listen to
         self.joint_names = [self.arm_side+'_shoulder_pan_joint',
                    self.arm_side+'_shoulder_lift_joint',
                    self.arm_side+'_upper_arm_roll_joint',
@@ -47,21 +51,31 @@ class PR2BioTacLogger:
             self.pr2_biotac_log.transforms.append(new_tf)
             self.pr2_biotac_log.transforms[ind].child_frame_id = xform_name
             self.pr2_biotac_log.transforms[ind].parent_frame_id = self.tf_parent_name
+        
         rospy.sleep(1.0) #sleeps to give the tf listener enough time to buffer
         rospy.loginfo('Let''s get this show on the road!')
-        #self.last_time = rospy.get_time() 
 
-    #Check if directory exits & create it
-    def check_dir(self, f):
-      if not os.path.exists(f):
-        os.makedirs(f)
-        return True
-      return False
- 
+        # File writing Setup
+        # Find Node Parameter Name
+        self.file_param = rospy.get_name() + '/filename'
+        # Grab directory
+        self.package_dir = roslib.packages.get_pkg_dir('pr2_arm_state_aggregator')
+        # Check for 'data' directory
+        dir_status = self.check_dir(self.package_dir + '/data')
+        if dir_status:
+          rospy.loginfo('The ''data'' directory was successfully created.')
+        # Set output filename
+        self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
+        if not self.fileName.endswith('.json'):
+          self.fileName = self.fileName + '.json'
+        # Create initial file - delete existing file with same name 
+        self.fout = open(self.fileName,'w')
+        self.fout.write("[\n")
+
+        rospy.loginfo(rospy.get_name()+' Starting to Log to file %s:',self.fileName);
+
     # Called each time there is a new biotac message
     def biotacCallback(self,data):
-        #print (rospy.Time.now() - data.header.stamp).to_sec()
-
         #Grab all Joint efforts
         (valid, position, velocity, effort) = self.joint_states.return_joint_states(self.joint_names)
         for ind,joint_name in enumerate(self.joint_names):
@@ -76,20 +90,20 @@ class PR2BioTacLogger:
             self.pr2_biotac_log.transforms[ind].transform.rotation = tf_rot
             self.pr2_biotac_log.transforms[ind].transform_valid = tf_valid
 
-        #Store off the BioTac Data Message
+        # Store off the BioTac Data Message
         self.pr2_biotac_log.bt_hand = data
 
         # Stores the frame count into the message
         self.pr2_biotac_log.frame_count = self.frame_count
+        
         # Uses rosjson_time to convert message to JSON 
         toWrite = rosjson_time.ros_message_to_json(self.pr2_biotac_log) + "\n"
-        # Open existing file and append to it 
-        fout = open(self.fileName,"a")
-        fout.write(toWrite) 
-        fout.close()    
+        self.fout.write(toWrite)
+
         # Move to next frame 
         self.frame_count += 1
 
+    # Used to loop the transforms
     def tfLookUp(self, transform_from, transform_to):
         tf_trans = [0.0, 0.0, 0.0]
         tf_rot = [0.0, 0.0, 0.0, 0.0]
@@ -111,22 +125,13 @@ class PR2BioTacLogger:
     def startListener(self):
         # Initialize the subscriber node 
         rospy.Subscriber("biotac_pub", BioTacHand, self.biotacCallback,queue_size=1000)
-
-        # Find Node Parameter Name
-        self.file_param = rospy.get_name() + "/filename"
-        self.package_dir = roslib.packages.get_pkg_dir('pr2_biotac_logger')
-        # Check for a 'data' directory
-        dir_status = self.check_dir( self.package_dir + '/data' )
-        if dir_status:
-          rospy.loginfo('The ''data'' directory was successfully created.')
-        # Set output filename
-        self.fileName =  self.package_dir + "/data/" + rospy.get_param(self.file_param,"default.txt")
-       
-        # Create initial file - delete existing file with same name 
-        fout = open(self.fileName,"w");
-        fout.close();
- 
         rospy.spin()
+
+    # Clean up by closing the file and adding the closing brackets
+    def __del__(self):
+      self.fout.write("]")
+      self.fout.close()
+
 
 if __name__ == '__main__':
 
