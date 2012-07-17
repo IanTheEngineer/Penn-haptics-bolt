@@ -63,7 +63,6 @@ void PR2GripperAccelerometer::update()
 {
   if (gripper_accelerometer_publisher_->trylock())
   {
-    current_pos_ = joint_state_ -> position_;
     std::vector<geometry_msgs::Vector3> threeAccs = accelerometerHandle->state_.samples_;
     uint numReadings = threeAccs.size();
    
@@ -71,7 +70,9 @@ void PR2GripperAccelerometer::update()
     gripper_accelerometer_publisher_->msg_.acc_y_raw = threeAccs[numReadings].y;
     gripper_accelerometer_publisher_->msg_.acc_z_raw = threeAccs[numReadings].z;
 
-    gripper_accelerometer_publisher_->msg_.aperture_position = joint_state_->position_;
+    gripper_accelerometer_publisher_->msg_.gripper_joint_position = joint_state_->position_;
+    gripper_accelerometer_publisher_->msg_.gripper_joint_velocity = joint_state_->velocity_;
+    gripper_accelerometer_publisher_->msg_.gripper_joint_effort = joint_state_->measured_effort_;
 
     gripper_accelerometer_publisher_->unlockAndPublish();
   } 

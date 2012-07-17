@@ -6,6 +6,7 @@ import rosjson_time
 import tf
 import threading
 import pr2_joint_states_listener
+from std_msgs.msg import Int8
 from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from biotac_sensors.msg import BioTacHand
 from pr2_arm_state_aggregator.msg import PR2BioTacLog
@@ -24,6 +25,7 @@ class PR2BioTacLogger:
         self.frame_count = 1
         self.tf_listener = tf.TransformListener()
         self.gripper_accelerometer = PR2GripperAccelerometerData()
+        self.controller_state = Int8(0);
         rospy.loginfo('tf listener up and running...')
         self.joint_states = pr2_joint_states_listener.PR2JointStatesListener()
         rospy.loginfo('pr2 joint state listener up and running...')
@@ -98,6 +100,9 @@ class PR2BioTacLogger:
         # Store the accelerometer and gripper aperture position
         self.pr2_biotac_log.gripper_accelerometer = self.gripper_accelerometer
 
+        # Store the controller state 
+        self.pr2_biotac_log.controller_state = self.controller_state
+
         # Stores the frame count into the message
         self.pr2_biotac_log.frame_count = self.frame_count
         
@@ -121,7 +126,11 @@ class PR2BioTacLogger:
 
     # Callback to store accelerometer and gripper information
     def gripperCallback(self, data):
-        self.gripper_accelerometer = data;
+        self.gripper_accelerometer = data
+
+    # Callback to store controller state
+    def controllerStateCallback(self,data):
+        self.controller_state = data
 
     #Check if directory exits & create it
     def check_dir(self, f):
@@ -135,8 +144,12 @@ class PR2BioTacLogger:
         # Initialize the subscriber node for BioTacs 
         rospy.Subscriber("biotac_pub", BioTacHand, self.biotacCallback,queue_size=1000)
 
-        # Initialize subscriber node for accelerometer and gripper appeture
+        # Initialize subscriber node for accelerometer and gripper aperture
         rospy.Subscriber("pr2_gripper_accelerometer/data", PR2GripperAccelerometerData, self.gripperCallback, queue_size=1000)
+        
+        # Initialize subscriber node for controller state
+        rospy.Subscriber("simple_gripper_controller_state", Int8, self.controllerStateCallback, queue_size=10)
+
         rospy.spin()
 
     # Clean up by closing the file and adding the closing brackets
