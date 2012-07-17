@@ -6,6 +6,7 @@ import rosjson_time
 import tf
 import threading
 import pr2_joint_states_listener
+from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from biotac_sensors.msg import BioTacHand
 from pr2_arm_state_aggregator.msg import PR2BioTacLog
 from pr2_arm_state_aggregator.msg import ArmJointState
@@ -22,6 +23,7 @@ class PR2BioTacLogger:
         self.arm_side = arm_name[0]
         self.frame_count = 1
         self.tf_listener = tf.TransformListener()
+        self.gripper_accelerometer = PR2GripperAccelerometerData()
         rospy.loginfo('tf listener up and running...')
         self.joint_states = pr2_joint_states_listener.PR2JointStatesListener()
         rospy.loginfo('pr2 joint state listener up and running...')
@@ -59,7 +61,7 @@ class PR2BioTacLogger:
         # Find Node Parameter Name
         self.file_param = rospy.get_name() + '/filename'
         # Grab directory
-        self.package_dir = roslib.packages.get_pkg_dir('pr2_arm_state_aggregator')
+        self.package_dir = roslib.packages.get_pkg_dir('biotac_simple_gripper')
         # Check for 'data' directory
         dir_status = self.check_dir(self.package_dir + '/data')
         if dir_status:
@@ -93,6 +95,9 @@ class PR2BioTacLogger:
         # Store off the BioTac Data Message
         self.pr2_biotac_log.bt_hand = data
 
+        # Store the accelerometer and gripper aperture position
+        self.pr2_biotac_log.gripper_accelerometer = self.gripper_accelerometer
+
         # Stores the frame count into the message
         self.pr2_biotac_log.frame_count = self.frame_count
         
@@ -114,6 +119,10 @@ class PR2BioTacLogger:
             tf_valid = False
         return (tf_trans, tf_rot, tf_valid)
 
+    # Callback to store accelerometer and gripper information
+    def gripperCallback(self, data):
+        self.gripper_accelerometer = data;
+
     #Check if directory exits & create it
     def check_dir(self, f):
       if not os.path.exists(f):
@@ -123,8 +132,11 @@ class PR2BioTacLogger:
 
     # Setup the subscriber Node
     def startListener(self):
-        # Initialize the subscriber node 
+        # Initialize the subscriber node for BioTacs 
         rospy.Subscriber("biotac_pub", BioTacHand, self.biotacCallback,queue_size=1000)
+
+        # Initialize subscriber node for accelerometer and gripper appeture
+        rospy.Subscriber("pr2_gripper_accelerometer/data", PR2GripperAccelerometerData, self.gripperCallback, queue_size=1000)
         rospy.spin()
 
     # Clean up by closing the file and adding the closing brackets

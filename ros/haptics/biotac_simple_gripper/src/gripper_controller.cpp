@@ -38,6 +38,7 @@
 #include <biotac_simple_gripper/biotac_observer.h>
 #include <biotac_simple_gripper/biotac_simple_gripper.h>
 #include <biotac_simple_gripper/biotac_arm_controller.h>
+#include "std_msgs/Int8.h"
 #include <boost/thread.hpp>
 #include <string>
 
@@ -64,6 +65,12 @@ class gripperController{
     static const int MoveGripperRate = 50;                  // In Hz
     static const double SlideArmDistance = 0.05;            // In meters
     static const double GripperMaxOpenPosition = 0.08;      // Also specified in biotac_simple_gripper.h
+    static const int DISABLED = 0;
+    static const int THERMAL_HOLD = 1;
+    static const int SLIDE = 2;
+    static const int SQUEEZE = 3;
+    static const int DONE = 4;
+
     //================================================================
     // Variables
     //================================================================ 
@@ -71,6 +78,8 @@ class gripperController{
     biotacSimpleGripper *simple_gripper;
     biotacArmController *arm_controller;
     std::string fileName;                                   // Filename to log data into
+    int state;
+    ros::Publisher state_pub;
 
     //================================================================
     // Gripper Constuctor
@@ -94,6 +103,12 @@ class gripperController{
       // Initializing Left and Right
       Left = biotac_obs->Left;
       Right = biotac_obs->Right;
+
+      // Set controller state to DISABLED
+      state = DISABLED;
+
+      // Initialize publisher
+      state_pub = n.advertise<std_msgs::Int8>("simple_gripper_controller_state", 10);
     }
     
     //================================================================
@@ -175,12 +190,34 @@ class gripperController{
     void startLogger()
     {
       ROS_INFO("Start Logging");
-      std::string command_pre("rosrun biotac_logger biotac_json_logger.py _filename:=");
+      std::string command_pre("rosrun pr2_arm_state_aggregator pr2_biotac_sub.py _filename:=");
       std::string command = command_pre + fileName; 
       std::cout << command << "\n";
       int success = system(command.c_str());
       if (success) ROS_INFO("Successfully Started"); 
     }
+
+    //================================================================
+    // Publish the state continuously
+    //================================================================
+    void publishState()
+    {
+      ros::Rate loop_rate(10);
+      ROS_INFO("Start publishing state");
+      while (ros::ok() && state != DONE)
+      { 
+        std_msgs::Int8 msg;
+        msg.data = state;
+        state_pub.publish(msg);
+        ros::spinOnce();
+        loop_rate.sleep();
+      }
+    
+      // Publish the final state (DONE)
+      std_msgs::Int8 msg;
+      msg.data = state;
+      state_pub.publish(msg);
+    } 
 
     //================================================================
     // Destructor
@@ -232,6 +269,10 @@ int main(int argc, char* argv[])
   // Store filename in controller;
   controller.fileName = filenameChar;
 
+  // Start thread to publish controller state
+  ROS_INFO("Starting controller state publisher");
+  boost::thread statePubThread( boost::bind( &gripperController::publishState, &controller));
+
   ROS_INFO("Waiting for BioTac Readings");
   //Wait for enough data to collect to normalize
   while (!controller.biotac_obs->init_complete_flag_ && ros::ok()){
@@ -246,7 +287,7 @@ int main(int argc, char* argv[])
   //================================================================
 
   //================================================================
-  // Open gripper and perform first action - find object and hold
+  // Open gripper and move to start position, start logger
   //================================================================
 
   // Open the gripper
@@ -259,11 +300,17 @@ int main(int argc, char* argv[])
 
   // Start recording data
   ROS_INFO("Starting data logging");
-  boost::thread testThread( boost::bind( &gripperController::startLogger, &controller));
+  boost::thread loggingThread( boost::bind( &gripperController::startLogger, &controller));
 
   // Pause to allow the node to come up - 2 seconds
   ros::Rate waitNode(0.5);
   waitNode.sleep();
+
+  //================================================================
+  // Thermal Hold
+  //================================================================
+  controller.state = controller.THERMAL_HOLD;
+  ROS_INFO("State set to [%d]", controller.state);
 
   ROS_INFO("Moving the gripper fast and find contact");
   // Close the gripper until contact is made 
@@ -285,7 +332,9 @@ int main(int argc, char* argv[])
   //================================================================
   // Start motion slide down
   //================================================================
-
+  controller.state = controller.SLIDE;
+  ROS_INFO("State set to [%d]", controller.state);
+  
   // Find position of arm
   controller.arm_controller->getArmTransform();
   double x = controller.arm_controller->getTransform('x');
@@ -304,6 +353,8 @@ int main(int argc, char* argv[])
   //================================================================
   // Start motion to squeeze
   //================================================================ 
+  controller.state = controller.SQUEEZE;
+  ROS_INFO("State set to [%d]", controller.state);
 
   ROS_INFO("Starting Squeeze Motion"); 
   // Re-open gripper and find contact again - (from last position + 0.5cm)
@@ -319,9 +370,16 @@ int main(int argc, char* argv[])
   //================================================================
   // Destroy logger
   //================================================================
-  int success = system("rosnode kill biotac_json_logger");
+  int success = system("rosnode kill pr2_biotac_logger");
   if (success) ROS_INFO("Logger stopped");
-  testThread.join();
+  loggingThread.join();
+
+  //================================================================
+  // Stop state publisher
+  //================================================================
+  controller.state = controller.DONE;
+  ROS_INFO("State set to [%d]", controller.state);
+  statePubThread.join();
 
   return 0;
 }

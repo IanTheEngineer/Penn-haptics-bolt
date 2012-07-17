@@ -1,0 +1,5 @@
+pr2_gripper_accelerometer:
+  type: PR2GripperAccelerometer
+  joint_name: l_gripper_joint
+  accelerometer_name: l_gripper_motor
+

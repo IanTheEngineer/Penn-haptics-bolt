@@ -14,6 +14,7 @@
   <depend package="rosjson_time"/>
   <depend package="sensor_msgs"/>
   <depend package="biotac_sensors"/>
+  <depend package="pr2_gripper_accelerometer"/>
 
 </package>
 

@@ -1,0 +1,6 @@
+<library path="lib/libpr2_gripper_accelerometer_lib">
+  <class name = "pr2_gripper_accelerometer/PR2GripperAccelerometer"
+         type = "pr2_gripper_accelerometer::PR2GripperAccelerometer"
+         base_class_type = "pr2_controller_interface::Controller" />
+</library>
+
