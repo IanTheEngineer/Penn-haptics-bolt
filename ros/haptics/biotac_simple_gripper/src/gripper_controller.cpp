@@ -54,6 +54,7 @@ class gripperController{
     int Right;
     static const int LightPressureContact = 50;         // Pressure value for light contacts
     static const int SqueezePressureContact = 400;      // Pressure value for squeezing objects
+    static const double SlideArmSlowDistance = 0.01;    // 1 cm
     
   public:
 
@@ -178,6 +179,29 @@ class gripperController{
 
         simple_gripper->openByAmount(move_gripper_distance);
         ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        ros::spinOnce();
+        rate.sleep();
+      }
+    }
+
+    //================================================================
+    // Move arm down at a constant velocity
+    //================================================================
+    void slide(ros::Rate rate, double distance)
+    {
+     // Find position of arm
+      arm_controller->getArmTransform();
+      double x = arm_controller->getTransform('x');
+      double y = arm_controller->getTransform('y');
+      double startZ = arm_controller->getTransform('z');
+      double currentZ = startZ;
+
+      // Keep moving until distance is achieved
+      while (abs(currentZ-startZ)< distance)
+      {
+        arm_controller->slide_down(x, y, currentZ, SlideArmSlowDistance);
+        arm_controller->getArmTransform();
+        currentZ = arm_controller->getTransform('z');
         ros::spinOnce();
         rate.sleep();
       }
