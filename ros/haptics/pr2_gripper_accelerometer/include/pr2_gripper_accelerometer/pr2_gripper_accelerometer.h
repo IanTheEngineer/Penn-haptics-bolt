@@ -15,6 +15,7 @@ namespace pr2_gripper_accelerometer
       boost::scoped_ptr<realtime_tools::RealtimePublisher< pr2_gripper_accelerometer::PR2GripperAccelerometerData> > gripper_accelerometer_publisher_;
       // Pointer to accelerometer
       pr2_hardware_interface::Accelerometer* accelerometerHandle;
+      double aX, aY, aZ;
 
     public:
       virtual bool init(pr2_mechanism_model::RobotState *robot, 

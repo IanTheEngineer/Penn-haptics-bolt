@@ -52,8 +52,8 @@ class gripperController{
     //================================================================
     int Left;                        // These are defined in the BioTacObserver class
     int Right;
-    static const int LightPressureContact = 50;         // Pressure value for light contacts
-    static const int SqueezePressureContact = 400;      // Pressure value for squeezing objects
+    static const int LightPressureContact = 200;         // Pressure value for light contacts
+    static const int SqueezePressureContact = 350;      // Pressure value for squeezing objects
     static const double SlideArmSlowDistance = 0.01;    // 1 cm
     
   public:
@@ -359,6 +359,7 @@ int main(int argc, char* argv[])
   controller.state = controller.SLIDE;
   ROS_INFO("State set to [%d]", controller.state);
   
+  ros::Rate slide_rate(1); 
   // Find position of arm
   controller.arm_controller->getArmTransform();
   double x = controller.arm_controller->getTransform('x');
@@ -369,7 +370,8 @@ int main(int argc, char* argv[])
   ROS_INFO("Sliding Arm down by [%f] meters", controller.SlideArmDistance);
   // Slide the arm down - currently 5 cm down
   controller.arm_controller->slide_down(x, y, z, controller.SlideArmDistance);
-
+  //controller.slide(slide_rate, 0.05);
+  
   ROS_INFO("Slide completed, holding for 2 seconds");
   // Wait for a small amount of time - 2 seconds
   waitNode.sleep();
