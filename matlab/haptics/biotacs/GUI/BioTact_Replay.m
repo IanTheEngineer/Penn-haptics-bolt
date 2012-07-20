@@ -137,7 +137,7 @@ function browse_file_btn_Callback(hObject, eventdata, handles)
     channel_display = 1; % Defaults to one finger first
     total_channels = 23;
 
-    [filename, pathname, filterindex] = uigetfile('*.json;*.txt', 'Pick a file');
+    [filename, pathname, filterindex] = uigetfile('*.json;*.txt;*.mat', 'Pick a file');
     
     % Check if user pressed cancel
     if isequal(filename,0) || isequal(pathname,0)
@@ -148,12 +148,24 @@ function browse_file_btn_Callback(hObject, eventdata, handles)
     end
     
     % Opens the file
-    fileID = fopen(strcat(pathname,filename));
+    if (sum(strfind(filename, '.mat')))
+        fileID = strcat(pathname, filename);
+    else
+        fileID = fopen(strcat(pathname,filename));
+    end
     
     if (sum(strfind(filename, '.json')) > 0)
-        [all_data, number_fingers] = process_json_file_fast(fileID);
-    else
+        [all_data, number_fingers] = process_json_file(fileID);
+        if (isfield(all_data, 'biotac'))
+            all_data = all_data.biotac;
+        end
+    elseif (sum(strfind(filename, '.txt')) > 0)
         [all_data, number_fingers] = process_txt_file(fileID);
+    else
+        [all_data, number_fingers] = process_mat_file(fileID);
+        if (isfield(all_data, 'biotac'))
+            all_data = all_data.biotac;
+        end
     end
     
     start_time = [];

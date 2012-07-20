@@ -54,7 +54,6 @@ class gripperController{
     int Right;
     static const int LightPressureContact = 50;         // Pressure value for light contacts
     static const int SqueezePressureContact = 400;      // Pressure value for squeezing objects
-    static const double SlideArmSlowDistance = 0.01;    // 1 cm
     
   public:
 
@@ -159,12 +158,20 @@ class gripperController{
     //================================================================
     void squeeze(ros::Rate rate, double move_gripper_distance)
     {
+      int previous_pressure_max = 0; 
       int pressure_max = 0;
-   
+      int no_motion_counter = 0;
+
       // Close 
-      while (pressure_max < SqueezePressureContact && ros::ok())
+      while (pressure_max < SqueezePressureContact && ros::ok()
+             && no_motion_counter < 10)
       {
+        previous_pressure_max = pressure_max;
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
+
+        // Checks if pressure has been "stuck" 
+        if (abs(previous_pressure_max-pressure_max) < 5)
+          no_motion_counter++;
 
         simple_gripper->closeByAmount(move_gripper_distance);
         ROS_INFO("Pressure Max is: [%d]", pressure_max);
@@ -179,29 +186,6 @@ class gripperController{
 
         simple_gripper->openByAmount(move_gripper_distance);
         ROS_INFO("Pressure Max is: [%d]", pressure_max);
-        ros::spinOnce();
-        rate.sleep();
-      }
-    }
-
-    //================================================================
-    // Move arm down at a constant velocity
-    //================================================================
-    void slide(ros::Rate rate, double distance)
-    {
-     // Find position of arm
-      arm_controller->getArmTransform();
-      double x = arm_controller->getTransform('x');
-      double y = arm_controller->getTransform('y');
-      double startZ = arm_controller->getTransform('z');
-      double currentZ = startZ;
-
-      // Keep moving until distance is achieved
-      while (abs(currentZ-startZ)< distance)
-      {
-        arm_controller->slide_down(x, y, currentZ, SlideArmSlowDistance);
-        arm_controller->getArmTransform();
-        currentZ = arm_controller->getTransform('z');
         ros::spinOnce();
         rate.sleep();
       }

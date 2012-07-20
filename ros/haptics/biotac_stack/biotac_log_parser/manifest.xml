@@ -11,6 +11,7 @@
   <depend package="biotac_sensors"/>
   <depend package="rospy"/>
   <depend package="rosjson_time"/>
+  <depend package="rosbag"/>
 
 </package>
 

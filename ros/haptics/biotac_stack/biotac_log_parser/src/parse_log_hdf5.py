@@ -61,23 +61,32 @@ def main():
         
         for _, msg, _ in bag.read_messages(topics="/biotac_pub"):
             isinstance(msg, BioTacHand)
-            
-            tdc_data.append( msg.bt_data[0].tdc_data)
-            tac_data.append( msg.bt_data[0].tac_data)
-            pdc_data.append( msg.bt_data[0].pdc_data)
-            pac_data.append( msg.bt_data[0].pac_data)
-            electrode_data.append( msg.bt_data[0].electrode_data)
+            tdc = []
+            tac = []
+            pdc = []
+            pac = []
+            electrode = []
+            for finger in msg.bt_data:
+                tdc.append( finger.tdc_data)
+                tac.append( finger.tac_data)
+                pdc.append( finger.pdc_data)
+                pac.append( finger.pac_data)
+                electrode.append( finger.electrode_data)
             
             time_stamp.append( msg.header.stamp.to_sec())
-            
+            tdc_data.append(tdc)
+            tac_data.append(tac)
+            pdc_data.append(pdc)
+            pac_data.append(pac)
+            electrode_data.append(electrode) 
 
 
         group_name = "trajectory_" + str(traj_num)
         f[group_name + "/tdc_data"] = tdc_data
-        f[group_name + "/tac_data"] = tac_data
-        f[group_name + "/pdc_data"] = pdc_data
-        f[group_name + "/pac_data"] = pac_data
-        f[group_name + "/electrode_data"] = electrode_data
+        f[group_name + "-tac_data"] = tac_data
+        f[group_name + "-pdc_data"] = pdc_data
+        f[group_name + "-pac_data"] = pac_data
+        f[group_name + "-electrode_data"] = electrode_data
 
         traj_num += 1
     f.close()
