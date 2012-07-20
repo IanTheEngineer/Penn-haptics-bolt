@@ -103,7 +103,7 @@ void biotacSimpleGripper::openByAmount(double move_gripper_distance)
   pr2_controllers_msgs::Pr2GripperCommandGoal open;
   
   ROS_INFO("Last position is %f", last_position_);
-  double position = last_position_- move_gripper_distance;  // Move gripper by specified distance
+  double position = last_position_+ move_gripper_distance;  // Move gripper by specified distance
  
   // Check if gripper position valid 
   if (position > GripperMaxOpenPosition) position = GripperMaxOpenPosition;

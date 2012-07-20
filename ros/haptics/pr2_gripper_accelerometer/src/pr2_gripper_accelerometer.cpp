@@ -57,6 +57,9 @@ void PR2GripperAccelerometer::starting()
   ROS_INFO("Starting controller to publish values");
   double init_pos_ = joint_state_ ->position_;
   ROS_INFO("Initial position is [%f]", init_pos_);
+  aX = 1.0;
+  aY = 1.0;
+  aZ = 1.0;
 }
 
 void PR2GripperAccelerometer::update()
@@ -64,12 +67,22 @@ void PR2GripperAccelerometer::update()
   if (gripper_accelerometer_publisher_->trylock())
   {
     std::vector<geometry_msgs::Vector3> threeAccs = accelerometerHandle->state_.samples_;
-    uint numReadings = threeAccs.size();
+/*    uint numReadings = threeAccs.size();
    
     gripper_accelerometer_publisher_->msg_.acc_x_raw = threeAccs[numReadings].x; 
     gripper_accelerometer_publisher_->msg_.acc_y_raw = threeAccs[numReadings].y;
     gripper_accelerometer_publisher_->msg_.acc_z_raw = threeAccs[numReadings].z;
-
+*/
+    for (uint i = 0; i < threeAccs.size(); i++)
+    {
+      aX = threeAccs[i].x; 
+      aY = threeAccs[i].y;
+      aZ = threeAccs[i].z;
+    }
+    gripper_accelerometer_publisher_ ->msg_.acc_x_raw = aX;
+    gripper_accelerometer_publisher_ ->msg_.acc_y_raw = aY;
+    gripper_accelerometer_publisher_ ->msg_.acc_z_raw = aZ;
+ 
     gripper_accelerometer_publisher_->msg_.gripper_joint_position = joint_state_->position_;
     gripper_accelerometer_publisher_->msg_.gripper_joint_velocity = joint_state_->velocity_;
     gripper_accelerometer_publisher_->msg_.gripper_joint_effort = joint_state_->measured_effort_;
