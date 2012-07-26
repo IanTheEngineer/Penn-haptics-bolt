@@ -64,10 +64,12 @@ void biotacArmController::slide_down(double x, double y, double z, double distan
   *assigns each value in the goal structure for us to prevent having to 
   *write it all out.
   */
-  EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
+  /*EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
                                     1000, 1000, 1000, 30, 30, 30,
                                     false, false, false, false, false,
                                     false, 4, "/torso_lift_link");
+  *logger = "TESTING"; */
+  
   /**
   *This point is farther down from the previous point 
   */
