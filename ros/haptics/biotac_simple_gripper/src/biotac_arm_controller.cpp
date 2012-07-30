@@ -63,22 +63,20 @@ void biotacArmController::slide_down(double x, double y, double z, double distan
   *adds a trajectory point to the end of the first argument.  It simply 
   *assigns each value in the goal structure for us to prevent having to 
   *write it all out.
-  *
-  *This is a point in the center of the robot's body.  This simply moves the 
-  *arm to that point with maximum stiffness.  
   */
-  EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
+  /*EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
                                     1000, 1000, 1000, 30, 30, 30,
                                     false, false, false, false, false,
                                     false, 4, "/torso_lift_link");
+  *logger = "TESTING"; */
+  
   /**
-  *This point is farther in front of the robot, but it is only allowed to 
-  *use a very small stiffness in the x direction
+  *This point is farther down from the previous point 
   */
   EECartImpedArm::addTrajectoryPoint(traj, x, y, z-distance, 0, 0, 0, 1,
                                      500, 500, 500, 30, 30, 30,
                                      false, false, false, false, false,
-                                     false, 6, "/torso_lift_link");
+                                     false, 5, "/torso_lift_link");
  /**
  *This is the line that actually sends the trajectory to the action server
  *and starts the arm moving.  The server will block until the arm completes 
@@ -96,10 +94,10 @@ void biotacArmController::moveArmToStart()
   ee_cart_imped_msgs::EECartImpedGoal traj;
  
   // Move arm to starting point 
-  EECartImpedArm::addTrajectoryPoint(traj, 1.0, 0, 0.04, 0, 0, 0, 1,
+  EECartImpedArm::addTrajectoryPoint(traj, 1.0, 0.2, 0.04, 0, 0, 0, 1,
                                     1000, 1000, 1000, 30, 30, 30,
                                     false, false, false, false, false,
-                                    false, 4, "/torso_lift_link");
+                                    false, 2, "/torso_lift_link");
   // Send path
   arm_controller->startTrajectory(traj);
 }

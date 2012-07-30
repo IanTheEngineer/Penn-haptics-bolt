@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <!-- Launch arm controller for left arm -->
+  <include file="$(find ee_cart_imped_action)/launch/l_arm_cart_imped_action.launch"/>
+
+  <!-- Start publishing sensor data (BioTac, Joints, Accelerometer) -->
+  <include file="$(find biotac_simple_gripper)/launch/publish_sensors.launch"/>
+ 
+</launch>

@@ -12,14 +12,14 @@ function [loaded_data] = load_data_from_file()
 % Website: http://www.bolt-haptics.seas.upenn.edu
 % June 2012; Last revision: 12-June-2012
 
-% Add to path JSON library
-if ispc()
-    javaaddpath(strcat(pwd,'\json-smart-1.1.1.jar')); 
-else
-    javaaddpath(strcat(pwd,'/json-smart-1.1.1.jar'));
-end
+% Add to path JSON library - only for java JSON - not needed anymore
+% if ispc()
+%     javaaddpath(strcat(pwd,'\json-smart-1.1.1.jar')); 
+% else
+%     javaaddpath(strcat(pwd,'/json-smart-1.1.1.jar'));
+% end
 
-[filename, pathname, filterindex] = uigetfile('*.json;*.txt', 'Pick a file');
+[filename, pathname, filterindex] = uigetfile('*.json;*.txt;*.mat', 'Pick a file');
     
 % Check if user pressed cancel
 if isequal(filename,0) || isequal(pathname,0)
@@ -30,12 +30,19 @@ else
 end
 
 % Opens the file
-fileID = fopen(strcat(pathname,filename));
-
-if (sum(strfind(filename, '.json')) > 0)
-    [all_data, number_fingers] = process_json_file_fast(fileID);
+if (sum(strfind(filename, '.mat')))
+    fileID = strcat(pathname, filename);
 else
+    fileID = fopen(strcat(pathname,filename));
+end
+
+% Process data
+if (sum(strfind(filename, '.json')) > 0)
+    [all_data, number_fingers] = process_json_file(fileID);
+elseif (sum(strfind(filename, '.txt')) > 0)
     [all_data, number_fingers] = process_txt_file(fileID);
+else
+    [all_data, number_fingers] = process_mat_file(fileID);
 end
 
 loaded_data = all_data;

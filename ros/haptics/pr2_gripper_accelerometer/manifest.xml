@@ -1,0 +1,23 @@
+<package>
+  <description brief="pr2_gripper_accelerometer">
+
+     pr2_gripper_accelerometer
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pr2_gripper_accelerometer</url>
+  <depend package="roscpp"/>
+  <depend package="pr2_controller_interface"/>
+  <depend package="pr2_mechanism_model"/>
+  <depend package="pluginlib"/>
+  <depend package="realtime_tools"/>
+  
+  <export>
+    <pr2_controller_interface plugin="${prefix}/controller_plugins.xml" />
+  </export>
+
+</package>
+
+

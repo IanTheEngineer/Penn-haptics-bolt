@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/biotac_simple_gripper</url>
   <depend package="roscpp"/>
+  <depend package="std_msgs"/>
   <depend package="biotac_sensors"/>
   <depend package="pr2_controllers_msgs"/>
   <depend package="actionlib"/>

@@ -64,9 +64,14 @@ def main():
         num_fingers = 0
         for _, msg, _ in bag.read_messages(topics="/biotac_pub"):
             isinstance(msg, BioTacHand)            
-            
+            tdc = []
             num_fingers = len(msg.bt_data)
             for finger_index in xrange(num_fingers):                
+                tdc.append( finger.tdc_data)
+                tac.append( finger.tac_data)
+                pdc.append( finger.pdc_data)
+                pac.append( finger.pac_data)
+                electrode.append( finger.electrode_data)
                 
                 tdc_data[finger_index].append( msg.bt_data[finger_index].tdc_data)
                 tac_data[finger_index].append( msg.bt_data[finger_index].tac_data)

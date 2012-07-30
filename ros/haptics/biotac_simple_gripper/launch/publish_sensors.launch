@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="biotac_sensors" type="biotac_pub" name="biotac_publisher" output="screen"/>
+  <node pkg="pr2_arm_state_aggregator" type="pr2_arm_state_pub.py" name="pr2_joint_publisher" output="screen"/>
+  <include file="$(find pr2_gripper_accelerometer)/launch/pr2_gripper_acc_pub.launch"/>
+</launch>

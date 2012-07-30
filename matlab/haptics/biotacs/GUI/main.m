@@ -21,11 +21,10 @@ clear all;
 % Add to path utilities folder
 if ispc()
     addpath('..\utilities');
-    javaaddpath('..\utilities\json-smart-1.1.1.jar');
-    
+    %javaaddpath('..\utilities\java_json\json-smart-1.1.1.jar');
 else
     addpath('../utilities');
-    javaaddpath('../utilities/json-smart-1.1.1.jar');
+    %javaaddpath('../utilities/java_json/json-smart-1.1.1.jar');
 end
 
 % Open up biotac GUI

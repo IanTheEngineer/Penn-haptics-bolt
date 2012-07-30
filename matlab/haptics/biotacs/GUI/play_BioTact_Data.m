@@ -78,22 +78,42 @@ axis(handles.All_Values,[start_time end_time min(min(all_data(channel_display).e
 axis(handles.Select_Val1,[start_time end_time min(min(allValues), -100) max(max(allValues),100)]);
 axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
 
-% If AC pressure is selected, resize the scale of the graphs
-if (val1_graph == 23)
-    allValues = [all_data(channel_display).electrodes(:); all_data(channel_display).pdc(:); all_data(channel_display).pac(:)];
-    axis(handles.Select_Val1,[start_time end_time*22 min(min(allValues),-100) max(max(allValues),100)]);
-elseif (val1_graph > 19)
-    allValues = [all_data(channel_display).tac(:); all_data(channel_display).pdc(:); all_data(channel_display).tdc(:)];
-    axis(handles.Select_Val1,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
-end
-if (val2_graph == 23)
-    allValues = [all_data(channel_display).electrodes(:); all_data(channel_display).pdc(:); all_data(channel_display).pac(:)];
-    axis(handles.Select_Val2,[start_time end_time*22 min(min(allValues),-100) max(max(allValues),100)]);
-elseif (val2_graph > 19)
-    allValues = [all_data(channel_display).tac(:); all_data(channel_display).pdc(:); all_data(channel_display).tdc(:)];
-    axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+if (isempty(val1_graph))
+else
+    % If AC pressure is selected, resize the scale of the graphs
+    switch (val1_graph)
+        case 23
+            allValues = all_data(channel_display).pac(:);
+            axis(handles.Select_Val1,[start_time end_time*22 min(min(allValues),-100) max(max(allValues),100)]);
+        case 22
+            allValues = all_data(channel_display).tdc(:);
+            axis(handles.Select_Val1,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+        case 21
+            allValues = all_data(channel_display).tac(:);
+            axis(handles.Select_Val1,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+        case 20
+            allValues = all_data(channel_display).pdc(:);
+            axis(handles.Select_Val1,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+    end
 end
 
+if (isempty(val2_graph))
+else
+    switch (val2_graph)
+        case 23
+            allValues = all_data(channel_display).pac(:);
+            axis(handles.Select_Val2,[start_time end_time*22 min(min(allValues),-100) max(max(allValues),100)]);
+        case 22
+            allValues = all_data(channel_display).tdc(:);
+            axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+        case 21
+            allValues = all_data(channel_display).tac(:);
+            axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+        case 20
+            allValues = all_data(channel_display).pdc(:);
+            axis(handles.Select_Val2,[start_time end_time min(min(allValues),-100) max(max(allValues),100)]);
+    end
+end
 % Size of plot
 data_length = size(all_data(channel_display).pdc,1);
 % store area information

@@ -1,0 +1,7 @@
+string frame_count
+biotac_sensors/BioTacHand bt_hand
+TransformVerbose[] transforms
+ArmJointState[] joint_states
+pr2_gripper_accelerometer/PR2GripperAccelerometerData gripper_accelerometer
+int8 controller_state
+string controller_state_detail
