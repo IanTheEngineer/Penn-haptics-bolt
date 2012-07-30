@@ -12,6 +12,8 @@ import itertools
 import h5py
 from biotac_sensors.msg import BioTacHand
 
+from collections import defaultdict
+
 def main():
     """ Usage
     First log the data using rosbag:
@@ -46,38 +48,45 @@ def main():
 
     gen = (glob.glob(f) for f in options.input_file.split())
     traj_num = 0
+
     for filename in itertools.chain.from_iterable(gen):
 
-        rospy.loginfo("Opening bag %s"% filename)
+        rospy.loginfo("Opening bag %s"% filename)        
         bag = rosbag.Bag(filename)
 
-        tdc_data = []
-        tac_data = []
-        pdc_data = []
-        pac_data = []
-        electrode_data = []
+        tdc_data = defaultdict(list)
+        tac_data = defaultdict(list)
+        pdc_data = defaultdict(list)
+        pac_data = defaultdict(list)
+        electrode_data = defaultdict(list)
         time_stamp = []
-        
-        
+
+        num_fingers = 0
         for _, msg, _ in bag.read_messages(topics="/biotac_pub"):
-            isinstance(msg, BioTacHand)
+            isinstance(msg, BioTacHand)            
             
-            tdc_data.append( msg.bt_data[0].tdc_data)
-            tac_data.append( msg.bt_data[0].tac_data)
-            pdc_data.append( msg.bt_data[0].pdc_data)
-            pac_data.append( msg.bt_data[0].pac_data)
-            electrode_data.append( msg.bt_data[0].electrode_data)
-            
+            num_fingers = len(msg.bt_data)
+            for finger_index in xrange(num_fingers):                
+                
+                tdc_data[finger_index].append( msg.bt_data[finger_index].tdc_data)
+                tac_data[finger_index].append( msg.bt_data[finger_index].tac_data)
+                pdc_data[finger_index].append( msg.bt_data[finger_index].pdc_data)
+                pac_data[finger_index].append( msg.bt_data[finger_index].pac_data)
+                electrode_data[finger_index].append( msg.bt_data[finger_index].electrode_data)
+                
             time_stamp.append( msg.header.stamp.to_sec())
-            
 
-
-        group_name = "trajectory_" + str(traj_num)
-        f[group_name + "/tdc_data"] = tdc_data
-        f[group_name + "/tac_data"] = tac_data
-        f[group_name + "/pdc_data"] = pdc_data
-        f[group_name + "/pac_data"] = pac_data
-        f[group_name + "/electrode_data"] = electrode_data
+        
+        #group_name = "trajectory_" + str(traj_num)        
+        group_name = filename
+        f[group_name + "/timestamps"] = time_stamp
+        for finger_index in xrange(num_fingers):
+            finger_name = "/finger_" + str(finger_index)
+            f[group_name + finger_name + "/tdc_data"] = tdc_data[finger_index]
+            f[group_name + finger_name + "/tac_data"] = tac_data[finger_index]
+            f[group_name + finger_name + "/pdc_data"] = pdc_data[finger_index]
+            f[group_name + finger_name + "/pac_data"] = pac_data[finger_index]
+            f[group_name + finger_name + "/electrode_data"] = electrode_data[finger_index]
 
         traj_num += 1
     f.close()
