@@ -35,12 +35,13 @@
 * Author: Vivian Chu (chuv@grasp.upenn.edu)
 *********************************************************************/
 
-#include <ros/ros.h>
-#include <pr2_controllers_msgs/Pr2GripperCommandAction.h>
-#include <actionlib/client/simple_action_client.h>
 
 #ifndef _BIOTAC_SIMPLE_GRIPPER
 #define _BIOTAC_SIMPLE_GRIPPER
+
+#include <ros/ros.h>
+#include <pr2_controllers_msgs/Pr2GripperCommandAction.h>
+#include <actionlib/client/simple_action_client.h>
 
 typedef actionlib::SimpleActionClient<pr2_controllers_msgs::Pr2GripperCommandAction> GripperClient;
 

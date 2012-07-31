@@ -41,9 +41,23 @@ class PR2BioTacLogger:
                    self.arm_side+'_wrist_flex_joint',
                    self.arm_side+'_wrist_roll_joint',
                    self.arm_side+'_gripper_joint']
-        self.tf_child_names = ['/'+self.arm_side+'_gripper_r_finger',
-                         '/'+self.arm_side+'_gripper_l_finger',
-                         '/'+self.arm_side+'_gripper_tool_frame']
+        self.tf_child_names = [
+                                '/'+self.arm_side+'_shoulder_pan_link',
+                                '/'+self.arm_side+'_shoulder_lift_link',
+                                '/'+self.arm_side+'_upper_arm_roll_link',
+                                '/'+self.arm_side+'_upper_arm_link',
+                                '/'+self.arm_side+'_elbow_flex_link',
+                                '/'+self.arm_side+'_forearm_roll_link',
+                                '/'+self.arm_side+'_forearm_link',
+                                '/'+self.arm_side+'_wrist_flex_link',
+                                '/'+self.arm_side+'_wrist_roll_link',
+                                '/'+self.arm_side+'_gripper_palm_link',
+                                '/'+self.arm_side+'_gripper_tool_frame',
+                                '/'+self.arm_side+'_gripper_l_finger_link',
+                                '/'+self.arm_side+'_gripper_l_finger_tip_link',
+                                '/'+self.arm_side+'_gripper_r_finger_link',
+                                '/'+self.arm_side+'_gripper_r_finger_tip_link'
+                         ]
         self.tf_parent_name = '/torso_lift_link'
         self.pr2_biotac_log = PR2BioTacLog()
         
@@ -58,6 +72,13 @@ class PR2BioTacLogger:
             self.pr2_biotac_log.transforms[ind].child_frame_id = xform_name
             self.pr2_biotac_log.transforms[ind].parent_frame_id = self.tf_parent_name
         
+        new_tf = TransformVerbose()
+        self.pr2_arm_state.transforms.append(new_tf)
+        end_ind = len(self.pr2_arm_state.transforms)-1
+        self.pr2_arm_state.transforms[end_ind].child_frame_id = '/torso_lift_link'
+        self.pr2_arm_state.transforms[end_ind].parent_frame_id = '/base_link'
+
+
         rospy.sleep(1.0) #sleeps to give the tf listener enough time to buffer
         rospy.loginfo('Let''s get this show on the road!')
 

@@ -35,13 +35,14 @@
 * Author: Vivian Chu (chuv@grasp.upenn.edu)
 *********************************************************************/
 
+
+#ifndef _BIOTAC_ARM_CONTROLLER
+#define _BIOTAC_ARM_CONTROLLER
+
 #include <ee_cart_imped_action/ee_cart_imped_arm.hh>
 #include <ee_cart_imped_msgs/EECartImpedGoal.h>
 #include <tf/transform_listener.h>
 #include <message_filters/subscriber.h>
-
-#ifndef _BIOTAC_ARM_CONTROLLER
-#define _BIOTAC_ARM_CONTROLLER
 
 //================================================================
 // BioTacArm Controller Class

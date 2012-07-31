@@ -36,12 +36,13 @@
 *         Ian McMahon (imcmahon@grasp.upenn.edu)
 *********************************************************************/
 
-#include <biotac_sensors/BioTacHand.h>
-#include <vector>
-#include <boost/thread/shared_mutex.hpp>
 
 #ifndef _BIOTAC_OBSERVER
 #define _BIOTAC_OBSERVER
+
+#include <biotac_sensors/BioTacHand.h>
+#include <vector>
+#include <boost/thread/shared_mutex.hpp>
 
 //================================================================
 // BioTacObserver Class Defintion
