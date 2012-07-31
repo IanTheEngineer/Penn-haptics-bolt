@@ -73,10 +73,10 @@ class PR2BioTacLogger:
             self.pr2_biotac_log.transforms[ind].parent_frame_id = self.tf_parent_name
         
         new_tf = TransformVerbose()
-        self.pr2_arm_state.transforms.append(new_tf)
-        end_ind = len(self.pr2_arm_state.transforms)-1
-        self.pr2_arm_state.transforms[end_ind].child_frame_id = '/torso_lift_link'
-        self.pr2_arm_state.transforms[end_ind].parent_frame_id = '/base_link'
+        self.pr2_biotac_log.transforms.append(new_tf)
+        end_ind = len(self.pr2_biotac_log.transforms)-1
+        self.pr2_biotac_log.transforms[end_ind].child_frame_id = '/torso_lift_link'
+        self.pr2_biotac_log.transforms[end_ind].parent_frame_id = '/base_link'
 
 
         rospy.sleep(1.0) #sleeps to give the tf listener enough time to buffer
