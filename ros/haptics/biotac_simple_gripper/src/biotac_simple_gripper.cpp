@@ -107,6 +107,8 @@ void biotacSimpleGripper::openByAmount(double move_gripper_distance)
  
   // Check if gripper position valid 
   if (position > GripperMaxOpenPosition) position = GripperMaxOpenPosition;
+  if (position < 0) position = 0.0;
+
   open.command.position = position;
   open.command.max_effort = GripperForceMax;  // Do not limit effort (negative)
 
@@ -139,7 +141,9 @@ void biotacSimpleGripper::closeByAmount(double move_gripper_distance)
   double position = last_position_- move_gripper_distance;  // Move gripper by specified distance 
   
   // CHeck if gripper position valid
+  if (position > GripperMaxOpenPosition) position = GripperMaxOpenPosition;
   if (position < 0) position = 0.0;        
+
   close.command.position = position;
   close.command.max_effort = GripperForceGentle;       // Close gently 
 
