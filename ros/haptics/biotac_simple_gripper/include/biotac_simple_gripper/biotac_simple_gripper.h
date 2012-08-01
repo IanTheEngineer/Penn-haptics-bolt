@@ -55,7 +55,7 @@ class biotacSimpleGripper
    
     // Constants
     static const double GripperMaxOpenPosition = 0.08;      // Distance in meters (8cm)
-    static const double GripperForceGentle = 30.0;          // In "Newtons"
+    static const double GripperForceGentle = 50.0;          // In "Newtons"
     static const double GripperForceMax = -1.0;             // No effort limit
     double last_position_;                                  // Store last known position of gripper
 

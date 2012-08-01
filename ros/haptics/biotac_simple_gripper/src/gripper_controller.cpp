@@ -54,8 +54,8 @@ class gripperController{
     //================================================================
     int Left;                        // These are defined in the BioTacObserver class
     int Right;
-    static const int LightPressureContact = 200;         // Pressure value for light contacts
-    static const int SqueezePressureContact = 351;      // Pressure value for squeezing objects
+    static const int LightPressureContact = 150;         // Pressure value for light contacts
+    static const int SqueezePressureContact = 500;      // Pressure value for squeezing objects
     
   public:
 
@@ -183,13 +183,14 @@ class gripperController{
 
       // Close 
       while (pressure_max < SqueezePressureContact && ros::ok()
-             && no_motion_counter < 10)
+             && no_motion_counter < 250 
+	     && simple_gripper->getGripperLastPosition() > 0.0)
       {
         previous_pressure_max = pressure_max;
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
 
         // Checks if pressure has been "stuck" 
-        if (abs(previous_pressure_max-pressure_max) < 5)
+        if (abs(previous_pressure_max-pressure_max) < 1)
           no_motion_counter++;
 
         simple_gripper->closeByAmount(move_gripper_distance);
@@ -199,7 +200,8 @@ class gripperController{
       }
     
       // Open - 10 and not 0 because the values will drift
-      while (pressure_max > 10 && ros::ok())
+      while (pressure_max > 10 && ros::ok() 
+	     && simple_gripper->getGripperLastPosition() < 0.08)
       {
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
 
