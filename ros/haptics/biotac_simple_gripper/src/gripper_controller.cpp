@@ -1,4 +1,4 @@
-/*********************************************************************
+/********************************************************************
 *
 * Software License Agreement (BSD License)
 *
@@ -42,6 +42,7 @@
 #include "std_msgs/String.h"
 #include <boost/thread.hpp>
 #include <string>
+#include <sstream>
 
 class gripperController{
   private:
@@ -80,6 +81,7 @@ class gripperController{
     biotacSimpleGripper *simple_gripper;
     biotacArmController *arm_controller;
     std::string fileName;                                   // Filename to log data into
+    std::string filePath;
     int state;
     std::string detail_state;
     ros::Publisher state_pub;
@@ -215,10 +217,10 @@ class gripperController{
     void startLogger()
     {
       ROS_INFO("Start Logging");
-      std::string command_pre("rosrun pr2_arm_state_aggregator pr2_biotac_sub.py _filename:=");
-      std::string command = command_pre + fileName; 
+      std::stringstream command;
+      command << "rosrun pr2_arm_state_aggregator pr2_biotac_sub.py _filename:="<<fileName<<" _data_path:="<<filePath;
       std::cout << command << "\n";
-      int success = system(command.c_str());
+      int success = system(command.str().c_str());
       if (success) ROS_INFO("Successfully Started"); 
     }
 
@@ -269,13 +271,16 @@ int main(int argc, char* argv[])
   // Checks if the filename is given 
   if (argc < 2)
   {
-    ROS_INFO("Please provide a name to store the data file in JSON form");
+    ROS_INFO("Please provide a name and path to store the data file in JSON form");
     exit(0);
   }
 
-  char* filenameChar = argv[1];
+  char* filepathChar = argv[1];
+  std::string filepath = std::string(filepathChar);
+  ROS_INFO("Writing to file path: %s", argv[1]);
+  char* filenameChar = argv[2];
   std::string filename = std::string(filenameChar);
-  ROS_INFO("Writing to filename: %s", argv[1]);
+  ROS_INFO("Writing to filename: %s", argv[2]);
 
   // Check if the file extention is .json
   if (std::string::npos == filename.find(".json"))
@@ -295,6 +300,7 @@ int main(int argc, char* argv[])
   gripperController controller;
 
   // Store filename in controller;
+  controller.filePath = filepathChar;
   controller.fileName = filenameChar;
 
   // Start thread to publish controller state

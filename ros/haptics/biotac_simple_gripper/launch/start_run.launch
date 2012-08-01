@@ -2,12 +2,13 @@
 <launch>
   <!-- Check for filename for JSON and rosbag -->
   <arg name="filename" default="default_trial" />
+  <arg name="data_path" default="$(env ROS_WORKSPACE)/bolt_data" />
   
   <!-- Spin up rosbag recorder -->
-  <node pkg="rosbag" type="record" name="record" output="screen" args="-O $(find biotac_simple_gripper)/data/bag/$(arg filename).bag /biotac_pub /pr2_arm_state /pr2_gripper_accelerometer/data /simple_gripper_controller_state /simple_gripper_controller_state_detailed /tf" />
+  <node pkg="rosbag" type="record" name="record" output="screen" args="-O $(arg data_path)/bag_files/$(arg filename).bag /biotac_pub /pr2_arm_state /pr2_gripper_accelerometer/data /simple_gripper_controller_state /simple_gripper_controller_state_detailed /tf" />
 
   <!-- Start controller -->
-  <node pkg="biotac_simple_gripper" type="biotac_gripper_controller" name="biotac_gripper_controller" output="screen" args=" $(arg filename).json" />
+  <node pkg="biotac_simple_gripper" type="biotac_gripper_controller" name="biotac_gripper_controller" output="screen" args="$(arg data_path) $(arg filename).json" />
 
 </launch>
 

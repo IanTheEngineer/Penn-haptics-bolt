@@ -83,18 +83,26 @@ class PR2BioTacLogger:
         rospy.loginfo('Let''s get this show on the road!')
 
         # File writing Setup
-        # Find Node Parameter Name
-        self.file_param = rospy.get_name() + '/filename'
-        # Grab directory
-        self.package_dir = roslib.packages.get_pkg_dir('biotac_simple_gripper')
-        # Check for 'data' directory
-        dir_status = self.check_dir(self.package_dir + '/data')
+        #Find this node's directory for default data writing path
+        self.package_dir = roslib.packages.get_pkg_dir('pr2_arm_state_aggregator')
+        #Find the data writing path parameter. If it is not set, set it to be this nodes's directory
+        self.path_param = rospy.get_name() + '/data_path'
+        self.output_path = rospy.get_param(self.path_param, (self.package_dir) ) + '/json_files'
+
+        # Check for 'json_files' directory
+        dir_status = self.check_dir(self.output_path)
         if dir_status:
-          rospy.loginfo('The ''data'' directory was successfully created.')
-        # Set output filename
-        self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
+          rospy.loginfo('The ''json_files'' directory was successfully created.')
+
+        #Find the output filename or set it to 'default.json if not set'
+        self.file_param = rospy.get_name() + '/filename'
+        self.fileName =  self.output_path+ '/' + rospy.get_param(self.file_param,'default.json')
         if not self.fileName.endswith('.json'):
           self.fileName = self.fileName + '.json'
+
+        print "pqrst "+self.output_path
+        
+
         # Create initial file - delete existing file with same name 
         self.fout = open(self.fileName,'w')
         self.fout.write("[\n")
