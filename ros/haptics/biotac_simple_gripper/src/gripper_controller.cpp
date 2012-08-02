@@ -402,16 +402,18 @@ int main(int argc, char* argv[])
   // Wait for a small amount of time - 5 seconds
   waitNode.sleep();
 
+  controller.detail_state = "OPEN_GRIPPER_FAST_2CM";
+  // Re-open gripper and find contact again - (from last position + 0.5cm)
+  controller.simple_gripper->open2Position(controller.initial_contact_distance+0.02);
+
   //================================================================
   // Start motion to squeeze
   //================================================================ 
   controller.state = controller.SQUEEZE;
   ROS_INFO("State set to [%d]", controller.state);
 
+  // Find contact again - (from contact position + 0.5cm)  
   ROS_INFO("Starting Squeeze Motion");
-  controller.detail_state = "OPEN_GRIPPER_FAST_2CM";
-  // Re-open gripper and find contact again - (from last position + 0.5cm)
-  controller.simple_gripper->open2Position(controller.initial_contact_distance+0.02);
   controller.detail_state = "FIND_CONTACT_CLOSE_GRIPPER_SLOW";
   controller.findContact(loop_rate, controller.MoveGripperSlowDistance);
   
