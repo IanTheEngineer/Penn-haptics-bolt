@@ -51,10 +51,47 @@ biotacArmController::biotacArmController()
 }
 
 //================================================================
+// Move arm upwards by specified distance from the specified
+// x,y,z positions.  All in meters
+//================================================================
+void biotacArmController::slide_up(double x, double y, double z, double distance)
+{
+  ee_cart_imped_msgs::EECartImpedGoal traj;
+  
+  /**
+  *addTrajectoryPoint is a static function in the EECartImpedArm class that 
+  *adds a trajectory point to the end of the first argument.  It simply 
+  *assigns each value in the goal structure for us to prevent having to 
+  *write it all out.
+  */
+  /*EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
+                                    1000, 1000, 1000, 30, 30, 30,
+                                    false, false, false, false, false,
+                                    false, 4, "/torso_lift_link");
+  *logger = "TESTING"; */
+  
+  /**
+  *This point is farther down from the previous point 
+  */
+  EECartImpedArm::addTrajectoryPoint(traj, x, y, z+distance, 0, 0, 0, 1,
+                                     500, 500, 500, 30, 30, 30,
+                                     false, false, false, false, false,
+                                     false, 5, "/torso_lift_link");
+ /**
+ *This is the line that actually sends the trajectory to the action server
+ *and starts the arm moving.  The server will block until the arm completes 
+ *the trajectory or it is aborted.
+ */
+  arm_controller->startTrajectory(traj);
+}
+
+
+//================================================================
 // Move arm downwards by the specified distance from the specified
 // x,y,z positions.  All in meters
 //================================================================
-void biotacArmController::slide_down(double x, double y, double z, double distance)
+void biotacArmController::slide_down(double x, double y, double z, 
+                                    double distance, int time)
 {
   ee_cart_imped_msgs::EECartImpedGoal traj;
   
@@ -76,7 +113,7 @@ void biotacArmController::slide_down(double x, double y, double z, double distan
   EECartImpedArm::addTrajectoryPoint(traj, x, y, z-distance, 0, 0, 0, 1,
                                      500, 500, 500, 30, 30, 30,
                                      false, false, false, false, false,
-                                     false, 5, "/torso_lift_link");
+                                     false, time, "/torso_lift_link");
  /**
  *This is the line that actually sends the trajectory to the action server
  *and starts the arm moving.  The server will block until the arm completes 

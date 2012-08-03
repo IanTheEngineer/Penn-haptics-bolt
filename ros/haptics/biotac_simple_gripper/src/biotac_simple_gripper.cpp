@@ -83,12 +83,12 @@ void biotacSimpleGripper::open2Position(double open_pos)
   // Check gripper state and update position
   if(gripper_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
   {
-    ROS_INFO("The gripper opened to [%f]", open_pos);
-    last_position_ = open_pos;
+    ROS_INFO("The gripper opened to [%f]", position);
+    last_position_ = position;
   }
   else
   {
-    ROS_INFO("The gripper failed to open to [%f]", open_pos);
+    ROS_INFO("The gripper failed to open to [%f]", position);
   }
 }
 

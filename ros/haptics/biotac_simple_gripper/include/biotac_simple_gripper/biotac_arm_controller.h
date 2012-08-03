@@ -60,7 +60,8 @@ class biotacArmController
     biotacArmController();                                // Constructor
     ~biotacArmController();                               // Destructor
     void moveArmToStart();                                // Move arm to start position
-    void slide_down(double, double, double, double);      // Moves arm down
+    void slide_down(double, double, double, double, int);      // Moves arm down
+    void slide_up(double, double, double, double);        // Moves arm up
     void getArmTransform();                               // Polls for arm transform
     double getTransform(char);                            // Returns the specified value
    

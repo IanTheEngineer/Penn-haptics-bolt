@@ -53,7 +53,7 @@ class biotacObserver{
 
     // Constants
     static const int NumberFingers = 2;                      // Expected # of BioTacs 
-    static const unsigned int NumberNormalizeValues = 50;    // Number of initial readings used to find the mean
+    static const unsigned int NumberNormalizeValues = 10;    // Number of initial readings used to find the mean
    
     // Variables 
     std::vector <std::vector <int> > init_pressure_vect_;    // Store initial readings to normalize the BioTac sensors
@@ -61,13 +61,18 @@ class biotacObserver{
     int pressure_[NumberFingers];                            // Latest raw pressure reading from BioTac callback
    // boost::shared_mutex biotac_mutex_;                     // Lock for reading/writing to final pressure
 
+    // Internal Functions
+    void normalize_pressure();                    // Normalize BioTac Readings
+    void calculate_mean();                        // Calculates the mean for PDC
+
   public:
 
     // Variables 
     static const int Left = 0;
     static const int Right = 1;
     int pressure_normalized_[NumberFingers]; 
-    bool init_complete_flag_;                     // Checks if initialization (normalization, etc) is complete
+    bool init_flag_;                     // Checks if initialization (normalization, etc) is complete
+    bool renorm_flag_;                            // Checks for renormalization
     boost::shared_mutex biotac_mutex_;            // Lock for reading/writing to     final pressure
 
     
@@ -75,7 +80,7 @@ class biotacObserver{
     biotacObserver();                             // Constructor 
     ~biotacObserver();                            // Destructor
     // Functions
-    void normalize_pressure();                    // Normalize BioTac Readings
+    void renormalize();                           // Asks the biotacs to renormalize PDC 
     void bioTacCB(const biotac_sensors::BioTacHand::ConstPtr& msg);                              // Callback for BioTac Sensor
 };
 #endif // _BIOTAC_OBSERVER    

@@ -45,8 +45,20 @@
 biotacObserver::biotacObserver()
 {
   // Setup normalization flags and storage 
-  init_complete_flag_ = false;
+  init_flag_ = true; 
+  renorm_flag_ = false;
   init_pressure_vect_.resize(NumberFingers);
+}
+
+//================================================================
+// Renormalize the Biotacs
+// - Reset init flag and clear out vector norm
+//================================================================
+void biotacObserver::renormalize()
+{
+  renorm_flag_ = true;
+  init_pressure_vect_[Left].clear();
+  init_pressure_vect_[Right].clear();
 }
 
 //================================================================
@@ -66,11 +78,44 @@ void biotacObserver::bioTacCB(const biotac_sensors::BioTacHand::ConstPtr& msg)
     // Store raw pressure values into vector for normalizing
     init_pressure_vect_[Left].push_back(pressure_[Left]);
     init_pressure_vect_[Right].push_back(pressure_[Right]);
+
+    // If renormalizing then continue to normalize pressure
+    if (renorm_flag_)
+    {
+      normalize_pressure();
+    }
   } 
   else
   {
+    if (init_flag_ || renorm_flag_)
+    {
+      calculate_mean();
+    }
+
     normalize_pressure();
   }
+}
+
+//================================================================
+// Function to calculate the mean for normalizing the pressures
+//================================================================
+void biotacObserver::calculate_mean()
+{
+  int sum[NumberFingers] = {0};
+  for (unsigned int i = 0; i < init_pressure_vect_[Left].size(); i++)
+  {
+    sum[Left] += init_pressure_vect_[Left][i];
+    sum[Right] += init_pressure_vect_[Right][i];
+  }
+
+  pressure_mean_[Left] = sum[Left]/init_pressure_vect_[Left].size();
+  pressure_mean_[Right] = sum[Right]/init_pressure_vect_[Right].size();
+    
+  init_flag_ = false;
+  renorm_flag_ = false;
+
+  ROS_INFO("Setting the left finger mean to: %d", pressure_mean_[Left]);
+  ROS_INFO("Setting the right finger mean to: %d", pressure_mean_[Right]);
 }
 
 //================================================================
@@ -79,25 +124,6 @@ void biotacObserver::bioTacCB(const biotac_sensors::BioTacHand::ConstPtr& msg)
 //================================================================
 void biotacObserver::normalize_pressure()
 {
-  // If the mean has never been set, then set the mean
-  if (!init_complete_flag_)
-  {
-    // Sum up values to take the mean
-    int sum[NumberFingers] = {0};
-    for (unsigned int i = 0; i < init_pressure_vect_[Left].size(); i++)
-    {
-      sum[Left] += init_pressure_vect_[Left][i];
-      sum[Right] += init_pressure_vect_[Right][i];
-    }
-
-    pressure_mean_[Left] = sum[Left]/init_pressure_vect_[Left].size();
-    pressure_mean_[Right] = sum[Right]/init_pressure_vect_[Right].size();
-    
-    init_complete_flag_ = true;
-    ROS_INFO("Setting the left finger mean to: %d", pressure_mean_[Left]);
-    ROS_INFO("Setting the right finger mean to: %d", pressure_mean_[Right]);
-  }
-
   // Grab lock on pressure_normalized because it is accessed publically
   boost::upgrade_lock<boost::shared_mutex> lock(biotac_mutex_);
   // For writing
