@@ -452,6 +452,9 @@ int main(int argc, char* argv[])
   controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
   controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
 
+  // Wait a second to allow the finger temperature to normalize
+  ros::Duration(1.0).sleep(); 
+
   //================================================================
   // Compute Position to move gripper for optimal contact
   //================================================================
