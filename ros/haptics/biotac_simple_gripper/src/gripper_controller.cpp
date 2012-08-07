@@ -71,6 +71,9 @@ class gripperController{
     static const double GripperFastContactProportion = 0.1;     // Proportion of object compliance to move gripper for fast slide
     static const int SlowSlideTime = 5;                     // Time to slide 5cm slow
     static const int FastSlideTime = 2;                     // Time to slide 5cm fast
+    static const int LiftPressure = 250;
+    static const double LiftHeight = 0.02; 
+    static const int LiftTime = 2; 
     static const int DISABLED = 0;
     static const int THERMAL_HOLD = 1;
     static const int SLIDE = 2;
@@ -78,6 +81,7 @@ class gripperController{
     static const int DONE = 4;
     static const int TAP = 5;
     static const int SLIDE_FAST = 6;
+    static const int LIFT = 7;
 
     //================================================================
     // Variables
@@ -161,6 +165,37 @@ class gripperController{
         simple_gripper->closeByAmount(move_gripper_distance);
         ROS_INFO("Pressure Min is: [%d]", pressure_min);
         ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        ros::spinOnce();
+        rate.sleep();
+      }
+    }
+
+    //================================================================
+    // Close gripper to specified pressure
+    //================================================================
+    void closeToPressure(ros::Rate rate, int desired_pressure, 
+                         double move_gripper_distance)
+    {
+      double current_gripper_position = simple_gripper->getGripperLastPosition();
+      int pressure_max = 0;
+      int pressure_min = 0;
+
+      while (pressure_min < desired_pressure 
+             && pressure_max < 500
+             && ros::ok()
+             && current_gripper_position > 0.0)
+      {
+        // Move the gripper by the specified amount
+        simple_gripper->closeByAmount(move_gripper_distance);
+        
+        // Find and update if gripper moved
+        current_gripper_position = simple_gripper->getGripperLastPosition();
+      
+        // Get pressure
+        pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
+        pressure_min = min(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
+
+        // Wait set time and check again 
         ros::spinOnce();
         rate.sleep();
       }
@@ -395,7 +430,7 @@ int main(int argc, char* argv[])
 
   // Move hand every N seconds (in Hz)
   ros::Rate loop_rate(controller.MoveGripperRate);
-
+  
   //================================================================
   // Movements start from here
   //================================================================
@@ -435,6 +470,41 @@ int main(int argc, char* argv[])
  
   // Open gripper slightly fast
   ROS_INFO("Contact found at [%f], Opening gripper by 2cm", controller.gripper_initial_contact_position);
+  controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
+  controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
+  
+  //================================================================
+  // Close the gripper on the object to a specified pressure
+  // and lift the object 
+  //================================================================
+  
+  // Close gripper
+  controller.state = controller.LIFT; 
+  ROS_INFO("Closing gripper to lift");
+
+  ROS_INFO("Moving the gripper fast and to the pressure [%d]", controller.LiftPressure);
+  controller.detail_state = "MOVE_GRIPPER_SLOW_CLOSE";
+  controller.closeToPressure(loop_rate, controller.LiftPressure, controller.MoveGripperSlowDistance);
+
+  ROS_INFO("Lifting the Object");
+  controller.detail_state = "LIFT_OBJECT";
+  
+  // Get current arm location  
+  controller.arm_controller->getArmTransform();
+  double x = controller.arm_controller->getTransform('x');
+  double y = controller.arm_controller->getTransform('y');
+  double z = controller.arm_controller->getTransform('z');
+
+  ROS_INFO("Current Arm location: X: [%f], Y: [%f], Z: [%f]", x,y,z);
+  controller.arm_controller->move_arm_to(x,y,z+controller.LiftHeight, controller.LiftTime);
+
+  ROS_INFO("Putting down Object");
+  controller.detail_state = "PUT_DOWN_OBJECT";
+
+  controller.arm_controller->move_arm_to(x,y,z, controller.LiftTime);
+
+  // Open gripper slightly fast
+  ROS_INFO("Object on the table, reopening gripper to [%f]", controller.gripper_initial_contact_position);
   controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
   controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
 
@@ -499,9 +569,9 @@ int main(int argc, char* argv[])
   ros::Rate slide_rate(1); 
   // Find position of arm
   controller.arm_controller->getArmTransform();
-  double x = controller.arm_controller->getTransform('x');
-  double y = controller.arm_controller->getTransform('y');
-  double z = controller.arm_controller->getTransform('z');
+  x = controller.arm_controller->getTransform('x');
+  y = controller.arm_controller->getTransform('y');
+  z = controller.arm_controller->getTransform('z');
 
   ROS_INFO("Current Arm location: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.detail_state = "SLIDE_5CM";
