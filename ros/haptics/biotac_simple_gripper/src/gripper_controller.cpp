@@ -525,15 +525,15 @@ int main(int argc, char* argv[])
   ROS_INFO("Moving arm back up 5cm"); 
   controller.detail_state = "MOVE_UP_5CM";
 
-  controller.arm_controller->getArmTransform();
-  x = controller.arm_controller->getTransform('x');
-  y = controller.arm_controller->getTransform('y');
-  z = controller.arm_controller->getTransform('z');
+  //controller.arm_controller->getArmTransform();
+  //x = controller.arm_controller->getTransform('x');
+  //y = controller.arm_controller->getTransform('y');
+  //z = controller.arm_controller->getTransform('z');
 
-  ROS_INFO("Current Arm location: X: [%f], Y: [%f], Z: [%f]", x,y,z);
+  ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.detail_state = "MOVE_UP_5CM";
-  ROS_INFO("Moving Arm up by [%f] meters", controller.SlideArmDistance);
-  controller.arm_controller->slide_up(x,y,z, controller.SlideArmDistance);
+  ROS_INFO("Moving Arm up by 5 cm");
+  controller.arm_controller->move_arm_to(x,y,z, 2);
 
   //================================================================
   // Slide down fast

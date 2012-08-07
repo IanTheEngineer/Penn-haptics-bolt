@@ -48,7 +48,32 @@ biotacArmController::biotacArmController()
   arm_controller = new EECartImpedArm("l_arm_cart_imped_controller");
   tf_listener = new tf::TransformListener();
   store_transform = new tf::StampedTransform();
+  ReferenceLink = "/torso_lift_link";
 }
+
+//================================================================
+// Move arm to specified position
+//================================================================
+void biotacArmController::move_arm_to(double x, double y, double z, 
+                                      int time)
+{
+  ee_cart_imped_msgs::EECartImpedGoal traj;
+  
+  /**
+  *This point is to move the arm 
+  */
+  EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
+                                     500, 500, 500, 30, 30, 30,
+                                     false, false, false, false, false,
+                                     false, time , ReferenceLink);
+ /**
+ *This is the line that actually sends the trajectory to the action server
+ *and starts the arm moving.  The server will block until the arm completes 
+ *the trajectory or it is aborted.
+ */
+  arm_controller->startTrajectory(traj);
+}
+
 
 //================================================================
 // Move arm upwards by specified distance from the specified
@@ -67,7 +92,7 @@ void biotacArmController::slide_up(double x, double y, double z, double distance
   /*EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
                                     1000, 1000, 1000, 30, 30, 30,
                                     false, false, false, false, false,
-                                    false, 4, "/torso_lift_link");
+                                    false, 4, ReferenceLink);
   *logger = "TESTING"; */
   
   /**
@@ -76,7 +101,7 @@ void biotacArmController::slide_up(double x, double y, double z, double distance
   EECartImpedArm::addTrajectoryPoint(traj, x, y, z+distance, 0, 0, 0, 1,
                                      500, 500, 500, 30, 30, 30,
                                      false, false, false, false, false,
-                                     false, 2, "/torso_lift_link");
+                                     false, 2, ReferenceLink);
  /**
  *This is the line that actually sends the trajectory to the action server
  *and starts the arm moving.  The server will block until the arm completes 
@@ -113,7 +138,7 @@ void biotacArmController::slide_down(double x, double y, double z,
   EECartImpedArm::addTrajectoryPoint(traj, x, y, z-distance, 0, 0, 0, 1,
                                      500, 500, 500, 30, 30, 30,
                                      false, false, false, false, false,
-                                     false, time, "/torso_lift_link");
+                                     false, time, ReferenceLink);
  /**
  *This is the line that actually sends the trajectory to the action server
  *and starts the arm moving.  The server will block until the arm completes 
@@ -134,7 +159,7 @@ void biotacArmController::moveArmToStart()
   EECartImpedArm::addTrajectoryPoint(traj, 1.0, 0.2, 0.04, 0, 0, 0, 1,
                                     1000, 1000, 1000, 30, 30, 30,
                                     false, false, false, false, false,
-                                    false, 2, "/torso_lift_link");
+                                    false, 2, ReferenceLink);
   // Send path
   arm_controller->startTrajectory(traj);
 }
@@ -152,7 +177,7 @@ void biotacArmController::getArmTransform()
   {
     try 
     {
-      tf_listener->lookupTransform("/torso_lift_link", "/l_gripper_tool_frame", ros::Time(0), *store_transform);
+      tf_listener->lookupTransform(ReferenceLink, "/l_gripper_tool_frame", ros::Time(0), *store_transform);
       noTransform = false;
     }
     catch (tf::TransformException ex)
