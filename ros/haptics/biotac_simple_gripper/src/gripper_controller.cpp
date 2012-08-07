@@ -142,18 +142,22 @@ class gripperController{
     //================================================================
     void findContact(ros::Rate rate, double move_gripper_distance)
     {
+      int pressure_min = 0; 
       int pressure_max = 0;
       bool contact_found = false;
 
-      while (pressure_max < LightPressureContact && ros::ok())
+      while (pressure_min < LightPressureContact && ros::ok())
+             && pressure_max < 800
       {
         // Set distance for object width 
-        if (!contact_found && pressure_max > 10){
+        if (!contact_found && pressure_min > 10){
           gripper_initial_contact_position = simple_gripper->getGripperLastPosition();
           contact_found = true;
         }
+        pressure_min = min(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
         simple_gripper->closeByAmount(move_gripper_distance);
+        ROS_INFO("Pressure Min is: [%d]", pressure_min);
         ROS_INFO("Pressure Max is: [%d]", pressure_max);
         ros::spinOnce();
         rate.sleep();
