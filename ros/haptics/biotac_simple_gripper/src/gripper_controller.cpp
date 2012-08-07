@@ -146,8 +146,10 @@ class gripperController{
       int pressure_max = 0;
       bool contact_found = false;
 
-      while (pressure_min < LightPressureContact && ros::ok())
-             && pressure_max < 800
+      // Close until minimum pressure is found - however stop if
+      // any finger has too much pressure
+      while (pressure_min < LightPressureContact && ros::ok()
+             && pressure_max < 800)
       {
         // Set distance for object width 
         if (!contact_found && pressure_min > 10){

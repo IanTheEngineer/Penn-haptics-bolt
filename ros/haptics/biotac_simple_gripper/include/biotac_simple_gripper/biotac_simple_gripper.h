@@ -70,7 +70,7 @@ class biotacSimpleGripper
 };
 
 //================================================================
-// Simple Template for getting max of two values
+// Simple Template for getting max and min of two values
 //================================================================
 template <class T>
 const T& max(const T& a, const T& b)
@@ -78,6 +78,11 @@ const T& max(const T& a, const T& b)
   return (a > b ? a:b);
 };
 
+template <class T> 
+const T& min ( const T& a, const T& b ) 
+{
+  return !(b<a)?a:b;     // or: return !comp(b,a)?a:b; for the comp version
+};
 
 #endif  // _BIOTAC_SIMPLE_GRIPPER
 

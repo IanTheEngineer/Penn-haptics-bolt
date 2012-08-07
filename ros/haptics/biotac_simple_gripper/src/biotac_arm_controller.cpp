@@ -76,7 +76,7 @@ void biotacArmController::slide_up(double x, double y, double z, double distance
   EECartImpedArm::addTrajectoryPoint(traj, x, y, z+distance, 0, 0, 0, 1,
                                      500, 500, 500, 30, 30, 30,
                                      false, false, false, false, false,
-                                     false, 5, "/torso_lift_link");
+                                     false, 2, "/torso_lift_link");
  /**
  *This is the line that actually sends the trajectory to the action server
  *and starts the arm moving.  The server will block until the arm completes 
