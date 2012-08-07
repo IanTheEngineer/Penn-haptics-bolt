@@ -1,0 +1,16 @@
+<package>
+  <description brief="extract_bag_audio">
+
+     extract_bag_audio
+
+  </description>
+  <author>Ian McMahon</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/extract_bag_audio</url>
+  <depend package="rospy"/>
+  <depend package="rosbag"/>
+
+</package>
+
+

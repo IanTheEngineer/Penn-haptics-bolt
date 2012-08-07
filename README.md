@@ -37,3 +37,6 @@ rosrun biotac_logger biotac_json_logger.py _filename:=trial_001.json
 Please see the Penn Bolt Wiki for instructions on how to use the GUI
 
 http://bolt-haptics.seas.upenn.edu/index.php/Software/MatlabGUI
+
+--Extracting Audio--
+rosrun audio_bag_extract <full_bagfile_path> /audio <full_mp3_file_path>
