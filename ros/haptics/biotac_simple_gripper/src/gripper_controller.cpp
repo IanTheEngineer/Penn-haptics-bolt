@@ -219,6 +219,7 @@ class gripperController{
       int pressure_min = 0; 
       int pressure_max = 0;
       bool contact_found = false;
+      bool fingerSet = true;
 
       // Close until minimum pressure is found - however stop if
       // any finger has too much pressure
@@ -227,7 +228,7 @@ class gripperController{
       {
 
         // First touches object
-        if (pressure_max > 5)
+        if (pressure_max > 5 && fingerSet)
         {
           firstContact.position = simple_gripper->getGripperLastPosition();
           if (biotac_obs->pressure_normalized_[Left] > biotac_obs->pressure_normalized_[Right])
@@ -238,6 +239,7 @@ class gripperController{
           {
             firstContact.finger = Right;
           }
+          fingerSet = false;
         }
 
         // Second finger touches object
