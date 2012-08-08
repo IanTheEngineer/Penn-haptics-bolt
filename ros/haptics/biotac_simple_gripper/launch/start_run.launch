@@ -5,7 +5,7 @@
   <arg name="data_path" default="$(env ROS_WORKSPACE)/bolt_data" />
   
   <!-- Spin up rosbag recorder -->
-  <node pkg="rosbag" type="record" name="record" output="screen" args="-j -O $(arg data_path)/bag_files/$(arg filename).bag /biotac_pub /pr3_arm_state /pr2_gripper_accelerometer/data /simple_gripper_controller_state /simple_gripper_controller_state_detailed /tf /narrow_stereo/left/image_raw/compressed /audio" />
+  <node pkg="rosbag" type="record" name="record" output="screen" args="-j -O $(arg data_path)/bag_files/$(arg filename).bag /biotac_pub /pr2_arm_state /pr2_gripper_accelerometer/data /simple_gripper_controller_state /simple_gripper_controller_state_detailed /tf /narrow_stereo/left/image_raw/compressed /audio /joint_states" />
 
   <!-- Start controller -->
   <node pkg="biotac_simple_gripper" type="biotac_gripper_controller" name="biotac_gripper_controller" output="screen" args="$(arg data_path) $(arg filename).json" />
