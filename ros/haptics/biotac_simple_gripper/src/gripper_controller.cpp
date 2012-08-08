@@ -165,7 +165,8 @@ class gripperController{
       double z = arm_controller->getTransform('z');
       
       double gripper_difference = (firstContact.position - secondContact.position)/2;
-      
+      ROS_INFO("Difference calculated is: [%f]",gripper_difference); 
+
       // Move left case 
       if (firstContact.finger == Left)
       {
@@ -267,8 +268,8 @@ class gripperController{
         pressure_min = min(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
         simple_gripper->closeByAmount(move_gripper_distance);
-        ROS_INFO("Pressure Min is: [%d]", pressure_min);
-        ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        //ROS_INFO("Pressure Min is: [%d]", pressure_min);
+       // ROS_INFO("Pressure Max is: [%d]", pressure_max);
         ros::spinOnce();
         rate.sleep();
       }
@@ -353,7 +354,7 @@ class gripperController{
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
 
         simple_gripper->open2Position(gripper_position);
-        ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        //ROS_INFO("Pressure Max is: [%d]", pressure_max);
         ros::spinOnce();
         rate.sleep();
       }
@@ -382,7 +383,7 @@ class gripperController{
           no_motion_counter++;
 
         simple_gripper->closeByAmount(move_gripper_distance);
-        ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        //ROS_INFO("Pressure Max is: [%d]", pressure_max);
         ros::spinOnce();
         rate.sleep();
       }
@@ -397,7 +398,7 @@ class gripperController{
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
 
         simple_gripper->openByAmount(move_gripper_distance);
-        ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        //ROS_INFO("Pressure Max is: [%d]", pressure_max);
         ros::spinOnce();
         rate.sleep();
       }
