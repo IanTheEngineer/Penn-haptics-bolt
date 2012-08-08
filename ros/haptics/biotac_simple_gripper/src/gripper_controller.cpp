@@ -56,7 +56,8 @@ class gripperController{
     int Right;
     static const int LightPressureContact = 20;         // Pressure value for light contacts
     static const int SqueezePressureContact = 500;      // Pressure value for squeezing objects
-    static const int RedistributePressureThreshold = 100; 
+    static const int RedistributePressureThreshold = 10; // Threshold of pressure between two biotacs to move arm
+    static const int MaxBadPressure = 200;              // Maximum pressure between two biotacs when an object is off center 
   public:
 
     //================================================================
@@ -157,15 +158,16 @@ class gripperController{
       double z = arm_controller->getTransform('z');
       
       int pressure_difference = tap_pressure_left-tap_pressure_right;
+      double movement = (GripperMaxOpenPosition/2)*(abs(pressure_difference)/MaxBadPressure); 
 
       // Move left case 
       if (pressure_difference > RedistributePressureThreshold)
       {
-        arm_controller->move_arm_to(x,y+0.02,z,2);    
+        arm_controller->move_arm_to(x,y+movement,z,2);    
       } 
       else if(pressure_difference < -RedistributePressureThreshold)
       {
-        arm_controller->move_arm_to(x,y-0.02,z,2);
+        arm_controller->move_arm_to(x,y-movement,z,2);
       } 
       else
       {
@@ -511,7 +513,7 @@ int main(int argc, char* argv[])
   controller.state = controller.CENTER_GRIPPER;
   ROS_INFO("Centering the Gripper");
 
-  while (ros::ok())
+  for (int i = 0; i < 2; i++) 
   {
     controller.findContact(loop_rate, controller.MoveGripperFastDistance);
 
