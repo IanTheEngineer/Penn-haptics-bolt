@@ -164,7 +164,7 @@ class gripperController{
       double y = arm_controller->getTransform('y');
       double z = arm_controller->getTransform('z');
       
-      double gripper_difference = (firstContact.position - secondContact.position)/2;
+      double gripper_difference = (firstContact.position - secondContact.position)/2.0;
       ROS_INFO("Difference calculated is: [%f]",gripper_difference); 
 
       // Move left case 
@@ -190,7 +190,7 @@ class gripperController{
       double z = arm_controller->getTransform('z');
       
       int pressure_difference = tap_pressure_left-tap_pressure_right;
-      double movement = (GripperMaxOpenPosition/2)*(abs(pressure_difference)/MaxBadPressure); 
+      double movement = (GripperMaxOpenPosition/2.0)*(abs(pressure_difference)/MaxBadPressure); 
 
       // Move left case 
       if (pressure_difference > RedistributePressureThreshold)
