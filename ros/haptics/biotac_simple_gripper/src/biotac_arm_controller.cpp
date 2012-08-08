@@ -63,7 +63,7 @@ void biotacArmController::move_arm_to(double x, double y, double z,
   *This point is to move the arm 
   */
   EECartImpedArm::addTrajectoryPoint(traj, x, y, z, 0, 0, 0, 1,
-                                     500, 500, 500, 30, 30, 30,
+                                     1000, 1000, 1000, 30, 30, 30,
                                      false, false, false, false, false,
                                      false, time , ReferenceLink);
  /**
