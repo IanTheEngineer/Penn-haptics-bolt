@@ -69,6 +69,7 @@ class gripperController{
     static const double GripperMaxOpenPosition = 0.08;      // Also specified in biotac_simple_gripper.h
     static const double GripperSlowContactProportion = 0.2;     // Proportion of object complaince to move gripper for slide and hold
     static const double GripperFastContactProportion = 0.1;     // Proportion of object compliance to move gripper for fast slide
+    static const double GripperThermalContactProportion = 0.5;  // Proportion of the object compliance to move gripper for thermal hold 
     static const int SlowSlideTime = 5;                     // Time to slide 5cm slow
     static const int FastSlideTime = 2;                     // Time to slide 5cm fast
     static const int LiftPressure = 250;
@@ -99,6 +100,7 @@ class gripperController{
     double gripper_max_squeeze_position;                            // Gripper distance when max PDC is achieved
     double gripper_slow_optimal_contact_position;                 // Position for gripper to go to for optimal contact
     double gripper_fast_optimal_contact_position;
+    double gripper_thermal_optimal_contact_position;
 
     //================================================================
     // Gripper Constuctor
@@ -153,7 +155,7 @@ class gripperController{
       // Close until minimum pressure is found - however stop if
       // any finger has too much pressure
       while (pressure_min < LightPressureContact && ros::ok()
-             && pressure_max < 800)
+             && pressure_max < 600)
       {
         // Set distance for object width 
         if (!contact_found && pressure_min > 10){
@@ -315,14 +317,20 @@ class gripperController{
       // Find proportion of the distance compressed
       double gripper_contact_distance = GripperSlowContactProportion * object_compliance_distance;
       double gripper_fast_contact_distance = GripperFastContactProportion * object_compliance_distance;
+      double gripper_thermal_contact_distance = GripperThermalContactProportion * object_compliance_distance;
+
       ROS_INFO("Distance to move into object slow is [%f]", gripper_contact_distance);
       ROS_INFO("Distance to move into object fast is [%f]", gripper_fast_contact_distance);
-       
+      ROS_INFO("Distance to move into object thermal is [%f]", gripper_thermal_contact_distance); 
+
       // Find the position the gripper should move to 
       gripper_slow_optimal_contact_position = gripper_initial_contact_position - gripper_contact_distance;
       gripper_fast_optimal_contact_position = gripper_initial_contact_position - gripper_fast_contact_distance; 
+      gripper_thermal_optimal_contact_position = gripper_initial_contact_position - gripper_thermal_contact_distance;
+      
       ROS_INFO("Gripper optimal slow contact position is [%f]", gripper_slow_optimal_contact_position);
       ROS_INFO("Gripper optimal fast contact position is [%f]", gripper_fast_optimal_contact_position);
+      ROS_INFO("Gripper optimal thermal contact position is [%f]", gripper_thermal_optimal_contact_position);
     }
 
     //================================================================
@@ -549,10 +557,10 @@ int main(int argc, char* argv[])
   ROS_INFO("State set to [%d]", controller.state);
 
   // Move gripper to optimal contact position  
-  ROS_INFO("Moving gripper slowly to position: [%f]", controller.gripper_slow_optimal_contact_position);
+  ROS_INFO("Moving gripper slowly to position: [%f]", controller.gripper_thermal_optimal_contact_position);
   controller.detail_state = "CLOSE_GRIPPER_SLOW_TO_POSITION";
   controller.closeToPosition(loop_rate, controller.MoveGripperSlowDistance,
-                             controller.gripper_slow_optimal_contact_position);
+                             controller.gripper_thermal_optimal_contact_position);
 
   ROS_INFO("Contact found - holding for 10 seconds");
   controller.detail_state = "HOLD_FOR_10_SECONDS";
@@ -560,11 +568,24 @@ int main(int argc, char* argv[])
   ros::Rate wait(0.1);
   wait.sleep();
 
+  // Open gripper slightly fast
+  ROS_INFO("Opening gripper by 2cm");
+  controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
+  controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
+
   //================================================================
   // Start motion slide down
   //================================================================
   controller.state = controller.SLIDE;
   ROS_INFO("State set to [%d]", controller.state);
+
+  // Move gripper to optimal contact position  
+  ROS_INFO("Moving gripper slowly to position: [%f]", controller.gripper_slow_optimal_contact_position);
+  controller.detail_state = "CLOSE_GRIPPER_SLOW_TO_POSITION";
+  controller.closeToPosition(loop_rate, controller.MoveGripperSlowDistance,
+                             controller.gripper_slow_optimal_contact_position);
+
+  ROS_INFO("Contact found - starting slide motion");
   
   ros::Rate slide_rate(1); 
   // Find position of arm
