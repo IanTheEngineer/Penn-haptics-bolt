@@ -54,7 +54,7 @@ class gripperController{
     //================================================================
     int Left;                        // These are defined in the BioTacObserver class
     int Right;
-    static const int LightPressureContact = 50;         // Pressure value for light contacts
+    static const int LightPressureContact = 20;         // Pressure value for light contacts
     static const int SqueezePressureContact = 500;      // Pressure value for squeezing objects
     static const int RedistributePressureThreshold = 10; // Threshold of pressure between two biotacs to move arm
     static const int MaxBadPressure = 200;              // Maximum pressure between two biotacs when an object is off center 
@@ -220,12 +220,19 @@ class gripperController{
       int pressure_max = 0;
       bool contact_found = false;
       bool fingerSet = true;
+      int no_motion_counter = 0;
+      int previous_pressure_max = 0;
 
       // Close until minimum pressure is found - however stop if
       // any finger has too much pressure
       while (pressure_min < LightPressureContact && ros::ok()
-             && pressure_max < 600)
+             && pressure_max < 600  && no_motion_counter < 250)
       {
+        previous_pressure_max = pressure_max;
+        
+        // Checks if pressure has been "stuck" 
+        if (abs(previous_pressure_max-pressure_max) < 1)
+          no_motion_counter++;
 
         // First touches object
         if (pressure_max > 5 && fingerSet)
@@ -243,7 +250,7 @@ class gripperController{
         }
 
         // Second finger touches object
-        if (pressure_min > 30)
+        if (pressure_min > 10)
         {
           secondContact.position = simple_gripper->getGripperLastPosition();
           if (firstContact.position == Left)
@@ -578,10 +585,11 @@ int main(int argc, char* argv[])
 
   for (int i = 0; i < 2; i++) 
   {
+    ROS_INFO("Find contact");
     controller.findContact(loop_rate, controller.MoveGripperFastDistance);
-
+    ROS_INFO("Open gripper");
     controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
-    
+    ROS_INFO("Redistribute Pressure Position"); 
     controller.redistributePressurePosition();
   }
 
