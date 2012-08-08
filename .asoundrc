@@ -1,0 +1,26 @@
+pcm.hda-intel {
+ type hw
+ card 0
+}
+    
+ctl.hda-intel {
+  type hw
+  card 0
+}
+
+pcm.!default { #Sets the MXL Studio 24 device to be default capture
+   type        dsnoop
+   ipc_key 234887
+   ipc_key_add_uid false  #allow sharing amongst multiple users 
+   slave {
+       pcm "hw:0,0"
+       channels 1
+       format S24_3LE
+       period_size 1024
+       buffer_size 4096
+       rate 48000
+       period_time 0
+   }
+   bindings.0  0
+}
+

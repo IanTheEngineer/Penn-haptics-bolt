@@ -35,12 +35,13 @@
 * Author: Vivian Chu (chuv@grasp.upenn.edu)
 *********************************************************************/
 
-#include <ros/ros.h>
-#include <pr2_controllers_msgs/Pr2GripperCommandAction.h>
-#include <actionlib/client/simple_action_client.h>
 
 #ifndef _BIOTAC_SIMPLE_GRIPPER
 #define _BIOTAC_SIMPLE_GRIPPER
+
+#include <ros/ros.h>
+#include <pr2_controllers_msgs/Pr2GripperCommandAction.h>
+#include <actionlib/client/simple_action_client.h>
 
 typedef actionlib::SimpleActionClient<pr2_controllers_msgs::Pr2GripperCommandAction> GripperClient;
 
@@ -54,7 +55,7 @@ class biotacSimpleGripper
    
     // Constants
     static const double GripperMaxOpenPosition = 0.08;      // Distance in meters (8cm)
-    static const double GripperForceGentle = 30.0;          // In "Newtons"
+    static const double GripperForceGentle = 50.0;          // In "Newtons"
     static const double GripperForceMax = -1.0;             // No effort limit
     double last_position_;                                  // Store last known position of gripper
 
@@ -69,7 +70,7 @@ class biotacSimpleGripper
 };
 
 //================================================================
-// Simple Template for getting max of two values
+// Simple Template for getting max and min of two values
 //================================================================
 template <class T>
 const T& max(const T& a, const T& b)
@@ -77,6 +78,11 @@ const T& max(const T& a, const T& b)
   return (a > b ? a:b);
 };
 
+template <class T> 
+const T& min ( const T& a, const T& b ) 
+{
+  return !(b<a)?a:b;     // or: return !comp(b,a)?a:b; for the comp version
+};
 
 #endif  // _BIOTAC_SIMPLE_GRIPPER
 

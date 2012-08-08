@@ -76,19 +76,19 @@ void biotacSimpleGripper::open2Position(double open_pos)
   open.command.position = position;     
   open.command.max_effort = GripperForceMax;  // Do not limit effort (negative)
 
-  ROS_INFO("Sending open goal of: [%f]", position);
+  //ROS_INFO("Sending open goal of: [%f]", position);
   gripper_client_->sendGoal(open);
   gripper_client_->waitForResult();
 
   // Check gripper state and update position
   if(gripper_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
   {
-    ROS_INFO("The gripper opened to [%f]", open_pos);
-    last_position_ = open_pos;
+    //ROS_INFO("The gripper opened to [%f]", position);
+    last_position_ = position;
   }
   else
   {
-    ROS_INFO("The gripper failed to open to [%f]", open_pos);
+    ROS_INFO("The gripper failed to open to [%f]", position);
   }
 }
 
@@ -102,22 +102,24 @@ void biotacSimpleGripper::openByAmount(double move_gripper_distance)
 {
   pr2_controllers_msgs::Pr2GripperCommandGoal open;
   
-  ROS_INFO("Last position is %f", last_position_);
+  //ROS_INFO("Last position is %f", last_position_);
   double position = last_position_+ move_gripper_distance;  // Move gripper by specified distance
  
   // Check if gripper position valid 
   if (position > GripperMaxOpenPosition) position = GripperMaxOpenPosition;
+  if (position < 0) position = 0.0;
+
   open.command.position = position;
   open.command.max_effort = GripperForceMax;  // Do not limit effort (negative)
 
-  ROS_INFO("Sending open goal of [%f]", position);
+  //ROS_INFO("Sending open goal of [%f]", position);
   gripper_client_->sendGoal(open);
   gripper_client_->waitForResult();
 
   // Check for success and then update position
   if(gripper_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
   { 
-    ROS_INFO("The gripper by [%f]", move_gripper_distance);
+    //ROS_INFO("The gripper by [%f]", move_gripper_distance);
     last_position_ = position;
   }
   else
@@ -135,22 +137,24 @@ void biotacSimpleGripper::closeByAmount(double move_gripper_distance)
 
   // Grab lock to prevent closing multiple times 
   //boost::shared_lock<boost::shared_mutex> lock(biotacObserver::biotac_mutex_);
-  ROS_INFO("Last position is: %f", last_position_); 
+  //ROS_INFO("Last position is: %f", last_position_); 
   double position = last_position_- move_gripper_distance;  // Move gripper by specified distance 
   
   // CHeck if gripper position valid
+  if (position > GripperMaxOpenPosition) position = GripperMaxOpenPosition;
   if (position < 0) position = 0.0;        
+
   close.command.position = position;
   close.command.max_effort = GripperForceGentle;       // Close gently 
 
-  ROS_INFO("Sending close goal of: [%f]", position);
+  //ROS_INFO("Sending close goal of: [%f]", position);
   gripper_client_ -> sendGoal(close);
   gripper_client_ -> waitForResult();
 
   // Check for success and then update position
   if(gripper_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
   {
-    ROS_INFO("The gripper closed by [%f]", move_gripper_distance);
+    //ROS_INFO("The gripper closed by [%f]", move_gripper_distance);
     last_position_ = position;          
   }
   else

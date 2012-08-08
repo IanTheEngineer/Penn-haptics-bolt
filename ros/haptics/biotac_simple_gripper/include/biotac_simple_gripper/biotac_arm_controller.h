@@ -35,13 +35,15 @@
 * Author: Vivian Chu (chuv@grasp.upenn.edu)
 *********************************************************************/
 
+
+#ifndef _BIOTAC_ARM_CONTROLLER
+#define _BIOTAC_ARM_CONTROLLER
+
 #include <ee_cart_imped_action/ee_cart_imped_arm.hh>
 #include <ee_cart_imped_msgs/EECartImpedGoal.h>
 #include <tf/transform_listener.h>
 #include <message_filters/subscriber.h>
-
-#ifndef _BIOTAC_ARM_CONTROLLER
-#define _BIOTAC_ARM_CONTROLLER
+#include <string.h>
 
 //================================================================
 // BioTacArm Controller Class
@@ -50,7 +52,8 @@ class biotacArmController
 {
   private:
     EECartImpedArm::EECartImpedArm *arm_controller;       // Arm controller
-
+    std::string ReferenceLink;
+    
   public:
 
     //================================================================
@@ -59,7 +62,9 @@ class biotacArmController
     biotacArmController();                                // Constructor
     ~biotacArmController();                               // Destructor
     void moveArmToStart();                                // Move arm to start position
-    void slide_down(double, double, double, double);      // Moves arm down
+    void slide_down(double, double, double, double, int);      // Moves arm down
+    void slide_up(double, double, double, double);        // Moves arm up
+    void move_arm_to(double, double, double, int);             // Moves arm to specified location 
     void getArmTransform();                               // Polls for arm transform
     double getTransform(char);                            // Returns the specified value
    

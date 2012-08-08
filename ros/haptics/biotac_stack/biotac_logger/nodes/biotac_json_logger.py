@@ -32,8 +32,9 @@
 
 import roslib; roslib.load_manifest('biotac_logger')
 import rospy
-import os
+import os, sys
 import rosjson_time
+from types import *
 
 from std_msgs.msg import String
 from biotac_sensors.msg import BioTacHand
@@ -43,7 +44,17 @@ class BioTacListener:
   def __init__(self):
     self.frame_count = 1;
     rospy.init_node('biotac_json_logger')
-   
+    self.time_to_log = rospy.myargv(argv=sys.argv)
+    #Check to see if logging time was set
+    try:
+      input_arg = float(self.time_to_log[1])
+      if type(input_arg) is FloatType:
+        self.node_log_time = input_arg
+      else:
+        self.node_log_time = 'inf'
+    except:
+      self.node_log_time = 'inf'
+    
     # FILE WRITING SETUP 
     # Find Node Parameter Name
     self.file_param = rospy.get_name() + '/filename'
@@ -62,7 +73,13 @@ class BioTacListener:
     self.fout.write("[\n")
 
     rospy.loginfo(rospy.get_name()+' Starting to Log to file %s:',self.fileName);
-    
+
+    #Begin starting to log for specified time
+    if self.node_log_time is not 'inf':
+      while not rospy.get_time(): pass
+      self.start_time = rospy.get_time()
+      rospy.loginfo("Logging start time: %f" % self.start_time)
+
   # Called each time there is a new message
   def biotacCallback(self,data):
     #rospy.loginfo(rospy.get_name()+' FRAME ID: %d',self.frame_count)
@@ -72,8 +89,17 @@ class BioTacListener:
 
     # Uses rosjson to convert message to JSON 
     toWrite = rosjson_time.ros_message_to_json(data) + '\n'
-    self.fout.write(toWrite); 
-       
+    self.fout.write(toWrite);
+
+    #Check to see if Elapsed time has run out
+    if self.node_log_time is not 'inf':
+      elapsed_time = rospy.get_time() - self.start_time
+      if elapsed_time >= self.node_log_time:
+        finish_msg = 'Logging for %f second(s) Complete!' % self.node_log_time
+        rospy.loginfo(finish_msg)
+        self.__del__()
+        rospy.signal_shutdown(finish_msg)
+      
     # Move to next frame 
     self.frame_count += 1
 

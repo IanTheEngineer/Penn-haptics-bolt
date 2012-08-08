@@ -41,9 +41,23 @@ class PR2BioTacLogger:
                    self.arm_side+'_wrist_flex_joint',
                    self.arm_side+'_wrist_roll_joint',
                    self.arm_side+'_gripper_joint']
-        self.tf_child_names = ['/'+self.arm_side+'_gripper_r_finger',
-                         '/'+self.arm_side+'_gripper_l_finger',
-                         '/'+self.arm_side+'_gripper_tool_frame']
+        self.tf_child_names = [
+                                '/'+self.arm_side+'_shoulder_pan_link',
+                                '/'+self.arm_side+'_shoulder_lift_link',
+                                '/'+self.arm_side+'_upper_arm_roll_link',
+                                '/'+self.arm_side+'_upper_arm_link',
+                                '/'+self.arm_side+'_elbow_flex_link',
+                                '/'+self.arm_side+'_forearm_roll_link',
+                                '/'+self.arm_side+'_forearm_link',
+                                '/'+self.arm_side+'_wrist_flex_link',
+                                '/'+self.arm_side+'_wrist_roll_link',
+                                '/'+self.arm_side+'_gripper_palm_link',
+                                '/'+self.arm_side+'_gripper_tool_frame',
+                                '/'+self.arm_side+'_gripper_l_finger_link',
+                                '/'+self.arm_side+'_gripper_l_finger_tip_link',
+                                '/'+self.arm_side+'_gripper_r_finger_link',
+                                '/'+self.arm_side+'_gripper_r_finger_tip_link'
+                         ]
         self.tf_parent_name = '/torso_lift_link'
         self.pr2_biotac_log = PR2BioTacLog()
         
@@ -58,22 +72,37 @@ class PR2BioTacLogger:
             self.pr2_biotac_log.transforms[ind].child_frame_id = xform_name
             self.pr2_biotac_log.transforms[ind].parent_frame_id = self.tf_parent_name
         
+        new_tf = TransformVerbose()
+        self.pr2_biotac_log.transforms.append(new_tf)
+        end_ind = len(self.pr2_biotac_log.transforms)-1
+        self.pr2_biotac_log.transforms[end_ind].child_frame_id = '/torso_lift_link'
+        self.pr2_biotac_log.transforms[end_ind].parent_frame_id = '/base_link'
+
+
         rospy.sleep(1.0) #sleeps to give the tf listener enough time to buffer
         rospy.loginfo('Let''s get this show on the road!')
 
         # File writing Setup
-        # Find Node Parameter Name
-        self.file_param = rospy.get_name() + '/filename'
-        # Grab directory
-        self.package_dir = roslib.packages.get_pkg_dir('biotac_simple_gripper')
-        # Check for 'data' directory
-        dir_status = self.check_dir(self.package_dir + '/data')
+        #Find this node's directory for default data writing path
+        self.package_dir = roslib.packages.get_pkg_dir('pr2_arm_state_aggregator')
+        #Find the data writing path parameter. If it is not set, set it to be this nodes's directory
+        self.path_param = rospy.get_name() + '/data_path'
+        self.output_path = rospy.get_param(self.path_param, (self.package_dir) ) + '/json_files'
+
+        # Check for 'json_files' directory
+        dir_status = self.check_dir(self.output_path)
         if dir_status:
-          rospy.loginfo('The ''data'' directory was successfully created.')
-        # Set output filename
-        self.fileName =  self.package_dir + '/data/' + rospy.get_param(self.file_param,'default.json')
+          rospy.loginfo('The ''json_files'' directory was successfully created.')
+
+        #Find the output filename or set it to 'default.json if not set'
+        self.file_param = rospy.get_name() + '/filename'
+        self.fileName =  self.output_path+ '/' + rospy.get_param(self.file_param,'default.json')
         if not self.fileName.endswith('.json'):
           self.fileName = self.fileName + '.json'
+
+        print "pqrst "+self.output_path
+        
+
         # Create initial file - delete existing file with same name 
         self.fout = open(self.fileName,'w')
         self.fout.write("[\n")

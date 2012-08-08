@@ -1,0 +1,9 @@
+<stack>
+  <description brief="bolt_data_aggregator">bolt_data_aggregator</description>
+  <author>Maintained by Vivian Chu</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bolt_data_aggregator</url>
+  <depend stack="ros" />
+
+</stack>

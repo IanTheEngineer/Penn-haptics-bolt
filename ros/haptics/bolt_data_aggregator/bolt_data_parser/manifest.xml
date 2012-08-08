@@ -1,0 +1,20 @@
+<package>
+  <description brief="bolt_data_parser">
+
+     bolt_data_parser
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bolt_data_parser</url>
+  <depend package="biotac_sensors"/>
+  <depend package="rospy"/>
+  <depend package="rosjson_time"/>
+  <depend package="rosbag"/>
+  <depend package="tf"/>
+  <depend package="pr2_gripper_accelerometer"/>
+
+</package>
+
+

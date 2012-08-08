@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #spins off a thread to listen for joint_states messages
 #and provides the same information (or subsets of) upon request
-#this whole script is curtousy of the ROSWiki Tutorials
+#this whole script is curtousy of the ROSWiki Tutorials:
+#Getting the current joint angles for the PR2
+#http://www.ros.org/wiki/pr2_controllers/Tutorials/Getting%20the%20current%20joint%20angles
 import roslib
 roslib.load_manifest('pr2_arm_state_aggregator')
 import rospy
