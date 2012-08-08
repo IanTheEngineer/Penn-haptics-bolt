@@ -54,7 +54,7 @@ class gripperController{
     //================================================================
     int Left;                        // These are defined in the BioTacObserver class
     int Right;
-    static const int LightPressureContact = 20;         // Pressure value for light contacts
+    static const int LightPressureContact = 50;         // Pressure value for light contacts
     static const int SqueezePressureContact = 500;      // Pressure value for squeezing objects
     static const int RedistributePressureThreshold = 10; // Threshold of pressure between two biotacs to move arm
     static const int MaxBadPressure = 200;              // Maximum pressure between two biotacs when an object is off center 
@@ -105,6 +105,15 @@ class gripperController{
     int tap_pressure_left;
     int tap_pressure_right;
 
+    struct fingerContact
+    {
+      double position;
+      int finger;
+    };
+
+    fingerContact firstContact;
+    fingerContact secondContact;
+
     //================================================================
     // Gripper Constuctor
     // Instantiate all of the observer classes and setup subscribers
@@ -143,8 +152,30 @@ class gripperController{
       // Initialize no finger touch first
       tap_pressure_left = 0;
       tap_pressure_right = 0;
-
     }
+    //================================================================
+    // Function that moves arm according to pressures given
+    //================================================================
+    void redistributePressurePosition()
+    {
+      // Find position of arm
+      arm_controller->getArmTransform();
+      double x = arm_controller->getTransform('x');
+      double y = arm_controller->getTransform('y');
+      double z = arm_controller->getTransform('z');
+      
+      double gripper_difference = (firstContact.position - secondContact.position)/2;
+      
+      // Move left case 
+      if (firstContact.finger == Left)
+      {
+        arm_controller->move_arm_to(x,y+gripper_difference,z,2);    
+      } 
+      else 
+      {
+        arm_controller->move_arm_to(x,y-gripper_difference,z,2);
+      } 
+    } 
 
     //================================================================
     // Function that moves arm according to pressures given
@@ -193,6 +224,35 @@ class gripperController{
       while (pressure_min < LightPressureContact && ros::ok()
              && pressure_max < 600)
       {
+
+        // First touches object
+        if (pressure_max > 5)
+        {
+          firstContact.position = simple_gripper->getGripperLastPosition();
+          if (biotac_obs->pressure_normalized_[Left] > biotac_obs->pressure_normalized_[Right])
+          {
+            firstContact.finger = Left;
+          }
+          else
+          {
+            firstContact.finger = Right;
+          }
+        }
+
+        // Second finger touches object
+        if (pressure_min > 30)
+        {
+          secondContact.position = simple_gripper->getGripperLastPosition();
+          if (firstContact.position == Left)
+          {
+            secondContact.finger = Right;
+          }
+          else
+          {
+            secondContact.finger = Left;
+          }
+        }
+
         // Set distance for object width 
         if (!contact_found && pressure_min > 10){
           gripper_initial_contact_position = simple_gripper->getGripperLastPosition();
@@ -519,7 +579,7 @@ int main(int argc, char* argv[])
 
     controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
     
-    controller.redistributePressure();
+    controller.redistributePressurePosition();
   }
 
   //================================================================
