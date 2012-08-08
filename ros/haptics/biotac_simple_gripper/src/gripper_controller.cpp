@@ -166,7 +166,7 @@ class gripperController{
       
       double gripper_difference = (firstContact.position - secondContact.position)/2.0;
       ROS_INFO("Difference calculated is: [%f]",gripper_difference); 
-
+      ROS_INFO("First contact position is: [%f], second contact: [%f]", firstContact.position, secondContact.position);
       // Move left case 
       if (firstContact.finger == Left)
       {
