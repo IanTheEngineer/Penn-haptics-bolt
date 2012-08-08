@@ -515,6 +515,8 @@ int main(int argc, char* argv[])
   {
     controller.findContact(loop_rate, controller.MoveGripperFastDistance);
 
+    controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
+    
     controller.redistributePressure();
   }
 
