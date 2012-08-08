@@ -33,4 +33,4 @@ if __name__ == '__main__':
     mp3_path = arguments[3]
     extract_audio(bag_path, topic_name, mp3_path)
   except:
-    rospy.logerr('Usage: rosrun audio_bag_extract <full_bagfile_path> /<topic_name> <full_mp3_file_path>')
+    rospy.logerr('Usage: rosrun extract_bag_audio audio_to_mp3.py <full_bagfile_path> /<topic_name> <full_mp3_file_path>')

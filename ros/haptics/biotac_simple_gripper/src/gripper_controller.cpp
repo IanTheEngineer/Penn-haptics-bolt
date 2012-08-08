@@ -72,8 +72,8 @@ class gripperController{
     static const int SlowSlideTime = 5;                     // Time to slide 5cm slow
     static const int FastSlideTime = 2;                     // Time to slide 5cm fast
     static const int LiftPressure = 250;
-    static const double LiftHeight = 0.02; 
-    static const int LiftTime = 2; 
+    static const double LiftHeight = 0.05; 
+    static const int LiftTime = 5; 
     static const int DISABLED = 0;
     static const int THERMAL_HOLD = 1;
     static const int SLIDE = 2;
@@ -473,7 +473,7 @@ int main(int argc, char* argv[])
   controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
   controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
   
-  //================================================================
+  /*//================================================================
   // Close the gripper on the object to a specified pressure
   // and lift the object 
   //================================================================
@@ -507,7 +507,7 @@ int main(int argc, char* argv[])
   ROS_INFO("Object on the table, reopening gripper to [%f]", controller.gripper_initial_contact_position);
   controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
   controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
-
+*/
   //================================================================
   // Start motion to squeeze
   //================================================================ 
@@ -569,9 +569,9 @@ int main(int argc, char* argv[])
   ros::Rate slide_rate(1); 
   // Find position of arm
   controller.arm_controller->getArmTransform();
-  x = controller.arm_controller->getTransform('x');
-  y = controller.arm_controller->getTransform('y');
-  z = controller.arm_controller->getTransform('z');
+  double x = controller.arm_controller->getTransform('x');
+  double y = controller.arm_controller->getTransform('y');
+  double z = controller.arm_controller->getTransform('z');
 
   ROS_INFO("Current Arm location: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.detail_state = "SLIDE_5CM";

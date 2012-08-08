@@ -39,4 +39,4 @@ Please see the Penn Bolt Wiki for instructions on how to use the GUI
 http://bolt-haptics.seas.upenn.edu/index.php/Software/MatlabGUI
 
 --Extracting Audio--
-rosrun audio_bag_extract <full_bagfile_path> /audio <full_mp3_file_path>
+rosrun extract_bag_audio audio_to_mp3.py <full_bagfile_path> /audio <full_mp3_file_path>
