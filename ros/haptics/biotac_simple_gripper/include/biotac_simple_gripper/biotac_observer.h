@@ -68,8 +68,8 @@ class biotacObserver{
   public:
 
     // Variables 
-    static const int Left = 0;
-    static const int Right = 1;
+    static const int Right = 0;
+    static const int Left = 1;
     int pressure_normalized_[NumberFingers]; 
     bool init_flag_;                     // Checks if initialization (normalization, etc) is complete
     bool renorm_flag_;                            // Checks for renormalization

@@ -56,7 +56,7 @@ class gripperController{
     int Right;
     static const int LightPressureContact = 20;         // Pressure value for light contacts
     static const int SqueezePressureContact = 500;      // Pressure value for squeezing objects
-    
+    static const int RedistributePressureThreshold = 100; 
   public:
 
     //================================================================
@@ -82,7 +82,7 @@ class gripperController{
     static const int DONE = 4;
     static const int TAP = 5;
     static const int SLIDE_FAST = 6;
-    static const int LIFT = 7;
+    static const int CENTER_GRIPPER = 7;
 
     //================================================================
     // Variables
@@ -101,6 +101,8 @@ class gripperController{
     double gripper_slow_optimal_contact_position;                 // Position for gripper to go to for optimal contact
     double gripper_fast_optimal_contact_position;
     double gripper_thermal_optimal_contact_position;
+    int tap_pressure_left;
+    int tap_pressure_right;
 
     //================================================================
     // Gripper Constuctor
@@ -137,8 +139,40 @@ class gripperController{
       state_pub = n.advertise<std_msgs::Int8>("simple_gripper_controller_state", 10);
       detailed_state_pub = n.advertise<std_msgs::String>("simple_gripper_controller_state_detailed", 10);
 
+      // Initialize no finger touch first
+      tap_pressure_left = 0;
+      tap_pressure_right = 0;
+
     }
-    
+
+    //================================================================
+    // Function that moves arm according to pressures given
+    //================================================================
+    void redistributePressure()
+    {
+      // Find position of arm
+      arm_controller->getArmTransform();
+      double x = arm_controller->getTransform('x');
+      double y = arm_controller->getTransform('y');
+      double z = arm_controller->getTransform('z');
+      
+      int pressure_difference = tap_pressure_left-tap_pressure_right;
+
+      // Move left case 
+      if (pressure_difference > RedistributePressureThreshold)
+      {
+        arm_controller->move_arm_to(x,y+0.02,z,2);    
+      } 
+      else if(pressure_difference < -RedistributePressureThreshold)
+      {
+        arm_controller->move_arm_to(x,y-0.02,z,2);
+      } 
+      else
+      {
+        ROS_INFO("Pressure normalized!");
+      }
+    } 
+
     //================================================================
     // Higher level motion to close gripper until contact is found
     // Pass in the rate at which contact is closed at and the 
@@ -162,6 +196,12 @@ class gripperController{
           gripper_initial_contact_position = simple_gripper->getGripperLastPosition();
           contact_found = true;
         }
+      
+        // Store last pressure felt by each finger 
+        tap_pressure_left = biotac_obs->pressure_normalized_[Left];
+        tap_pressure_right = biotac_obs->pressure_normalized_[Right];
+
+        // Check pressure min and max
         pressure_min = min(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
         pressure_max = max(biotac_obs->pressure_normalized_[Left], biotac_obs->pressure_normalized_[Right]);
         simple_gripper->closeByAmount(move_gripper_distance);
@@ -464,7 +504,20 @@ int main(int argc, char* argv[])
   // Pause to allow the node to come up - 2 seconds
   ros::Rate waitNode(0.2);
   waitNode.sleep();
-  
+
+  //================================================================
+  // Redistribute pressure - move arm in direction
+  //================================================================
+  controller.state = controller.CENTER_GRIPPER;
+  ROS_INFO("Centering the Gripper");
+
+  while (ros::ok())
+  {
+    controller.findContact(loop_rate, controller.MoveGripperFastDistance);
+
+    controller.redistributePressure();
+  }
+
   //================================================================
   // Fast Tap - to first find contact with object
   //================================================================
