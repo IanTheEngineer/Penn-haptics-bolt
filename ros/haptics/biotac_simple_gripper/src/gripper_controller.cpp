@@ -700,6 +700,21 @@ int main(int argc, char* argv[])
   ROS_INFO("Opening gripper by 2cm");
   controller.detail_state = "OPEN_GRIPPER_BY_2CM_FAST";
   controller.openUntilNoContact(loop_rate, controller.gripper_initial_contact_position + 0.02);
+  //================================================================
+  // Move arm back up 5cm to slide  
+  //================================================================
+  ROS_INFO("Moving arm up 5cm"); 
+  controller.detail_state = "MOVE_UP_5CM";
+
+  controller.arm_controller->getArmTransform();
+  double x = controller.arm_controller->getTransform('x');
+  double y = controller.arm_controller->getTransform('y');
+  double z = controller.arm_controller->getTransform('z') + controller.SlideArmDistance;
+
+  ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
+  controller.detail_state = "MOVE_UP_5CM";
+  ROS_INFO("Moving Arm up by 5 cm");
+  controller.arm_controller->move_arm_to(x,y,z, 2);
 
   //================================================================
   // Start motion slide down
@@ -718,9 +733,9 @@ int main(int argc, char* argv[])
   ros::Rate slide_rate(1); 
   // Find position of arm
   controller.arm_controller->getArmTransform();
-  double x = controller.arm_controller->getTransform('x');
-  double y = controller.arm_controller->getTransform('y');
-  double z = controller.arm_controller->getTransform('z');
+  x = controller.arm_controller->getTransform('x');
+  y = controller.arm_controller->getTransform('y');
+  z = controller.arm_controller->getTransform('z');
 
   ROS_INFO("Current Arm location: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.detail_state = "SLIDE_5CM";
