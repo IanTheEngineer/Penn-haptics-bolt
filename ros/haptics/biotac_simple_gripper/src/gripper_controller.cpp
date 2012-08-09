@@ -153,6 +153,91 @@ class gripperController{
       tap_pressure_left = 0;
       tap_pressure_right = 0;
     }
+
+    //================================================================
+    // Function to move the arm a little in a direction it needs to
+    // move
+    //================================================================
+    void centerArmIncremental(ros::Rate rate, double move_gripper_distance)
+    {
+
+      // Find position of arm
+      arm_controller->getArmTransform();
+      double x = arm_controller->getTransform('x');
+      double y = arm_controller->getTransform('y');
+      double z = arm_controller->getTransform('z');
+
+      int pressure_min = 0; 
+      int pressure_max = 0;
+      bool fingerSet = false;
+      int num_run = 0;
+      bool not_centered = true;
+      int pressure_left = 0;
+      int pressure_right = 0;
+
+      // Close until minimum pressure is found - however stop if
+      // any finger has too much pressure
+      while (num_run < 4 && not_centered 
+             && pressure_max < 600 && ros::ok())
+      { 
+        simple_gripper->closeByAmount(move_gripper_distance);
+       
+        pressure_left = biotac_obs->pressure_normalized_[Left];
+        pressure_right = biotac_obs->pressure_normalized_[Right];
+
+        // Check pressure min and max
+        pressure_min = min(pressure_left, pressure_right);
+        pressure_max = max(pressure_left, pressure_right);
+        
+        // First touches object
+        if (pressure_max > 5 && !fingerSet)
+        {
+          fingerSet = true;
+          
+          if (pressure_min > 5)
+          {
+            not_centered = false;
+            fingerSet = false;
+          }
+
+          firstContact.position = simple_gripper->getGripperLastPosition();
+          if (pressure_left > pressure_right)
+          {
+            firstContact.finger = Left;
+          }
+          else
+          {
+            firstContact.finger = Right;
+          }
+        }
+
+        if (fingerSet)
+        {
+          // Open grippers 
+          simple_gripper->open2Position(GripperMaxOpenPosition);
+          
+          // Move left case 
+          if (firstContact.finger == Left)
+          {
+            arm_controller->move_arm_to(x,y+0.01,z,1);    
+          } 
+          else 
+          {
+            arm_controller->move_arm_to(x,y-0.01,z,1);
+          }
+          fingerSet = false;
+          num_run++;
+        } 
+
+        //ROS_INFO("Pressure Min is: [%d]", pressure_min);
+       // ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        ros::spinOnce();
+        rate.sleep();
+      }
+    }
+
+
+
     //================================================================
     // Function that moves arm according to pressures given
     //================================================================
@@ -583,7 +668,7 @@ int main(int argc, char* argv[])
   controller.state = controller.CENTER_GRIPPER;
   ROS_INFO("Centering the Gripper");
 
-  for (int i = 0; i < 2; i++) 
+  /*for (int i = 0; i < 2; i++) 
   {
     ROS_INFO("Find contact");
     controller.findContact(loop_rate, controller.MoveGripperFastDistance);
@@ -591,7 +676,10 @@ int main(int argc, char* argv[])
     controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
     ROS_INFO("Redistribute Pressure Position"); 
     controller.redistributePressurePosition();
-  }
+  }*/
+
+  controller.centerArmIncremental(loop_rate, controller.MoveGripperFastDistance);
+  controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
 
   //================================================================
   // Fast Tap - to first find contact with object
