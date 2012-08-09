@@ -57,13 +57,16 @@ def main():
         # Store gripper controller state
         current_state = 0 
         control_state = []
+        current_detail_state = "DISABLED" 
+        detail_state = []
+
 
         num_entries = 0
         num_biotac_entries = 0
         num_controller_state_entries = 0
         num_gripper_accelerometer_entries = 0
 
-        for topic, msg, stamp in bag.read_messages(topics=["/biotac_pub", "/pr2_gripper_accelerometer/data", "/simple_gripper_controller_state"]):
+        for topic, msg, stamp in bag.read_messages(topics=["/biotac_pub", "/pr2_gripper_accelerometer/data", "/simple_gripper_controller_state", "/simple_gripper_controller_state_detailed"]):
             num_entries += 1
             if msg._type == 'pr2_gripper_accelerometer/PR2GripperAccelerometerData':
                 num_gripper_accelerometer_entries += 1
@@ -73,6 +76,9 @@ def main():
             if topic == '/simple_gripper_controller_state':
                 num_controller_state_entries += 1
                 current_state = msg.data
+
+            if topic == '/simple_gripper_controller_state_detailed':
+                current_detail_state = msg.data
 
             if msg._type == 'biotac_sensors/BioTacHand': 
                 num_biotac_entries += 1          
@@ -98,6 +104,9 @@ def main():
 
                 # Store control state
                 control_state.append(current_state)
+
+                # Store control detail state
+                detail_state.append(current_detail_state)
 
             # Store time stamps for entire run 
             time_stamp.append( stamp.to_sec())
@@ -167,7 +176,11 @@ def main():
         #Store controller state
         control_state_carray = h5file.createCArray(bag_group, "controller_state", tables.Int64Atom(), (num_biotac_entries,))
         control_state_carray[:] = control_state 
-            
+       
+        # Store controller detailed state
+        control_detail_carray = h5file.createCArray(bag_group, "controller_detail_state", tables.StringAtom(itemsize=30), (num_biotac_entries,))
+        control_detail_carray[:] = detail_state
+        
     h5file.close()
 
 
