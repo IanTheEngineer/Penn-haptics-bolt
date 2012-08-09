@@ -8,12 +8,13 @@ if [ -z "$1" ]
     exit 1
 fi
 
-if [ -z "$ROS_WORKSPACE" ]; then
-    echo "You must set to set ROS_WORKSPACE to create BOLT data dumping directories. Aborting..."
-    exit 1
-fi
+#if [ -z "$ROS_WORKSPACE" ]; then
+#    echo "You must set to set ROS_WORKSPACE to create BOLT data dumping directories. Aborting..."
+#    exit 1
+#fi
 
-BOLT_DATA_DIR="$ROS_WORKSPACE/bolt_haptic_data"
+#BOLT_DATA_DIR="$ROS_WORKSPACE/bolt_haptic_data"
+BOLT_DATA_DIR="/removable/bolt_haptic_data"
 
 if [ ! -d "$BOLT_DATA_DIR" ]; then
   mkdir $BOLT_DATA_DIR
