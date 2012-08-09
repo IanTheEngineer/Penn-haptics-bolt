@@ -709,7 +709,7 @@ int main(int argc, char* argv[])
   controller.arm_controller->getArmTransform();
   double x = controller.arm_controller->getTransform('x');
   double y = controller.arm_controller->getTransform('y');
-  double z = controller.arm_controller->getTransform('z') + controller.SlideArmDistance;
+  double z = controller.arm_controller->getTransform('z') + 0.07;
 
   ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.detail_state = "MOVE_UP_5CM";
@@ -732,10 +732,10 @@ int main(int argc, char* argv[])
   
   ros::Rate slide_rate(1); 
   // Find position of arm
-  controller.arm_controller->getArmTransform();
-  x = controller.arm_controller->getTransform('x');
-  y = controller.arm_controller->getTransform('y');
-  z = controller.arm_controller->getTransform('z');
+  //controller.arm_controller->getArmTransform();
+  //x = controller.arm_controller->getTransform('x');
+  //y = controller.arm_controller->getTransform('y');
+  //z = controller.arm_controller->getTransform('z');
 
   ROS_INFO("Current Arm location: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.detail_state = "SLIDE_5CM";

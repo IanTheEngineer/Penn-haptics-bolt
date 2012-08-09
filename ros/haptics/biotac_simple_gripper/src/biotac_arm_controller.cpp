@@ -156,7 +156,7 @@ void biotacArmController::moveArmToStart()
   ee_cart_imped_msgs::EECartImpedGoal traj;
  
   // Move arm to starting point 
-  EECartImpedArm::addTrajectoryPoint(traj, 1.0, 0.2, -0.01, 0, 0, 0, 1,
+  EECartImpedArm::addTrajectoryPoint(traj, 1.0, 0.2, 0.00, 0, 0, 0, 1,
                                     1000, 1000, 1000, 30, 30, 30,
                                     false, false, false, false, false,
                                     false, 2, ReferenceLink);
