@@ -67,7 +67,8 @@ class biotacArmController
     void move_arm_to(double, double, double, int);             // Moves arm to specified location 
     void getArmTransform();                               // Polls for arm transform
     double getTransform(char);                            // Returns the specified value
-   
+    static const double GripperStartHeight = -0.27;               // Start height of robot
+
     //================================================================ 
     // Variables
     //================================================================
