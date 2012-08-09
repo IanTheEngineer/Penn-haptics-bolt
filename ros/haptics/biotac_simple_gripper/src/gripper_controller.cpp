@@ -219,11 +219,11 @@ class gripperController{
           // Move left case 
           if (firstContact.finger == Left)
           {
-            arm_controller->move_arm_to(x,y+0.01,z,1);    
+            arm_controller->move_arm_to(x,y+0.015,z,2);    
           } 
           else 
           {
-            arm_controller->move_arm_to(x,y-0.01,z,1);
+            arm_controller->move_arm_to(x,y-0.015,z,2);
           }
           fingerSet = false;
           num_run++;
