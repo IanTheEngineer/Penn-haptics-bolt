@@ -796,6 +796,7 @@ int main(int argc, char* argv[])
   // Controller open all
   controller.detail_state = "OPEN_GRIPPER_FAST_MAX";
   controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
+  controller.arm_controller->moveArmToStart();
 
   //================================================================
   // Destroy logger
