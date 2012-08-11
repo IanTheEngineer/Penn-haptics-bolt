@@ -30,7 +30,7 @@ def main():
         sys.exit()
 
     filters = tables.Filters(complevel=9)
-    h5file = tables.openFile(output_filename, mode="w", title="Biotach Log",
+    h5file = tables.openFile(output_filename, mode="w", title="Aggregated BOLT Data",
                              filters = filters)
 
     for filename in input_filenames:
@@ -60,7 +60,7 @@ def main():
         current_detail_state = "DISABLED" 
         detail_state = []
 
-
+        # Number of entries
         num_entries = 0
         num_biotac_entries = 0
         num_controller_state_entries = 0
@@ -68,6 +68,8 @@ def main():
 
         for topic, msg, stamp in bag.read_messages(topics=["/biotac_pub", "/pr2_gripper_accelerometer/data", "/simple_gripper_controller_state", "/simple_gripper_controller_state_detailed"]):
             num_entries += 1
+            # Currently downsampling the accelerometers by storing them off when they arrive
+            # and then writing to the array at the same frequency at the biotacs
             if msg._type == 'pr2_gripper_accelerometer/PR2GripperAccelerometerData':
                 num_gripper_accelerometer_entries += 1
                 gripper_accelerometer_msg = msg
@@ -111,8 +113,6 @@ def main():
             # Store time stamps for entire run 
             time_stamp.append( stamp.to_sec())
 
-        #import pdb; pdb.set_trace()
-
         #group_name = "trajectory_" + str(traj_num)        
         group_name = filename.partition(".")[0]
         
@@ -122,6 +122,9 @@ def main():
         timestamps_carray = h5file.createCArray(bag_group, "timestamps", tables.Int64Atom(), (num_entries,)
                                               )
         timestamps_carray[:] = time_stamp
+
+        # Create biotac group
+        biotac_group = h5file.createGroup(bag_group, "biotacs")
 
         # Store information for biotacs        
         for finger_index in xrange(num_fingers):
@@ -136,7 +139,7 @@ def main():
                                  ##"electrode" : electrode_dsc
                                  #}
             
-            finger_group = h5file.createGroup(bag_group, "finger_"+str(finger_index))
+            finger_group = h5file.createGroup(biotac_group, "finger_"+str(finger_index))
             
             electrode_carray = h5file.createCArray(finger_group, "electrodes", tables.Int64Atom(), (num_biotac_entries, 19))
             #import pdb; pdb.set_trace() 
@@ -172,13 +175,15 @@ def main():
         gripper_joint_effort_carray = h5file.createCArray(gripper_group, "joint_effort", tables.Float64Atom(), (num_biotac_entries,))
         gripper_joint_effort_carray[:] = gripper_joint_effort
         #import pdb; pdb.set_trace()
-       
+      
+        state_group = h5file.createGroup(bag_group, "state")
+
         #Store controller state
-        control_state_carray = h5file.createCArray(bag_group, "controller_state", tables.Int64Atom(), (num_biotac_entries,))
+        control_state_carray = h5file.createCArray(state_group, "controller_state", tables.Int64Atom(), (num_biotac_entries,))
         control_state_carray[:] = control_state 
        
         # Store controller detailed state
-        control_detail_carray = h5file.createCArray(bag_group, "controller_detail_state", tables.StringAtom(itemsize=30), (num_biotac_entries,))
+        control_detail_carray = h5file.createCArray(state_group, "controller_detail_state", tables.StringAtom(itemsize=30), (num_biotac_entries,))
         control_detail_carray[:] = detail_state
         
     h5file.close()
