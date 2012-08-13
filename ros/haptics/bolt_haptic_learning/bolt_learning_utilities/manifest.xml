@@ -1,0 +1,15 @@
+<package>
+  <description brief="bolt_learning_utilities">
+
+     bolt_learning_utilities
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bolt_learning_utilities</url>
+  <depend package = "rospy"/>
+
+</package>
+
+
