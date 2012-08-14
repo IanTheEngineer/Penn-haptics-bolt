@@ -23,7 +23,10 @@ class BoltPR2MotionObj(object):
         self.tdc = array([]) 
         self.tac = array([]) 
         self.pdc = array([]) 
+        # 2 finger x n x 22 
         self.pac = array([]) 
+        # 2 finger x n * 22
+        self.pac_flat = array([])
        
         # Gripper
         # n x 1
@@ -38,4 +41,8 @@ class BoltPR2MotionObj(object):
         # Store state
         self.state = self.DISABLED
    
-        # Maybe store raw electrodes
+        # Store information about the run the motion came from
+        self.name = ""
+        self.run_number = 0 
+     
+         # Maybe store raw electrodes
