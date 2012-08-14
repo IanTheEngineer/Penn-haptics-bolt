@@ -17,25 +17,32 @@ class BoltPR2MotionObj(object):
 
     def __init__(self):
 
-        # 2 finger x 19 x n
+        # 2 finger x n x 19 
         self.electrodes = array([]) 
         # 2 finger x n
         self.tdc = array([]) 
         self.tac = array([]) 
         self.pdc = array([]) 
+        # 2 finger x n x 22 
         self.pac = array([]) 
+        # 2 finger x n * 22
+        self.pac_flat = array([])
        
         # Gripper
-        # 1 x n
+        # n x 1
         self.gripper_velocity = array([]) 
         self.gripper_position = array([]) 
         self.gripper_effort = array([]) 
 
         # Accelerometer
-        # 3 x n
+        # n x 3 
         self.accelerometer = array([]) 
 
         # Store state
         self.state = self.DISABLED
    
-        # Maybe store raw electrodes
+        # Store information about the run the motion came from
+        self.name = ""
+        self.run_number = 0 
+     
+         # Maybe store raw electrodes
