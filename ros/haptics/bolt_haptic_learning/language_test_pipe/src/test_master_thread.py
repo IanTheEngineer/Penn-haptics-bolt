@@ -3,6 +3,10 @@
 import roslib; roslib.load_manifest('language_test_pipe')
 import rospy
 import sys
+#print sys.path
+
+
+from bolt_pr2_motion_obj import BoltPR2MotionObj
 
 import multiprocessing
 
@@ -20,7 +24,10 @@ class MyFancyClass(object):
     
     def do_something(self):
         proc_name = multiprocessing.current_process().name
-        print 'Doing something fancy in %s for %s!' % (proc_name, self.name)
+        current_motion = BoltPR2MotionObj()
+        current_motion.tdc = proc_name
+        print current_motion
+        #print 'Doing something fancy in %s for %s!' % (proc_name, self.name)
 
 def worker(q):
     obj = q.get()
