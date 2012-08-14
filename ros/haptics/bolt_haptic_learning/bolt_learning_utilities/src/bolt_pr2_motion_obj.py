@@ -4,7 +4,7 @@ import rospy
 import numpy as np 
 
 # Class to store an entire run 
-class BoltPR2Motion(object):
+class BoltPR2MotionObj(object):
 
     def __init__(self):
 
