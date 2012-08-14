@@ -34,14 +34,6 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
     motion_object.name = object_name
     motion_object.run_number = int(object_run_num)
 
-    # Create list to store the values before converting into numpy array
-    electrodes = []
-    tdc = []
-    tac = []
-    pac = []
-    pac_flat = []
-    pdc = []
-
     # Biotac information
     for _finger in xrange(one_run_pytable_ptr.biotacs._v_depth):
 
@@ -54,40 +46,31 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
 
         # Electrodes
         one_set_electrode = eval(finger_name + '.electrodes[:]')
-        one_motion_electrode = one_set_electrode[idx_segment]
-        electrodes.append(one_motion_electrode)
+        one_motion_electrode = np.array(one_set_electrode[idx_segment])
+        motion_object.electrodes.append(one_motion_electrode)
 
         # TDC
         one_set_tdc = eval(finger_name + '.tdc[:]')
-        one_motion_tdc = one_set_tdc[idx_segment]
-        tdc.append(one_motion_tdc)
+        one_motion_tdc = np.array(one_set_tdc[idx_segment])
+        motion_object.tdc.append(one_motion_tdc)
 
         # TAC
         one_set_tac = eval(finger_name + '.tac[:]')
-        one_motion_tac = one_set_tac[idx_segment]
-        tac.append(one_motion_tac)
+        one_motion_tac = np.array(one_set_tac[idx_segment])
+        motion_object.tac.append(one_motion_tac)
 
         # PDC
         one_set_pdc = eval(finger_name + '.pdc[:]')
-        one_motion_pdc = one_set_pdc[idx_segment]
-        pdc.append(one_motion_pdc)
+        one_motion_pdc = np.array(one_set_pdc[idx_segment])
+        motion_object.pdc.append(one_motion_pdc)
 
         # PAC
-        one_set_pac_flat = eval(finger_name + '.pac[:]')
-        one_motion_pac_flat = one_set_pac_flat[idx_segment]
-        pac.append(one_motion_pac_flat)
+        one_set_pac = eval(finger_name + '.pac[:]')
+        one_motion_pac = np.array(one_set_pac[idx_segment])
+        motion_object.pac.append(one_motion_pac)
 
-        # PAC FLAT
-        pac_flat.append(one_motion_pac_flat.reshape(1, len(one_motion_pac_flat)*22)[0])
+        #pac_flat.append(one_motion_pac_flat.reshape(1, len(one_motion_pac_flat)*22)[0])
    
-    # Store biotac into object
-    motion_object.electrodes = np.array(electrodes)
-    motion_object.tdc = np.array(tdc)
-    motion_object.tac = np.array(tac)
-    motion_object.pdc = np.array(pdc)
-    motion_object.pac = np.array(pac)
-    motion_object.pac_flat = np.array(pac_flat)
-
     # Store gripper information
     # Velocity 
     gripper_velocity = one_run_pytable_ptr.gripper_aperture.joint_velocity[:] 
@@ -146,7 +129,7 @@ def main():
     for _objectRun in all_runs_root:
         num_runs += 1
         print num_runs
-
+        
         # Pull out tap information
         tap_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.TAP)
         tap_runs.append(tap_object)
