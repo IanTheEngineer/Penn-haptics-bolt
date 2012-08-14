@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
-import numpy as np 
+from numpy import * 
 
 # Class to store an entire run 
 class BoltPR2MotionObj(object):
@@ -18,22 +18,22 @@ class BoltPR2MotionObj(object):
     def __init__(self):
 
         # 2 finger x 19 x n
-        self.electrodes = []
+        self.electrodes = array([]) 
         # 2 finger x n
-        self.tdc = []
-        self.tac = []
-        self.pdc = []
-        self.pac = []
+        self.tdc = array([]) 
+        self.tac = array([]) 
+        self.pdc = array([]) 
+        self.pac = array([]) 
        
         # Gripper
         # 1 x n
-        self.gripper_velocity = []
-        self.gripper_position = []
-        self.gripper_effort = []
+        self.gripper_velocity = array([]) 
+        self.gripper_position = array([]) 
+        self.gripper_effort = array([]) 
 
         # Accelerometer
         # 3 x n
-        self.accelerometer = [] 
+        self.accelerometer = array([]) 
 
         # Store state
         self.state = self.DISABLED
