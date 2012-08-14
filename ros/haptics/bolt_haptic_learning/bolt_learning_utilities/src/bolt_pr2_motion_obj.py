@@ -6,6 +6,15 @@ import numpy as np
 # Class to store an entire run 
 class BoltPR2MotionObj(object):
 
+    DISABLED = 0
+    THERMAL_HOLD = 1
+    SLIDE = 2
+    SQUEEZE = 3
+    TAP = 5
+    DONE = 4
+    SLIDE_FAST = 6
+    CENTER_GRIPPER = 7
+
     def __init__(self):
 
         # 2 finger x 19 x n
@@ -27,6 +36,6 @@ class BoltPR2MotionObj(object):
         self.accelerometer = [] 
 
         # Store state
-        self.state = 0
+        self.state = self.DISABLED
    
         # Maybe store raw electrodes
