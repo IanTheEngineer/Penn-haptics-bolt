@@ -23,5 +23,4 @@ for i = 1:size(data_file_names, 1)
     save(name{1}, varname);
 end
 
-    
 

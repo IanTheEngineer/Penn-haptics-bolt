@@ -6,7 +6,7 @@ function [ centered_signal ] = select_signal( signal )
 all_signals = mean(abs(signal),2);
 %all_signals = max(abs(signal),2);
 
-idx = find(all_signals > 4);
+idx = find(all_signals > 10);
 
 if (isempty(idx))
     idx = find(all_signals > 3);

@@ -1,4 +1,4 @@
-function [loaded_data, total_files] = load_all_data(path, mat)
+function [loaded_data, total_files] = load_all_data(path, mat, segment)
 % This function is similar to load_data_from_file but instead of a single
 % file, it will load a directory of files, including other directories.  It
 % expects the data to be stored in a heirachal fashion.  You must pass in
@@ -41,8 +41,12 @@ if (mat)
     for i = 1:numel(data_file_names)
         data = load_data_from_path(strcat(path, dirLink,data_file_names(i).name));
         total_files = total_files +1;
-        data_files(i).values = data;
-        data_files(i).name = data_file_names(i).name;
+        if (segment)
+            data_files(i).values = separate_states(data, true);
+        else
+            data_files(i).values = data;
+        end
+        data_files(i).values.name = data_file_names(i).name;
     end
 else
     for i = 1:numel(data_file_names)
