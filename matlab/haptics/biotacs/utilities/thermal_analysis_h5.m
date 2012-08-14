@@ -35,8 +35,8 @@ for trial=1:10
 
     for column=1:2
         for count=(hold_moment(trial)+200): (hold_moment(trial)+1500)
-            if all_data(trial).data.biotac(1).tac(count) < valley_value(column)
-                valley_value(column)=all_data(trial).data.biotac(1).tac(count);
+            if all_data(trial).data.biotac(column).tac(count) < valley_value(column)
+                valley_value(column)=all_data(trial).data.biotac(column).tac(count);
                 valley_point(column)=count;
             end
         end
