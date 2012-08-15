@@ -31,7 +31,23 @@ class BoltPR2MotionObj(object):
         self.pac = [] 
         # n * 22
         self.pac_flat = [] 
-       
+
+        # Store first 10 values to use as means
+        self.electrodes_mean = []
+        self.pdc_mean = []
+        self.pac_mean = []
+        self.tdc_mean = []
+        self.tac_mean = []
+        self.pac_mean = []
+        
+        # Store normalized finger values
+        self.electrodes_normalized = []
+        self.pdc_normalized = []
+        self.pac_normalized = []
+        self.tdc_normalized = []
+        self.tac_normalized = []
+        self.pac_flat_normalized = []
+
         # Gripper
         # n x 1
         self.gripper_velocity = array([]) 
