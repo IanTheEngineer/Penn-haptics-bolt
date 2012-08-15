@@ -7,6 +7,7 @@ import numpy
 import glob
 import sys
 import cPickle
+import os
 from optparse import OptionParser
 import itertools
 import tables
@@ -115,6 +116,7 @@ def main():
 
         #group_name = "trajectory_" + str(traj_num)        
         group_name = filename.partition(".")[0]
+        group_name = os.path.split(group_name)[1] #remove path and trailing /
         
         #f[group_name + "/timestamps"] = time_stamp
         bag_group = h5file.createGroup("/", group_name)

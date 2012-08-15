@@ -7,6 +7,7 @@ import sys
 import tables
 import numpy as np
 import cPickle
+import extract_features
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
@@ -48,26 +49,31 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
         one_set_electrode = eval(finger_name + '.electrodes[:]')
         one_motion_electrode = np.array(one_set_electrode[idx_segment])
         motion_object.electrodes.append(one_motion_electrode)
+        motion_object.electrodes_mean.append(np.array(one_set_electrode[1:10, :]))
 
         # TDC
         one_set_tdc = eval(finger_name + '.tdc[:]')
         one_motion_tdc = np.array(one_set_tdc[idx_segment])
         motion_object.tdc.append(one_motion_tdc)
+        motion_object.tdc_mean.append(np.array(one_set_tdc[1:10]))
 
         # TAC
         one_set_tac = eval(finger_name + '.tac[:]')
         one_motion_tac = np.array(one_set_tac[idx_segment])
         motion_object.tac.append(one_motion_tac)
+        motion_object.tac_mean.append(np.array(one_set_tac[1:10]))
 
         # PDC
         one_set_pdc = eval(finger_name + '.pdc[:]')
         one_motion_pdc = np.array(one_set_pdc[idx_segment])
         motion_object.pdc.append(one_motion_pdc)
+        motion_object.pdc_mean.append(np.array(one_set_pdc[1:10]))
 
         # PAC
         one_set_pac = eval(finger_name + '.pac[:]')
         one_motion_pac = np.array(one_set_pac[idx_segment])
         motion_object.pac.append(one_motion_pac)
+        motion_object.pac_mean.append(np.array(one_set_pac[1:10, :]))
 
         #pac_flat.append(one_motion_pac_flat.reshape(1, len(one_motion_pac_flat)*22)[0])
    
@@ -132,22 +138,27 @@ def main():
         
         # Pull out tap information
         tap_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.TAP)
+        extract_features.normalize_data(tap_object)
         tap_runs.append(tap_object)
 
         # Pull out squeeze information
         squeeze_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SQUEEZE)
+        extract_features.normalize_data(squeeze_object)
         squeeze_runs.append(squeeze_object)
 
         # Pull out hold information
         hold_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.THERMAL_HOLD) 
+        extract_features.normalize_data(hold_object)
         hold_runs.append(hold_object)
 
         # Pull out slide fast information
         slide_fast_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE_FAST)
+        extract_features.normalize_data(slide_fast_object)
         fast_slide_runs.append(slide_fast_object)
 
         # Pull out slide slow information
         slide_slow_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE)
+        extract_features.normalize_data(slide_slow_object)
         slow_slide_runs.append(slide_slow_object)
    
 
