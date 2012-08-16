@@ -180,7 +180,7 @@ end
 
 %% HOLD
 HOLD_1 = zeros(10,3);
-FAST_SLIDE_2 = zeros(10,3);
+HOLD_2 = zeros(10,3);
 
 for trial=1:10
    
@@ -209,7 +209,7 @@ for trial=1:10
 
     % search for solution
       HOLD_1(trial,:) = fminsearch(errfh_1,p0,[],t,rel_1); 
-      FAST_SLIDE_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
+      HOLD_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
 
     % plot the result
      subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,P(trial,:)),'r-'); hold on
@@ -221,8 +221,8 @@ end
 
 
 %% SLOW SLIDE
-FAST_SLIDE_1 = zeros(10,3);
-FAST_SLIDE_2 = zeros(10,3);
+SLOW_SLIDE_1 = zeros(10,3);
+SLOW_SLIDE_2 = zeros(10,3);
 
 for trial=1:10
 
@@ -250,8 +250,8 @@ for trial=1:10
       q0 = [mean(rel_2) ( max(rel_2)-min(rel_2) ) (max(t) - min(t))/2];
 
     % search for solution
-      FAST_SLIDE_1(trial,:) = fminsearch(errfh_1,p0,[],t,rel_1); 
-      FAST_SLIDE_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
+      SLOW_SLIDE_1(trial,:) = fminsearch(errfh_1,p0,[],t,rel_1); 
+      SLOW_SLIDE_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
 
     % plot the result
      subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,P(trial,:)),'r-'); hold on
