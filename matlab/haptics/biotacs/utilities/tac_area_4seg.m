@@ -134,8 +134,8 @@ for trial=1:10
     
     % Normalize the TAC value by subtracting the part after the squeezing
     % begins    
-    all_data(trial).data.biotac(1).tac = all_data(trial).data.biotac(1).tac - mean(all_data(trial).data.biotac(1).tac(sqz_moment(trial):(sqz_moment(trial)+50)));
-    all_data(trial).data.biotac(2).tac = all_data(trial).data.biotac(2).tac - mean(all_data(trial).data.biotac(2).tac(sqz_moment(trial):(sqz_moment(trial)+50)));
+    all_data(trial).data.biotac(1).tac = all_data(trial).data.biotac(1).tac - mean(all_data(trial).data.biotac(1).tac(sqz_start(trial):(sqz_start(trial)+50)));
+    all_data(trial).data.biotac(2).tac = all_data(trial).data.biotac(2).tac - mean(all_data(trial).data.biotac(2).tac(sqz_start(trial):(sqz_start(trial)+50)));
 
     
     % Area for squeezing
