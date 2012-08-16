@@ -2,6 +2,7 @@
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import numpy as np
+import sklearn.decomposition
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
@@ -70,13 +71,12 @@ def extract_features(bolt_obj):
         pac_central_frequency.append()
        
         # Thermal features
-
+        
        
         # Compute electrode features
-
-
-
-
+        pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
+        pca.fit(motion.electrodes_normalized[finger])
+        transf_finger = pca.tranform(motion.electrodes_normalized[finger])
 
 
 
