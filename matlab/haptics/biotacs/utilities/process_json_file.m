@@ -14,7 +14,7 @@ function [ all_data_robot, number_fingers ] = process_json_file( fileID )
 % July 2012; Last revision: 18-July-2012
 tic
 
-num_frames_throw_away = 50;
+num_frames_throw_away = 1;
 
 % Read data from JSON file
 data_read = [];
@@ -80,7 +80,7 @@ for i = 1:number_fingers
     all_data(i).raw_tdc = raw_tdc(num_frames_throw_away:end);
     all_data(i).raw_pac = raw_pac(num_frames_throw_away:end,:);
     % Add a negative because Syntouch's filter inverts the PAC signal
-    all_data(i).raw_pac_flat = -reshape(all_data(i).raw_pac',[],1);
+    all_data(i).raw_pac_flat = reshape(all_data(i).raw_pac',[],1);
 
     % Processed Data
     all_data(i).electrodes = -bsxfun(@minus, all_data(i).raw_electrodes,mean(all_data(i).raw_electrodes(1:10,:)));
@@ -90,7 +90,7 @@ for i = 1:number_fingers
     all_data(i).tdc =  all_data(i).raw_tdc - mean(all_data(i).raw_tdc(1:10));
     % Add a negative because Syntouch's filter inverts the PAC signal
     all_data(i).pac = -bsxfun(@minus, all_data(i).raw_pac,mean(all_data(i).raw_pac(1:10,:)));
-    all_data(i).pac_flat = all_data(i).raw_pac_flat - mean(all_data(i).raw_pac_flat(1:10));
+    all_data(i).pac_flat = -(all_data(i).raw_pac_flat - mean(all_data(i).raw_pac_flat(1:10)));
 
     all_data(i).finger = values(1).bt_position;
     all_data(i).bt_serial = values(1).bt_serial;
@@ -112,18 +112,23 @@ if (pr2_transforms)
     num_transforms = size(data_read(1).transforms,2);
     transforms =  cell2mat([data_read(:).transforms]);
     all_data_robot(1).transforms = reshape(transforms, [num_transforms size(transforms,2)/num_transforms]);
+    all_data_robot(1).transforms = all_data_robot(1).transforms(:,num_frames_throw_away:end);
     
     % Store joints
     num_joints = size(data_read(1).joint_states,2);
     joints = cell2mat([data_read(:).joint_states]);
     all_data_robot(1).joint_states = reshape(joints, [num_joints size(joints,2)/num_joints]);
+    all_data_robot(1).joint_states = all_data_robot(1).joint_states(:, num_frames_throw_away:end);
     
     % Store controller state
     temp = [data_read(:).controller_state];
     all_data_robot(1).controller_state = [temp(:).data];
+    all_data_robot(1).controller_state = all_data_robot(1).controller_state(:, num_frames_throw_away:end);
     
     % Store gripper_accelerometer
     all_data_robot(1).gripper_accelerometer = [data_read(:).gripper_accelerometer];
+    all_data_robot(1).gripper_accelerometer = all_data_robot(1).gripper_accelerometer(:, num_frames_throw_away:end);
+    
 else
     all_data_robot = all_data;
 end

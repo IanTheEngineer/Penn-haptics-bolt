@@ -161,14 +161,14 @@ else
         % Calculate area of electrodes
         thresh_points = toPlot(1,:) > 100;
         if sum(thresh_points) > 2
-            area_points = electrode_points(thresh_points,:);
-
-            dt = DelaunayTri(area_points(:,1),area_points(:,2));
-    %         triplot(dt);
-    %         axis equal;
-            [ch areaC] = convexHull(dt);
-            set(handles.area_contact,'string',num2str(round(areaC)));
-            area_contact(stepT) = areaC;
+%             area_points = electrode_points(thresh_points,:);
+% 
+%             dt = DelaunayTri(area_points(:,1),area_points(:,2));
+%     %         triplot(dt);
+%     %         axis equal;
+%             [ch areaC] = convexHull(dt);
+%             set(handles.area_contact,'string',num2str(round(areaC)));
+%             area_contact(stepT) = areaC;
         else
             set(handles.area_contact,'string',num2str(round(0)));
         end

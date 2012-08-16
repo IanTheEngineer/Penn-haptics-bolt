@@ -16,7 +16,7 @@ function [ all_data, number_fingers ] = process_txt_file( fileID )
 finger_index = [5 7 9];
 finger_channels = [];
 num_values_frame = 44;
-num_frames_throw_away = 50;
+num_frames_throw_away = 1;
 
 data = textscan(fileID,'%f %f %f %f %f %f %f %f %f %f');
 fclose(fileID);
@@ -24,7 +24,7 @@ fclose(fileID);
 % Selects the proper finger channel
 if (data{6}(1) == 0)
     finger_channels = [finger_channels 1];
-elseif (data{6}(1) == 0)
+elseif (data{8}(1) == 0)
     finger_channels = [finger_channels 2];
 elseif (data{10}(1) == 0)
     finger_channels = [finger_channels 3];
@@ -45,7 +45,7 @@ for i = 1:number_fingers
     all_data(i).raw_tdc = values(num_frames_throw_away:end,end-1:2:end);
     all_data(i).raw_pac = values(num_frames_throw_away:end,2:2:end);
     % Add a negative because Syntouch's filter inverts the PAC signal
-    all_data(i).raw_pac_flat = -reshape(all_data(i).raw_pac',[],1);
+    all_data(i).raw_pac_flat = reshape(all_data(i).raw_pac',[],1);
 
     % Processed Data
     all_data(i).electrodes = -bsxfun(@minus, all_data(i).raw_electrodes,mean(all_data(i).raw_electrodes(1:10,:)));
@@ -55,7 +55,7 @@ for i = 1:number_fingers
     all_data(i).tdc =  all_data(i).raw_tdc - mean(all_data(i).raw_tdc(1:10));
     % Add a negative because Syntouch's filter inverts the PAC signal
     all_data(i).pac = -bsxfun(@minus, all_data(i).raw_pac,mean(all_data(i).raw_pac(1:10,:)));
-    all_data(i).pac_flat = all_data(i).raw_pac_flat - mean(all_data(i).raw_pac_flat(1:10));
+    all_data(i).pac_flat = -(all_data(i).raw_pac_flat - mean(all_data(i).raw_pac_flat(1:10)));
 
     all_data(i).finger = finger_index(finger_channels(i));
 

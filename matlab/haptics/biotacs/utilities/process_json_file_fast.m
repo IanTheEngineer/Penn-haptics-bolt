@@ -18,7 +18,7 @@ tic
 addpath(genpath('json_c'));
 
 % For how many frames to ignore
-num_frames_throw_away = 50;
+num_frames_throw_away = 1;
 
 % Read data from JSON file
 data_read = [];
@@ -118,18 +118,23 @@ if (pr2_transforms)
     num_transforms = size(data_read(1).transforms,2);
     transforms =  cell2mat([data_read(:).transforms]);
     all_data_robot(1).transforms = reshape(transforms, [num_transforms size(transforms,2)/num_transforms]);
+    all_data_robot(1).transforms = all_data_robot(1).transforms(:,num_frames_throw_away:end);
     
     % Store joints
     num_joints = size(data_read(1).joint_states,2);
     joints = cell2mat([data_read(:).joint_states]);
     all_data_robot(1).joint_states = reshape(joints, [num_joints size(joints,2)/num_joints]);
+    all_data_robot(1).joint_states = all_data_robot(1).joint_states(:, num_frames_throw_away:end);
     
     % Store controller state
     temp = [data_read(:).controller_state];
     all_data_robot(1).controller_state = [temp(:).data];
+    all_data_robot(1).controller_state = all_data_robot(1).controller_state(:, num_frames_throw_away:end);
     
     % Store gripper_accelerometer
     all_data_robot(1).gripper_accelerometer = [data_read(:).gripper_accelerometer];
+    all_data_robot(1).gripper_accelerometer = all_data_robot(1).gripper_accelerometer(:, num_frames_throw_away:end);
+    
 else
     all_data_robot = all_data;
 end
