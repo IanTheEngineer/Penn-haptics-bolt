@@ -170,9 +170,9 @@ for trial=1:10
       SQUEEZE_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
 
     % plot the result
-     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,P(trial,:)),'r-'); hold on
+     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,SQUEEZE_1(trial,:)),'r-'); hold on
      title('finger 1')
-     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,Q(trial,:)),'r-');   hold on
+     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,SQUEEZE_2(trial,:)),'r-');   hold on
      title('finger 2')
 
 end
@@ -212,9 +212,9 @@ for trial=1:10
       HOLD_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
 
     % plot the result
-     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,P(trial,:)),'r-'); hold on
+     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,HOLD_1(trial,:)),'r-'); hold on
      title('finger 1')
-     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,Q(trial,:)),'r-');   hold on
+     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,HOLD_2(trial,:)),'r-');   hold on
      title('finger 2')
 
 end
@@ -254,9 +254,9 @@ for trial=1:10
       SLOW_SLIDE_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
 
     % plot the result
-     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,P(trial,:)),'r-'); hold on
+     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,SLOW_SLIDE_1(trial,:)),'r-'); hold on
      title('finger 1')
-     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,Q(trial,:)),'r-');   hold on
+     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,SLOW_SLIDE_2(trial,:)),'r-');   hold on
      title('finger 2')
 
 end
@@ -297,9 +297,9 @@ for trial=1:10
       FAST_SLIDE_2(trial,:) = fminsearch(errfh_2,q0,[],t,rel_2); 
 
     % plot the result
-     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,P(trial,:)),'r-'); hold on
+     subplot(2,1,1);  plot(t,rel_1,'b',t,fh_1(t,FAST_SLIDE_1(trial,:)),'r-'); hold on
      title('finger 1')
-     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,Q(trial,:)),'r-');   hold on
+     subplot(2,1,2); plot(t,rel_2,'b',t,fh_2(t,FAST_SLIDE_2(trial,:)),'r-');   hold on
      title('finger 2')
 
 end
