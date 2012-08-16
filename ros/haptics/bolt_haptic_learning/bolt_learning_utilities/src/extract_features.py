@@ -2,6 +2,7 @@
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import numpy as np
+import sklearn.decomposition
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
@@ -60,23 +61,27 @@ def extract_features(bolt_obj):
     for finger in xrange(num_fingers):
        
         # Compute pdc features 
-        pdc_area.append(np.trapz(bolt_obj.pdc_normalized[finger]) 
-        pdc_max.append(max(bolt_obj.pdc_normalized[finger])
+        pdc_area.append(np.trapz(bolt_obj.pdc_normalized[finger])) 
+        pdc_max.append(max(bolt_obj.pdc_normalized[finger]))
 
         # Compute pac features
         pac_square_split = np.array_split(np.square(bolt_obj.pac_flat_normalized[finger]), 4)
-        # <INSERT SUM>
-
+        pac_power.append(np.divide(np.sum(pac_square_split, axis = 1)), np.shape(pac_square_split[0])[0])
+        
+        pac_central_frequency.append()
+       
+        # Thermal features
+        
+       
         # Compute electrode features
-
-
-
-
+        pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
+        pca.fit(motion.electrodes_normalized[finger])
+        transf_finger = pca.tranform(motion.electrodes_normalized[finger])
 
 
 
 # Normalizes the given bolt_obj.  Works directly on the object
-def normalize_data(bolt_obj):
+def normalize_data(bolt_obj, discard_raw_flag = True):
     """ 
     Given a BOLTPR2MotionObj 
     Normalize the data
@@ -118,4 +123,12 @@ def normalize_data(bolt_obj):
         bolt_obj.pac_flat.append( pac.reshape(1,len(pac)*22)[0])
         bolt_obj.pac_flat_normalized.append( pac_norm.reshape(1, len(pac_norm)*22)[0])
 
+    if discard_raw_flag: 
+        # Clear out raw values - comment out later if they want to be stored
+        # Will double the amount of data stored
+        del bolt_obj.pdc[:]
+        del bolt_obj.electrodes[:]
+        del bolt_obj.pac[:]
+        del bolt_obj.tdc[:]
+        del bolt_obj.tac[:]
 

@@ -115,6 +115,9 @@ def main():
     # Load the data from an h5 file
     all_data = tables.openFile(input_filename)
 
+    # Flag to indicate if raw values are stored when normalizing
+    discard_raw_flag = True 
+
     # Create a storage container for data
     tap_runs = list()
     squeeze_runs = list()
@@ -138,27 +141,27 @@ def main():
         
         # Pull out tap information
         tap_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.TAP)
-        extract_features.normalize_data(tap_object)
+        extract_features.normalize_data(tap_object, discard_raw_flag)
         tap_runs.append(tap_object)
 
         # Pull out squeeze information
         squeeze_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SQUEEZE)
-        extract_features.normalize_data(squeeze_object)
+        extract_features.normalize_data(squeeze_object, discard_raw_flag)
         squeeze_runs.append(squeeze_object)
 
         # Pull out hold information
         hold_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.THERMAL_HOLD) 
-        extract_features.normalize_data(hold_object)
+        extract_features.normalize_data(hold_object, discard_raw_flag)
         hold_runs.append(hold_object)
 
         # Pull out slide fast information
         slide_fast_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE_FAST)
-        extract_features.normalize_data(slide_fast_object)
+        extract_features.normalize_data(slide_fast_object, discard_raw_flag)
         fast_slide_runs.append(slide_fast_object)
 
         # Pull out slide slow information
         slide_slow_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE)
-        extract_features.normalize_data(slide_slow_object)
+        extract_features.normalize_data(slide_slow_object, discard_raw_flag)
         slow_slide_runs.append(slide_slow_object)
    
 
