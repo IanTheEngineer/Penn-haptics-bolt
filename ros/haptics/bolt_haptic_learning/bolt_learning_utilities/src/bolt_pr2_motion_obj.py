@@ -60,6 +60,7 @@ class BoltPR2MotionObj(object):
 
         # Store state
         self.state = self.DISABLED
+        self.detailed_state = []
    
         # Store information about the run the motion came from
         self.name = ""
