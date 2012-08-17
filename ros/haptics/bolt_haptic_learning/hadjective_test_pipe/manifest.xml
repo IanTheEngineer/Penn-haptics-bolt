@@ -1,13 +1,13 @@
 <package>
-  <description brief="language_test_pipe">
+  <description brief="hadjective_test_pipe">
 
-     language_test_pipe
+     hadjective_test_pipe
 
   </description>
   <author>Ian McMahon</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/language_test_pipe</url>
+  <url>http://ros.org/wiki/hadjective_test_pipe</url>
   <depend package="rospy"/>
   <depend package="biotac_sensors"/>
   <depend package="pr2_gripper_accelerometer"/>
