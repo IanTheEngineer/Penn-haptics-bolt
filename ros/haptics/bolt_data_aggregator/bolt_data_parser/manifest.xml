@@ -14,6 +14,7 @@
   <depend package="rosbag"/>
   <depend package="tf"/>
   <depend package="pr2_gripper_accelerometer"/>
+  <depend package="pr2_arm_state_aggregator"/>
 
 </package>
 

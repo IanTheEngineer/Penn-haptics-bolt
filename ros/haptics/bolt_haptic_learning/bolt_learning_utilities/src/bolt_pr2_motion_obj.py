@@ -65,5 +65,7 @@ class BoltPR2MotionObj(object):
         # Store information about the run the motion came from
         self.name = ""
         self.run_number = 0 
-     
-         # Maybe store raw electrodes
+    
+        # Store the labels in a dictionary
+        self.labels = None 
+        
