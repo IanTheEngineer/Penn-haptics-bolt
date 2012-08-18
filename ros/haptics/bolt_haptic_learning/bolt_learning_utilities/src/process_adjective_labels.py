@@ -11,7 +11,7 @@ from optparse import OptionParser
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
 
-def populate_BoltPR2MotionObj(input_file, out_file, adjective_file):
+def populate_BoltPR2MotionObj(all_data, out_file, adjective_file, save_to_file):
     
     # Checks the h5 table    
     if not adjective_file.endswith(".h5"):
@@ -41,12 +41,6 @@ def populate_BoltPR2MotionObj(input_file, out_file, adjective_file):
         # Store off the dictionary in the final dictionary
         all_object_label_mapping[object_id] = object_mapping
 
-    # Opens and loads pickle file with BoltPR2MotionObj
-    if not input_file.endswith(".pkl"):
-        raise Exception("Input BoltPR2Motion file %s is not a pkl file\nPlease pass in pkl data file" % input_file)
-
-    object_file = open(input_file, "r") 
-    all_data = cPickle.load(object_file)
 
     # For all motions in all_data
     for motion_name in all_data:
@@ -65,9 +59,21 @@ def populate_BoltPR2MotionObj(input_file, out_file, adjective_file):
             motion.labels = all_object_label_mapping[object_id]
    
     # Stores the output in a pickle file
-    file_ptr = open(out_file, "w")
-    cPickle.dump(all_data, file_ptr, cPickle.HIGHEST_PROTOCOL)
-    file_ptr.close()
+    if (save_to_file):
+        file_ptr = open(out_file, "w")
+        cPickle.dump(all_data, file_ptr, cPickle.HIGHEST_PROTOCOL)
+        file_ptr.close()
+
+def load_files(input_file):
+    
+    # Opens and loads pickle file with BoltPR2MotionObj
+    if not input_file.endswith(".pkl"):
+        raise Exception("Input BoltPR2Motion file %s is not a pkl file\nPlease pass in pkl data file" % input_file)
+
+    object_file = open(input_file, "r") 
+    all_data = cPickle.load(object_file)
+    
+    return all_data
 
 def parse_arguments():
     """Parses the arguments provided at command line.
@@ -100,5 +106,6 @@ def parse_arguments():
 
 if __name__ == "__main__":
     input_file, out_file, adjective_file = parse_arguments()
-    populate_BoltPR2MotionObj(input_file, out_file, adjective_file)     
+    bolt_obj_data = load_files(input_file)
+    populate_BoltPR2MotionObj(bolt_obj_data, out_file, adjective_file, True)     
 

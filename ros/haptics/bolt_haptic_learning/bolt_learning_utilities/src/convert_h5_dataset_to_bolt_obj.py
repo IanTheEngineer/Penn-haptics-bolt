@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Script to start loading data into pytables and convert into meaningful features
-import roslib; roslib.load_manifest("language_train_pipe")
+import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import sys
 import tables
@@ -97,14 +97,7 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
     return motion_object
 
 
-def main():
-
-    # Parse out the arguments passed in 
-    if len(sys.argv) < 3:
-        raise Exception("Usage: %s [input_file] [output_file]", sys.argv[0])
-
-    input_filename = sys.argv[1]
-    output_filename = sys.argv[2]
+def load_data(input_filename, output_filename, save_to_file):
 
     if not input_filename.endswith(".h5"):
         raise Exception("Input file is %s \nPlease pass in a hdf5 data file" % input_filename)
@@ -172,10 +165,26 @@ def main():
     segmented_data['slide'] = slow_slide_runs
     segmented_data['slide_fast'] = fast_slide_runs
 
-    file_ptr = open(output_filename, "w")
-    cPickle.dump(segmented_data, file_ptr, cPickle.HIGHEST_PROTOCOL)
-    file_ptr.close()
+    # if we want to save to file
+    if (save_to_file):
+        file_ptr = open(output_filename, "w")
+        cPickle.dump(segmented_data, file_ptr, cPickle.HIGHEST_PROTOCOL)
+        file_ptr.close()
+
+    return segmented_data
+
+def main():
+
+    # Parse out the arguments passed in 
+    if len(sys.argv) < 3:
+        raise Exception("Usage: %s [input_file] [output_file]", sys.argv[0])
+
+    input_filename = sys.argv[1]
+    output_filename = sys.argv[2]
+
+    return input_filename, output_filename
 
 if __name__== "__main__":
-    main()
+    input_file, output_file = main() 
+    load_data(input_file, output_file, True)
 
