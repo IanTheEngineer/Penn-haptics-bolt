@@ -10,13 +10,14 @@ from collections import defaultdict
 import numpy as np
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
+from extract_features import *
 
 from biotac_sensors.msg import BioTacHand
 from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, String
 
 import matplotlib.pyplot as plt
-
+import cPickle
 
 
 def processMotion(task_queue, result_queue):
@@ -25,15 +26,28 @@ def processMotion(task_queue, result_queue):
     #Grab the current motion from the queue
     current_motion = task_queue.get()
     # Convert the buffer received into BoltPR2MotionObj
-    current_bolt_pr2_motion_obj = current_motion.convertToBoltPR2MotionObj()
-
+    current_obj = current_motion.convertToBoltPR2MotionObj()
+    normalize_data(current_obj, False)
     #MACHINE LEARNING STUFF!!
+   
+    #plt.plot(current_obj.pac_normalized[0])
+    #plt.show()
 
+    #output_filename = '/home/imcmahon/data/'+name
+    #file_ptr = open(output_filename, "w")
+    #cPickle.dump(current_obj, file_ptr, cPickle.HIGHEST_PROTOCOL)
+    #file_ptr.close()
+
+    #fig = plt.figure()
+    #ax1 = fig.add_subplot(2, 2, 1)
+    #ax2 = fig.add_subplot(2, 2, 2)
+    #ax2 = fig.add_subplot(2, 2, 3)
+    #ax3 = fig.add_subplot(2, 2, 4)
     #operate to determine stuff
     answer = current_motion.state
  
     print name, ' received motion ', answer
-    result_queue.put( answer )
+    result_queue.put(current_obj)
 
 class BoltPR2MotionBuf(object):
     DISABLED = BoltPR2MotionObj.DISABLED 
@@ -57,6 +71,7 @@ class BoltPR2MotionBuf(object):
         self.gripper_position = []
         self.gripper_effort = []
         self.accelerometer = []
+        self.detailed_state = []
         self.state = BoltPR2MotionBuf.DISABLED
         self.electrodes_mean = defaultdict(list)
         self.pdc_mean = defaultdict(list)
@@ -76,11 +91,13 @@ class BoltPR2MotionBuf(object):
         new_obj.gripper_position = np.array(self.gripper_position)
         new_obj.gripper_effort = np.array(self.gripper_effort)
         new_obj.accelerometer = np.array(self.accelerometer)
+        new_obj.detailed_state = self.detailed_state
         new_obj.electrodes_mean = [np.array(self.electrodes_mean[self.RIGHT]), np.array(self.electrodes_mean[self.LEFT])]
         new_obj.tdc_mean = [np.array(self.tdc_mean[self.RIGHT]), np.array(self.tdc_mean[self.LEFT])]
         new_obj.tac_mean = [np.array(self.tac_mean[self.RIGHT]), np.array(self.tac_mean[self.LEFT])]
         new_obj.pdc_mean = [np.array(self.pdc_mean[self.RIGHT]), np.array(self.pdc_mean[self.LEFT])]
         new_obj.pac_mean = [np.array(self.pac_mean[self.RIGHT]), np.array(self.pac_mean[self.LEFT])]
+        new_obj.state = self.state
         #return populated object
         return new_obj
         
@@ -97,10 +114,12 @@ class LanguageTestMainThread:
         self.gripper_position_buf = 0
         self.gripper_effort_buf = 0
         self.accelerometer_buf = 0
+        self.detailed_state_buf = ''
         #Create locks for the callbacks - they are all in threads of their own
         self.accel_lock = threading.Lock()
-        self.tf_lock = threading.Lock()
+        #self.tf_lock = threading.Lock()
         self.state_lock = threading.Lock()
+        #self.detailed_lock = threading.Lock()
         #self.thread_lock = threading.Lock()
         self.accel_downsample_counter = 0
         self.electrodes_mean_list = defaultdict(list)
@@ -113,11 +132,9 @@ class LanguageTestMainThread:
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)
 
     def clear_motion(self):
-        #Store current state
-        current_state = self.current_motion.state
         #Reset current_motion, but populate mean list
         self.current_motion = BoltPR2MotionBuf()
-        self.current_motion.state = current_state
+        #self.current_motion.state = current_state
         self.current_motion.electrodes_mean = self.electrodes_mean_list
         self.current_motion.pdc_mean = self.pdc_mean_list
         self.current_motion.pac_mean = self.pac_mean_list
@@ -130,14 +147,15 @@ class LanguageTestMainThread:
         #Start Accelerometer Subscriber
         rospy.Subscriber('/pr2_gripper_accelerometer/data', PR2GripperAccelerometerData, self.accelerometerCallback,queue_size=500)
         #Start Gripper Controller State Subscriber
-        rospy.Subscriber('/simple_gripper_controller_state', Int8, self.gripperControllerCallback, queue_size=50)
+        rospy.Subscriber('/simple_gripper_controller_state', Int8, self.gripperStateCallback, queue_size=50)
+        #Start Detailed Gripper Controller State Subscriber
+        rospy.Subscriber('/simple_gripper_controller_state_detailed', String, self.gripperDetailedCallback, queue_size=50)
 
     def accelerometerCallback(self, msg):
         self.accel_downsample_counter = self.accel_downsample_counter + 1    
         if not self.accel_downsample_counter % 5: # 1000Hz -> 200Hz which is 2*100Hz. Yay Nyquist! 
             self.accel_downsample_counter = 0
             self.accel_lock.acquire()
-            #if self.current_motion.state not in (BoltPR2MotionObj.DISABLED, BoltPR2MotionObj.DONE, BoltPR2MotionObj.CENTER_GRIPPER):
             # Store accelerometer
             self.accelerometer_buf = (msg.acc_x_raw, msg.acc_y_raw, msg.acc_z_raw)
             # Store gripper
@@ -157,12 +175,14 @@ class LanguageTestMainThread:
                 self.pdc_mean_list[finger_index].append( msg.bt_data[finger_index].pdc_data)
                 self.pac_mean_list[finger_index].append( msg.bt_data[finger_index].pac_data)
                 if len(self.tdc_mean_list[0]) is 10:
+                    self.state_lock.acquire()
                     self.current_motion.electrodes_mean = self.electrodes_mean_list
                     self.current_motion.pdc_mean = self.pdc_mean_list
                     self.current_motion.pac_mean = self.pac_mean_list
                     self.current_motion.tdc_mean = self.tdc_mean_list
                     self.current_motion.tac_mean = self.tac_mean_list
-                        
+                    self.state_lock.release()
+        #Locks needed for debugging                 
         self.state_lock.acquire()
         if self.current_motion.state in self.valid_state_tuple:
             num_fingers = len(msg.bt_data)
@@ -173,8 +193,9 @@ class LanguageTestMainThread:
                 self.current_motion.pdc[finger_index].append( msg.bt_data[finger_index].pdc_data)
                 self.current_motion.pac[finger_index].append( msg.bt_data[finger_index].pac_data)
                 self.current_motion.electrodes[finger_index].append( msg.bt_data[finger_index].electrode_data)
-                
-
+            
+            self.current_motion.detailed_state.append(self.detailed_state_buf)
+            #A lock is necessary here to ensure all accelerometer reading and gripper readings are simultaneous 
             self.accel_lock.acquire()
             self.current_motion.accelerometer.append(self.accelerometer_buf)
             self.current_motion.gripper_position.append(self.gripper_position_buf)
@@ -183,12 +204,14 @@ class LanguageTestMainThread:
             self.accel_lock.release()
         self.state_lock.release()
 
+    def gripperDetailedCallback(self, msg):
+        #Store the current detailed state
+        self.detailed_state_buf = msg.data
 
-    def gripperControllerCallback(self, gripper_state):
-        #Save off last read state?
-        #self.last_state_state = self.current_motion.state
+    def gripperStateCallback(self, msg):
+        #Acquire the state lock and store the current state off
         self.state_lock.acquire()
-        self.current_motion.state = gripper_state.data
+        self.current_motion.state = msg.data
         self.state_lock.release()
 
 
@@ -208,9 +231,6 @@ def main(argv):
         if  main_thread.current_motion.state in main_thread.valid_state_tuple and \
             main_thread.last_state in main_thread.valid_state_tuple and \
             main_thread.last_state is not main_thread.current_motion.state:
-            #print "current state %d" % main_thread.current_motion.state 
-            #print "last state %d" % main_thread.last_state
-            #start_time = time.time()
 
             #Store off next state to see if we're done
             next_state = main_thread.current_motion.state
@@ -220,9 +240,12 @@ def main(argv):
             main_thread.last_state = next_state
             #Place current_motion in the que
             #main_thread.current_motion.convertToBoltPR2MotionObj()
-            if num_tasks is 1:
-                current_bolt_pr2_motion_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
-                import pdb; pdb.set_trace()
+            #if num_tasks is 1:
+            #    current_bolt_pr2_motion_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
+            current_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
+            normalize_data(current_obj, False)
+            extract_features(current_obj)
+
             tasks.put(main_thread.current_motion)
             #Reset current_motion
             main_thread.clear_motion()
@@ -245,11 +268,22 @@ def main(argv):
 
     tasks.close()
     tasks.join_thread()
-
+    result_list = []
     for i in range(num_tasks):
-        result = results.get()
-        print 'Result:', result
-
+        #import pdb; pdb.set_trace()
+        result_list.append(results.get())
+        if result_list[-1].state == BoltPR2MotionBuf.SQUEEZE:
+            plt.subplot(211)
+            plt.plot(result_list[-1].electrodes[0])
+            plt.grid(True)
+            plt.title('Electrodes - Raw and Normalized')
+            plt.subplot(212)
+            plt.plot(result_list[-1].electrodes_normalized[0])
+            plt.xlabel('time')
+            plt.grid(True)
+            plt.show()
+            #print 'Result:', result
+    done = True
 
 
 
