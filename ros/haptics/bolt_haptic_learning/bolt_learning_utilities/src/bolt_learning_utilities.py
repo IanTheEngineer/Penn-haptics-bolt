@@ -31,13 +31,6 @@ def convertH5ToBoltObjFile(input_file, output_file, save_to_file):
         "squeeze" -> list(BoltPR2MotionObjs)
 
     """
-    
-    # File checking
-    if not input_file.endswith(".h5"):
-        raise Exception("Input file: %s is not a h5 file.\nPlease pass in a hdf5 fdata file with extention .h5" % input_file)
-
-    if not output_file.endswith(".pkl"):
-        output_file = output_file + ".pkl"
 
     # Call the function
     loaded_data = converth5.load_data(input_file, output_file, save_to_file)
@@ -75,8 +68,8 @@ def insertAdjectiveLabels(input_boltPR2Motion, output_file, adjective_file, save
     file before inserting adjectives
 
     """
-
-    if isinstance(input_boltPR2Motion, string):
+    
+    if isinstance(input_boltPR2Motion, str):
         data = process_adjective_labels.load_files(input_boltPR2Motion)
     else:
         data = input_boltPR2Motion

@@ -106,8 +106,9 @@ def load_data(input_filename, output_filename, save_to_file):
     if not input_filename.endswith(".h5"):
         raise Exception("Input file is %s \nPlease pass in a hdf5 data file" % input_filename)
 
-    if not output_filename.endswith(".pkl"):
-        output_filename = output_filename + '.pkl'
+    if save_to_file: 
+        if not output_filename.endswith(".pkl"):
+            output_filename = output_filename + '.pkl'
 
     # Load the data from an h5 file
     all_data = tables.openFile(input_filename)

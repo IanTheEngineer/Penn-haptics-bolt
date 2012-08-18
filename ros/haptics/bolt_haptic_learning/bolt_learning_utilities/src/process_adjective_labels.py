@@ -4,6 +4,7 @@
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import sys 
+import os
 import tables
 import cPickle
 from optparse import OptionParser
@@ -63,6 +64,8 @@ def populate_BoltPR2MotionObj(all_data, out_file, adjective_file, save_to_file):
         file_ptr = open(out_file, "w")
         cPickle.dump(all_data, file_ptr, cPickle.HIGHEST_PROTOCOL)
         file_ptr.close()
+
+    return all_data
 
 def load_files(input_file):
     

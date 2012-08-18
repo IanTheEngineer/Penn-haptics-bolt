@@ -129,8 +129,32 @@ for file_num = 1:size(file_groups,1)
     state_detail_loc = H5D.open(controller_state_loc, 'controller_detail_state');
     state_data(1).controller_state_detail = H5D.read(state_detail_loc);
     
+    % Pull out transform information
+    % Structure to store transform info pulled out
+    transform_data = struct('child_frame_id', {},'parent_frame_id',{},'translation',{}, 'rotation', {});
+    
+    % Pull out transform information
+    transform_data_name = strcat(file_name, file_concat, 'transforms');
+    transform_data_loc = H5G.open(file_loc, transform_data_name);
+    
+     % Pull out transform child frame name 
+    transform_child_frame_name_loc = H5D.open(transform_data_loc, 'child_frame_id');
+    transform_data(1).child_frame_id = H5D.read(transform_child_frame_name_loc);
+    
+     % Pull out transform parent frame name 
+    transform_parent_frame_name_loc = H5D.open(transform_data_loc, 'parent_frame_id');
+    transform_data(1).parent_frame_id = H5D.read(transform_parent_frame_name_loc);
+    
+    % Pull out transform rotation 
+    transform_rotation_loc = H5D.open(transform_data_loc, 'rotation');
+    transform_data(1).rotation = H5D.read(transform_rotation_loc);
+    
+     % Pull out transform translation
+    transform_translation_loc = H5D.open(transform_data_loc, 'translation');
+    transform_data(1).translation = H5D.read(transform_translation_loc);
+    
     % Datastructure to store all data
-    all_data_robot = struct('biotac',{},'accelerometer',{} , 'controller_state', {},'gripper_aperture',{});
+    all_data_robot = struct('biotac',{},'accelerometer',{} , 'controller_state', {},'gripper_aperture',{}, 'transforms', {});
     
     % Store biotac information
     all_data_robot(1).biotac = biotac_data;
@@ -143,6 +167,9 @@ for file_num = 1:size(file_groups,1)
     
     % Store state information
     all_data_robot(1).controller_state = state_data;
+    
+    % Store transform information
+    all_data_robot(1).transforms = transform_data;
     
     % Store each file
     all_data(file_num).data = all_data_robot;
