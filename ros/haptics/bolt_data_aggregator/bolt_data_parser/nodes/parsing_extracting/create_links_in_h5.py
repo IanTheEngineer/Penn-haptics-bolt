@@ -39,16 +39,16 @@ def main():
         
         test_exist = "/adjectives/%s" % adjective_name
         if test_exist in all_objects:
-            print "Adjective %s already exists, removing it", adjective_name
+            print "Adjective %s already exists, removing it" % adjective_name
             all_objects.removeNode("/adjectives", adjective_name, recursive=True)
         
         where_condition = "%s > 0" % (adjective_name)                
         cond = [x["object_id"] for x in table.where(where_condition)]        
 
         print "(%d/%d) Parsing h5 file for adjective %s" % (i, len(all_adjectives), adjective_name)
-        #This is probably very inefficient, there should be a way to get all the level-1 groups without having to list and filter them!
-        groups = [g for g in all_objects.walkGroups("/") if g._v_depth == 1 and any(c in g._v_name for c in cond)]
-        print "I've got %d groups" % len(groups)
+        groups = [g for g in all_objects.root._v_children.values() if any(c in g._v_name for c in cond)]
+        
+        print "I've got %d groups. Adding hard links" % len(groups)
         create_hard_links(all_objects, adjective_name, groups)
 
     adjective_h5.close()
