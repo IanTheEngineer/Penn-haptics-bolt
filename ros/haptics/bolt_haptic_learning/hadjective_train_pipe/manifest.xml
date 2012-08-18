@@ -1,7 +1,7 @@
 <package>
-  <description brief="language_train_pipe">
+  <description brief="hadjective_train_pipe">
 
-     language_train_pipe
+     hadjective_train_pipe
 
   </description>
   <author>Vivian Chu</author>
