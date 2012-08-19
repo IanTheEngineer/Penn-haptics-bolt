@@ -1,4 +1,4 @@
-function [ all_data ] = process_h5_file( h5_file_path )
+function [ all_data ] = process_h5_file( h5_file_path, new_flag )
 %process_h5_file Given a h5 file, loads and parses
 
 % Check if PC or linux
@@ -133,25 +133,27 @@ for file_num = 1:size(file_groups,1)
     % Structure to store transform info pulled out
     transform_data = struct('child_frame_id', {},'parent_frame_id',{},'translation',{}, 'rotation', {});
     
-    % Pull out transform information
-    transform_data_name = strcat(file_name, file_concat, 'transforms');
-    transform_data_loc = H5G.open(file_loc, transform_data_name);
-    
-     % Pull out transform child frame name 
-    transform_child_frame_name_loc = H5D.open(transform_data_loc, 'child_frame_id');
-    transform_data(1).child_frame_id = H5D.read(transform_child_frame_name_loc);
-    
-     % Pull out transform parent frame name 
-    transform_parent_frame_name_loc = H5D.open(transform_data_loc, 'parent_frame_id');
-    transform_data(1).parent_frame_id = H5D.read(transform_parent_frame_name_loc);
-    
-    % Pull out transform rotation 
-    transform_rotation_loc = H5D.open(transform_data_loc, 'rotation');
-    transform_data(1).rotation = H5D.read(transform_rotation_loc);
-    
-     % Pull out transform translation
-    transform_translation_loc = H5D.open(transform_data_loc, 'translation');
-    transform_data(1).translation = H5D.read(transform_translation_loc);
+    if (new_flag)
+        % Pull out transform information
+        transform_data_name = strcat(file_name, file_concat, 'transforms');
+        transform_data_loc = H5G.open(file_loc, transform_data_name);
+
+         % Pull out transform child frame name 
+        transform_child_frame_name_loc = H5D.open(transform_data_loc, 'child_frame_id');
+        transform_data(1).child_frame_id = H5D.read(transform_child_frame_name_loc);
+
+         % Pull out transform parent frame name 
+        transform_parent_frame_name_loc = H5D.open(transform_data_loc, 'parent_frame_id');
+        transform_data(1).parent_frame_id = H5D.read(transform_parent_frame_name_loc);
+
+        % Pull out transform rotation 
+        transform_rotation_loc = H5D.open(transform_data_loc, 'rotation');
+        transform_data(1).rotation = H5D.read(transform_rotation_loc);
+
+         % Pull out transform translation
+        transform_translation_loc = H5D.open(transform_data_loc, 'translation');
+        transform_data(1).translation = H5D.read(transform_translation_loc);
+    end
     
     % Datastructure to store all data
     all_data_robot = struct('biotac',{},'accelerometer',{} , 'controller_state', {},'gripper_aperture',{}, 'transforms', {});
