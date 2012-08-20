@@ -7,7 +7,7 @@ import sys
 import tables
 import numpy as np
 import cPickle
-import extract_features
+import bolt_learning_utilities as utilities
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
@@ -93,6 +93,10 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
     # Store accelerometer
     accelerometer = one_run_pytable_ptr.accelerometer[:] 
     motion_object.accelerometer = accelerometer[idx_segment]
+    
+    # Store detailed states
+    detailed_state = one_run_pytable_ptr.state.controller_detail_state[:]
+    motion_object.detailed_state = detailed_state[idx_segment]
 
     return motion_object
 
@@ -102,8 +106,9 @@ def load_data(input_filename, output_filename, save_to_file):
     if not input_filename.endswith(".h5"):
         raise Exception("Input file is %s \nPlease pass in a hdf5 data file" % input_filename)
 
-    if not output_filename.endswith(".pkl"):
-        output_filename = output_filename + '.pkl'
+    if save_to_file: 
+        if not output_filename.endswith(".pkl"):
+            output_filename = output_filename + '.pkl'
 
     # Load the data from an h5 file
     all_data = tables.openFile(input_filename)
@@ -134,27 +139,27 @@ def load_data(input_filename, output_filename, save_to_file):
         
         # Pull out tap information
         tap_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.TAP)
-        extract_features.normalize_data(tap_object, discard_raw_flag)
+        utilities.normalize_data(tap_object, discard_raw_flag)
         tap_runs.append(tap_object)
 
         # Pull out squeeze information
         squeeze_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SQUEEZE)
-        extract_features.normalize_data(squeeze_object, discard_raw_flag)
+        utilities.normalize_data(squeeze_object, discard_raw_flag)
         squeeze_runs.append(squeeze_object)
 
         # Pull out hold information
         hold_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.THERMAL_HOLD) 
-        extract_features.normalize_data(hold_object, discard_raw_flag)
+        utilities.normalize_data(hold_object, discard_raw_flag)
         hold_runs.append(hold_object)
 
         # Pull out slide fast information
         slide_fast_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE_FAST)
-        extract_features.normalize_data(slide_fast_object, discard_raw_flag)
+        utilities.normalize_data(slide_fast_object, discard_raw_flag)
         fast_slide_runs.append(slide_fast_object)
 
         # Pull out slide slow information
         slide_slow_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE)
-        extract_features.normalize_data(slide_slow_object, discard_raw_flag)
+        utilities.normalize_data(slide_slow_object, discard_raw_flag)
         slow_slide_runs.append(slide_slow_object)
    
 
