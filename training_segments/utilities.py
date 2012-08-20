@@ -1,4 +1,6 @@
-import numpy
+import numpy as n
+import scipy
+import pylab
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
@@ -47,14 +49,14 @@ def smooth(x,window_len=11,window='hanning'):
         raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
 
 
-    s=numpy.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
+    s=n.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
     #print(len(s))
     if window == 'flat': #moving average
-        w=numpy.ones(window_len,'d')
+        w=n.ones(window_len,'d')
     else:
-        w=eval('numpy.'+window+'(window_len)')
+        w=eval('n.'+window+'(window_len)')
 
-    y=numpy.convolve(w/w.sum(),s,mode='valid')
+    y=n.convolve(w/w.sum(),s,mode='valid')
     return y
 
 def nan_helper(y):
@@ -181,3 +183,24 @@ def congrid(a, newdims, method='linear', centre=False, minusone=False):
               "Currently only \'neighbour\', \'nearest\',\'linear\',", \
               "and \'spline\' are supported."
         return None
+    
+def plot_database(database):
+    """
+    
+    database: a dictionary as saved by aggregate_data
+    """
+    features = database.keys()
+    sensors = database[features[0]].keys()
+    
+    rows = int(pylab.sqrt(len(sensors)))
+    cols = len(sensors) / rows + 1
+    
+    #hold(True)
+    for feature in features:
+        pylab.figure()
+        pylab.suptitle(feature, fontsize=12)
+        for i, sensor in enumerate(sensors):
+            pylab.subplot(rows, cols, i)
+            data = database[feature][sensor]
+            [pylab.plot(x[:,0]) for x in data]
+            pylab.title(sensor)
