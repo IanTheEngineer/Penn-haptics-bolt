@@ -1,10 +1,22 @@
 import sklearn.hmm
 import numpy as np
+import string
 
 #change a few functions otherwise it won't work with the grid search
 class MultinomialHMMClasifier(sklearn.hmm.MultinomialHMM):
-    def __init__(self, n_symbols = 10, *args, **kwargs):
-        super(MultinomialHMMClasifier, self).__init__(*args, **kwargs)
+    def __init__(self, n_symbols = 10, n_components=1, startprob=None, 
+                 transmat=None,
+                 startprob_prior=None, transmat_prior=None,
+                 algorithm="viterbi", random_state=None,
+                 n_iter=10, thresh=1e-2, params=string.ascii_letters,
+                 init_params=string.ascii_letters):
+        
+        super(MultinomialHMMClasifier, self).__init__(n_components, startprob,
+                                                      transmat, startprob_prior,
+                                                      algorithm,
+                                                      random_state,
+                                                      n_iter, thresh, params,
+                                                      init_params)
         self.n_symbols = n_symbols
         
     def fit(self, X, y=None, **kwargs):    
