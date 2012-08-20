@@ -1,10 +1,8 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.cluster import KMeans
 import numpy as n
-import scipy.interpolate
-import scipy.ndimage
 
-import sklearn.pipeline
+from utilities import congrid
 
     
 class Resample(BaseEstimator, TransformerMixin):
@@ -44,6 +42,8 @@ class Resample(BaseEstimator, TransformerMixin):
         to apply the inverse transform one has to supply original_rows, i.e. the number of rows the data is supposed to
         have before discrtization. This can be done with set_params prior to calling inverse_trasform.
         """
+        super(Resample).__init__(self)
+        
         self.newshape = newshape
         self.method = method
         self.centre = centre
