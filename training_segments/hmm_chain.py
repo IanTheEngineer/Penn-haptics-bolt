@@ -85,7 +85,8 @@ class HMMChain(BaseEstimator, TransformerMixin):
         if type(X) is not list:
             X = [X]
         self.update_splits(X)        
-        return self.pipeline.fit(X, y, **fit_params)
+        self.pipeline.fit(X, y, **fit_params)
+        return self
     
     @property    
     def n_pca_components(self):
@@ -140,7 +141,7 @@ class HMMChain(BaseEstimator, TransformerMixin):
     @property
     def n_hidden_components(self):
         return self.hmm.n_components
-    @kmeans_max_iter.setter
+    @n_hidden_components.setter
     def n_hidden_components(self, value):
         self.hmm.n_components = value    
         
