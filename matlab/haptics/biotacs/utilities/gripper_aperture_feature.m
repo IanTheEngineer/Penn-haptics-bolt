@@ -12,9 +12,11 @@
 
 
 
+
+
 % Load data from .h5 files
 clear all_data
-all_data = process_h5_file('cork_board_501.h5');
+all_data = process_h5_file('cork_board_501.h5',0);
 
 % Check the controller state to find the start moment of each segmentation 
 tap_start=zeros(1,10);
@@ -37,66 +39,83 @@ done=zeros(1,10);
 
 
 for trial=1:10
-    total_samples = length(all_data(trial).data.biotac(1).pdc);
+    
+    hold_start(trial)=find(all_data(trial).data.controller_state.controller_state == 1,1,'first');
+    
+    tap_start(trial)=find(all_data(trial).data.controller_state.controller_state == 5,1,'first');
 
-    % For tap
-    for sample_number=1:total_samples
-        if all_data(trial).data.controller_state.controller_state(sample_number) == 5
-            tap_start(trial)=sample_number;
-            mark=sample_number;
-            break
-        end
-    end    
-    
-    
-    % For squeeze
-    for sample_number=mark:total_samples
-        if all_data(trial).data.controller_state.controller_state(sample_number) == 3
-            sqz_start(trial)=sample_number;
-            break
-        end
-    end    
-    
+    sqz_start(trial)=find(all_data(trial).data.controller_state.controller_state == 3,1,'first');
 
-    % For hold
-    for sample_number=mark:total_samples
-        if all_data(trial).data.controller_state.controller_state(sample_number) == 1
-            hold_start(trial)=sample_number;
-            mark=sample_number;
-            break
-        end
-    end
+    slow_slide_start(trial)=find(all_data(trial).data.controller_state.controller_state == 2,1,'first');
+    
+    fast_slide_start(trial)=find(all_data(trial).data.controller_state.controller_state == 6,1,'first');
 
-   
-    % For slow slide
-    for sample_number=mark:total_samples
-        if all_data(trial).data.controller_state.controller_state(sample_number) == 2
-            slow_slide_start(trial)=sample_number;
-            mark=sample_number;
-            break
-        end
-    end
+    done(trial)=find(all_data(trial).data.controller_state.controller_state == 4,1,'first');
 
-   
+
+
     
-    % For fast slide
-    for sample_number=mark:total_samples
-        if all_data(trial).data.controller_state.controller_state(sample_number) == 6
-            fast_slide_start(trial)=sample_number;
-            mark=sample_number;
-            break
-        end
-    end
-    
-    
-    % For DONE
-    for sample_number=mark:total_samples
-        if all_data(trial).data.controller_state.controller_state(sample_number) == 4
-            done(trial)=sample_number;
-            mark=sample_number;
-            break
-        end
-    end
+%     
+%     total_samples = length(all_data(trial).data.biotac(1).pdc);
+% 
+%     % For tap
+%     for sample_number=1:total_samples
+%         if all_data(trial).data.controller_state.controller_state(sample_number) == 5
+%             tap_start(trial)=sample_number;
+%             mark=sample_number;
+%             break
+%         end
+%     end    
+%     
+%     
+%     % For squeeze
+%     for sample_number=mark:total_samples
+%         if all_data(trial).data.controller_state.controller_state(sample_number) == 3
+%             sqz_start(trial)=sample_number;
+%             break
+%         end
+%     end    
+%     
+% 
+%     % For hold
+%     for sample_number=mark:total_samples
+%         if all_data(trial).data.controller_state.controller_state(sample_number) == 1
+%             hold_start(trial)=sample_number;
+%             mark=sample_number;
+%             break
+%         end
+%     end
+% 
+%    
+%     % For slow slide
+%     for sample_number=mark:total_samples
+%         if all_data(trial).data.controller_state.controller_state(sample_number) == 2
+%             slow_slide_start(trial)=sample_number;
+%             mark=sample_number;
+%             break
+%         end
+%     end
+% 
+%    
+%     
+%     % For fast slide
+%     for sample_number=mark:total_samples
+%         if all_data(trial).data.controller_state.controller_state(sample_number) == 6
+%             fast_slide_start(trial)=sample_number;
+%             mark=sample_number;
+%             break
+%         end
+%     end
+%     
+%     
+%     % For DONE
+%     for sample_number=mark:total_samples
+%         if all_data(trial).data.controller_state.controller_state(sample_number) == 4
+%             done(trial)=sample_number;
+%             mark=sample_number;
+%             break
+%         end
+%     end
     
      
 end
@@ -104,7 +123,7 @@ end
 
 %% Calculate the area of the 
 
-steplenght = 1/100; % sampling rate is 100Hz
+steplength=0.01; % sampling rate is 100Hz
 
 area_tap=zeros(1,10);
 area_squeeze=zeros(1,10);
@@ -204,26 +223,14 @@ sqz_depth=zeros(1,10);
 
 for trial=1:10
     
-    % Find the peak value of TAP
-    peak_tap(trial)= all_data(trial).data.gripper_aperture.joint_position(5);
     
-    for count=tap_start(trial):sqz_start(trial)
-        if all_data(trial).data.gripper_aperture.joint_position(count) < peak_tap(trial)
-            peak_tap(trial)=all_data(trial).data.gripper_aperture.joint_position(count);
-        end
-    end
+    % Calculate the "softness" of the object
+    peak_tap(trial)=min(all_data(trial).data.gripper_aperture.joint_position(tap_start(trial):sqz_start(trial)));
+    peak_squeeze(trial)=min(all_data(trial).data.gripper_aperture.joint_position(sqz_start(trial):hold_start(trial)));
+
     
-    
-    % Find the peak value of SQUEEZE
-    peak_squeeze(trial)= all_data(trial).data.gripper_aperture.joint_position(5);
-    
-    for count=(sqz_start(trial)+10):hold_start(trial)
-        if all_data(trial).data.gripper_aperture.joint_position(count) < peak_squeeze(trial)
-            peak_squeeze(trial)=all_data(trial).data.gripper_aperture.joint_position(count);
-        end
-    end
-  
     sqz_depth(trial)=peak_tap(trial)-peak_squeeze(trial);
+    
 
 end
 
