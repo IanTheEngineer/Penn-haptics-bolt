@@ -2,7 +2,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.cluster import KMeans
 import numpy as n
 
-from utilities import congrid
+from utilities import resample
 
     
 class Resample(BaseEstimator, TransformerMixin):
@@ -18,7 +18,8 @@ class Resample(BaseEstimator, TransformerMixin):
     spline - uses ndimage.map_coordinates
     
     """
-    def __init__(self, newshape = None, method='linear', centre=True, minusone=False,
+    def __init__(self, newshape = None, method='linear', centre=False, 
+                 minusone=False,
                  original_rows = None):
         """
         
@@ -42,7 +43,7 @@ class Resample(BaseEstimator, TransformerMixin):
         to apply the inverse transform one has to supply original_rows, i.e. the number of rows the data is supposed to
         have before discrtization. This can be done with set_params prior to calling inverse_trasform.
         """
-        super(Resample).__init__(self)
+        super(Resample, self).__init__()
         
         self.newshape = newshape
         self.method = method
@@ -63,22 +64,35 @@ class Resample(BaseEstimator, TransformerMixin):
         """
         Resample the matrix X.
         
-        X is of shape [n_samples, n_features]. It has to have at least 2 dimensions.
+        X is of shape [n_samples, n_features]. It has to have at least 2 
+        dimensions.
+        X can be a list of matrices, in which case tranforms is applied to each
+        of them independently and it returns a list of discretized matrices.
         """
-       
-        newshape = (self.newshape, X.shape[1])
-        return congrid(X, newshape, self.method, self.centre, self.minusone)
+        
+        if type(X) is list:
+            ret = []
+            for x in X:
+                newshape = (self.newshape, x.shape[1])
+                ret.append(resample(x, newshape, self.method, 
+                                   self.centre, self.minusone)
+                           )
+            return ret
+        else:
+            newshape = (self.newshape, X.shape[1])
+            return resample(X, newshape, self.method, self.centre, self.minusone)
     
     def inverse_transform(self, X):
         """
-        Inverse transform of sampled data X. It requires original_shape to be set (via set_params).
+        Inverse transform of sampled data X. It requires original_shape to be 
+        set (via set_params).
         """
         if self.original_rows is None:
             raise ValueError("original shape is not set!")
         
     
         newshape = (self.original_rows, X.shape[1])
-        return congrid(X, newshape, self.method, self.centre, self.minusone)        
+        return resample(X, newshape, self.method, self.centre, self.minusone)        
 
 class KMeansDiscretizer(KMeans):
     """
@@ -96,7 +110,7 @@ class KMeansDiscretizer(KMeans):
         """
         This replaces KMeans.transform by calling predict.
         """
-        return self.predict(X)
+        return n.atleast_2d(self.predict(X)).T
     
     def inverse_transform(self, labels):
         """
