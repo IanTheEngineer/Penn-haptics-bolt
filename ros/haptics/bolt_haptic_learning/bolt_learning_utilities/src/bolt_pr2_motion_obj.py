@@ -18,18 +18,18 @@ class BoltPR2MotionObj(object):
     RIGHT = 0 
     LEFT = 1
 
-    state_string = {BoltPr2MotionObj.DISABLED:'Disabled',
-                    BoltPr2MotionObj.THERMAL_HOLD:'Thermal Hold',
-                    BoltPr2MotionObj.SLIDE:'Slide',
-                    BoltPr2MotionObj.SQUEEZE:'Squeeze',
-                    BoltPr2MotionObj.TAP:'Tap',
-                    BoltPr2MotionObj.DONE:'Done',
-                    BoltPr2MotionObj.SLIDE_FAST:'Slide Fast',
-                    BoltPr2MotionObj.CENTER_GRIPPER:'Center Gripper'
-                    }
 
 
     def __init__(self):
+        self.state_string = {self.DISABLED:'Disabled',
+                    self.THERMAL_HOLD:'Thermal Hold',
+                    self.SLIDE:'Slide',
+                    self.SQUEEZE:'Squeeze',
+                    self.TAP:'Tap',
+                    self.DONE:'Done',
+                    self.SLIDE_FAST:'Slide Fast',
+                    self.CENTER_GRIPPER:'Center Gripper'
+                    }
 
         # For each finger
         # n x 19 

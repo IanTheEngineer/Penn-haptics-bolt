@@ -17,7 +17,9 @@ from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from std_msgs.msg import Int8, String
 
 import matplotlib.pyplot as plt
-import cPickle
+import pickle
+
+from pylab import *
 
 
 def processMotion(task_queue, result_queue):
@@ -150,6 +152,8 @@ class LanguageTestMainThread:
         rospy.Subscriber('/simple_gripper_controller_state', Int8, self.gripperStateCallback, queue_size=50)
         #Start Detailed Gripper Controller State Subscriber
         rospy.Subscriber('/simple_gripper_controller_state_detailed', String, self.gripperDetailedCallback, queue_size=50)
+        #Start Publisher for Learning Algorithms
+        self.pub = rospy.Publisher('hadjective_motion_pickle', String)
 
     def accelerometerCallback(self, msg):
         self.accel_downsample_counter = self.accel_downsample_counter + 1    
@@ -182,7 +186,7 @@ class LanguageTestMainThread:
                     self.current_motion.tdc_mean = self.tdc_mean_list
                     self.current_motion.tac_mean = self.tac_mean_list
                     self.state_lock.release()
-        #Locks needed for debugging                 
+        #Lock to prevent the state controller from updating                 
         self.state_lock.acquire()
         if self.current_motion.state in self.valid_state_tuple:
             num_fingers = len(msg.bt_data)
@@ -231,7 +235,8 @@ def main(argv):
         if  main_thread.current_motion.state in main_thread.valid_state_tuple and \
             main_thread.last_state in main_thread.valid_state_tuple and \
             main_thread.last_state is not main_thread.current_motion.state:
-
+            #if main_thread.current_motion.state == 1:
+            #import pdb; pdb.set_trace()
             #Store off next state to see if we're done
             next_state = main_thread.current_motion.state
             #Close up the current current_motion and send it to a thread
@@ -244,16 +249,20 @@ def main(argv):
             #    current_bolt_pr2_motion_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
             current_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
             normalize_data(current_obj, False)
-            extract_features(current_obj)
-
-            tasks.put(main_thread.current_motion)
+            #extract_features(current_obj)
+            #Pickle & Publish
+            pickle_string = pickle.dumps(current_obj, protocol=pickle.HIGHEST_PROTOCOL)
+            #pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
+            main_thread.pub.publish(String(pickle_string))    
+            
+            #tasks.put(main_thread.current_motion)
             #Reset current_motion
             main_thread.clear_motion()
 
             #Spin up a new thread
-            new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
-            new_process.start()
-            num_tasks = num_tasks + 1
+            #new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
+            #new_process.start()
+            #num_tasks = num_tasks + 1
 
             #Check to see if the motions have finished
             if next_state is BoltPR2MotionBuf.DONE:
@@ -265,8 +274,9 @@ def main(argv):
             main_thread.last_state = main_thread.current_motion.state
         #Release Lock
         main_thread.state_lock.release()
-
-    tasks.close()
+    print "Done!"
+    #show()
+    '''tasks.close()
     tasks.join_thread()
     result_list = []
     for i in range(num_tasks):
@@ -283,7 +293,7 @@ def main(argv):
             plt.grid(True)
             plt.show()
             #print 'Result:', result
-    done = True
+    done = True'''
 
 
 
