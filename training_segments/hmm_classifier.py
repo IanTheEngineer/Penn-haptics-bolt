@@ -43,6 +43,11 @@ class MultinomialHMMClasifier(sklearn.hmm.MultinomialHMM):
         if np.isnan(score):
             score = np.NINF
         return score
+    
+    def transform(self, X, y=None, **kwargs):
+        """ I know this shouldn't be here, but I need it"""
+        return X
+    
 
 class DataSplitter(BaseEstimator):
     """Class used in conjunction with the HMMClassifier. Most of the 
