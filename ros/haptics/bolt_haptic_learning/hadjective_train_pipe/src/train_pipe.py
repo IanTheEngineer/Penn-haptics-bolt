@@ -23,7 +23,7 @@ def loadDataFromH5File(input_file, adjective_file):
     all_bolt_data = utilities.convertH5ToBoltObjFile(input_file, None, False);
    
     # Inserts adjectives into the bolt_data  
-    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, None, adjective_file, False)
+    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority3.pkl", adjective_file, True)
 
     return all_bolt_data_adj
 
@@ -92,7 +92,7 @@ def bolt_obj_2_feature_vector(all_bolt_data, feature_name_list):
         feature_vector_list = list()
         # For all objects
         for motion in motion_list:
-            
+            #import pdb; pdb.set_trace() 
             # Create feature vector
             bolt_feature_obj = utilities.extract_features(motion)
             feature_vector = utilities.createFeatureVector(bolt_feature_obj, feature_name_list) 
@@ -129,21 +129,36 @@ def run_dbscan(input_vector, num_clusters):
     """
 
 
-def run_kmeans(input_vector, num_clusters):
+def run_kmeans(input_vector, num_clusters, obj_data):
     """
     run_kmeans - expects a vector of features and the number of
                  clusters to generate
 
     Returns the populated clusters 
     """
-    k_means = KMeans(init='k-means++', k=num_clusters, n_init=10)
+    k_means = KMeans(init='random', k=num_clusters, n_init=100)
 
     k_means.fit(input_vector)
     k_means_labels = k_means.labels_
     k_means_cluster_centers = k_means.cluster_centers_
     k_mean_labels_unique = np.unique(k_means_labels)
 
-    return (kmean_labels, k_means_labels, k_means_cluster_centers)
+    import pdb; pdb.set_trace()
+    # Pull clusters out
+    clusters = dict()
+    cluster_names = dict()
+    cluster_ids = dict()
+    cluster_soft = dict() 
+    for labels in k_mean_labels_unique:
+        idx = np.nonzero(k_means_labels == labels)
+        clusters[labels] = [obj_data[i] for i in idx[0]]
+        cluster_names[labels] = [obj.name for obj in clusters[labels]]
+        cluster_ids[labels] = [obj.object_id for obj in clusters[labels]]
+        cluster_soft[labels] = [obj.labels['soft'] for obj in clusters[labels]]
+
+    import pdb; pdb.set_trace() 
+    
+    return (k_means_labels, k_means_cluster_centers, clusters)
 
 
 def train_knn(train_vector, train_labels, N):
@@ -184,7 +199,7 @@ def main(input_file, adjective_file):
     train_data, test_data = utilities.split_data(all_data, 0.9)
     
     # Take loaded data and extract out features
-    feature_name_list = ["max_pdc", "pdc_area"]
+    feature_name_list = ["pdc_rise_count"]
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
 
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
@@ -194,9 +209,12 @@ def main(input_file, adjective_file):
     
     print("Created feature vector containing %s" % feature_name_list)
 
+    import pdb; pdb.set_trace()
     # Run k-means
-    kmean_labels, k_means_labels, k_means_cluster_centers = run_kmeans(all_feature_vector['squeeze'], 25)
-
+    k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['squeeze'], 3, all_data['squeeze'])
+   
+    import pdb; pdb.set_trace()
+    print "Ran KMeans"
     
 
 # Parse the command line arguments
