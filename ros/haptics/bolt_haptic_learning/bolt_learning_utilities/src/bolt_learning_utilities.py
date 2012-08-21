@@ -5,7 +5,9 @@ import numpy as np
 import cPickle
 import convert_h5_dataset_to_bolt_obj as converth5
 import process_adjective_labels
+from random import shuffle
 
+from bolt_feature_obj import BoltFeatureObj
 # Convert h5 files to BolPR2MotionObj data
 def convertH5ToBoltObjFile(input_file, output_file, save_to_file):
     """
@@ -137,7 +139,97 @@ def normalize_data(bolt_obj, discard_raw_flag = True):
         del bolt_obj.pac[:]
         del bolt_obj.tdc[:]
         del bolt_obj.tac[:]
+        del bolt_obj.pac_flat[:]
 
     
+# Pull from the BoltFeatureObj and return a vector of features and labels
+def createFeatureVector(bolt_feature_obj, feature_list):
+    """ 
+    Given a BoltFeatureObj and a list of features to pull, returns
+    the features and labels in vector form for all adjectives
+
+    feature_list: expects a list of strings containing the name of the
+                  features to extract
+                  
+                  Ex. ["max_pdc", "centroid"]
+
+    Returns: Vector of features (1 x feature length)
+             Features - in order of feature_list
+
+             Ex. max_pdc = 10, centroid = [14, 10]
+
+             returned numpy array: [10 14 10]
+
+    """
+    # Store the features with their adjectives 
+    all_feature_vector = list()
+   
+    # Pull out the features from the object
+    for feature in feature_list:
         
-     
+        feature_vector = eval('bolt_feature_obj.'+ feature)
+        all_feature_vector.append(feature_vector)
+
+
+    return np.array(all_feature_vector)
+
+# Function to split the data
+def split_data(all_bolt_data, train_size):
+    """
+    Given a dictionary of all bolt objects
+
+    Splits the objects into train and test sets
+
+    train_size is a percentage - Ex. train_size = .9
+    """
+
+    train_bolt_data = dict()
+    test_bolt_data = dict()
+  
+    # Calculate train size
+    num_runs = len(all_bolt_data[all_bolt_data.keys()[0]])
+    train_size = num_runs*train_size
+    train_size = int(round(train_size))
+    
+    # Create list to shuffle and index into objects
+    access_idx = range(num_runs)
+    shuffle(access_idx)
+    access_np_idx = np.array(access_idx)
+    
+    train_idx = np.nonzero(access_np_idx <= train_size)[0]
+    test_idx = np.nonzero(access_np_idx > train_size)[0] 
+
+    # Go through the list of motions
+    for motion_name in all_bolt_data:
+        motion_list = all_bolt_data[motion_name]
+
+        train_set = [motion_list[i] for i in train_idx]
+        test_set = [motion_list[i] for i in test_idx]
+ 
+        train_bolt_data[motion_name] = train_set
+        test_bolt_data[motion_name] = test_set
+    
+    return (train_bolt_data, test_bolt_data)
+
+
+# Temp place holder function to test extraction
+def extract_features(bolt_pr2_motion_obj):
+    
+    bolt_feature_obj = BoltFeatureObj()
+
+    # Store state information
+    bolt_feature_obj.state = bolt_pr2_motion_obj.state
+    bolt_feature_obj.detailed_state = bolt_pr2_motion_obj.detailed_state
+
+    # Store phsyical object information
+    bolt_feature_obj.name = bolt_pr2_motion_obj.name
+    bolt_feature_obj.run_number = bolt_pr2_motion_obj.run_number
+
+    # Store labels in class
+    bolt_feature_obj.labels = bolt_pr2_motion_obj.labels
+
+    # PURELY TESTING
+    bolt_feature_obj.max_pdc = bolt_pr2_motion_obj.run_number
+    bolt_feature_obj.pdc_area = bolt_pr2_motion_obj.run_number
+
+    return bolt_feature_obj
