@@ -5,12 +5,18 @@ import numpy as np
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
+
 #For thermal_features
 
 from scipy.integrate import trapz
 from scipy.optimize import fmin
 
 
+def rindex(lis, item):
+    for i in range(len(lis)-1, -1, -1):
+        if item == lis[i]:
+            return i
+    raise ValueError("rindex(lis, item): item not in lis")
 
 def fit_func(t, p):
     return p[0] + p[1]*np.exp(-t/p[2])
@@ -71,7 +77,7 @@ def thermal_features(tdc_norm, tac_norm, controller_state, controller_state_deta
 
     # Exponential fits for TDC 
 
-    tdc_norm = tdc_normalized[ k[0]:k[1] ]
+    tdc_norm = tdc_norm[ k[0]:k[1] ]
 
     t = np.arange(1.,len(tdc_norm))
     p0 = [np.mean(tdc_norm), np.max(tdc_norm)-np.min(tdc_norm), (np.max(t)-np.min(t))/2]

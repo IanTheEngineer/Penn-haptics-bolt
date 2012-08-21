@@ -13,6 +13,7 @@ from scipy.signal import get_window
 from scipy.signal import filtfilt
 from scipy.integrate import trapz
 
+from extract_features_thermal import thermal_features
 
 
 # Functions to help extract features from a BoltPR2MotionObj
