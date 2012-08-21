@@ -84,7 +84,7 @@ class HMMChain(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None, **fit_params):
         if type(X) is not list:
             X = [X]
-        self.__update_splits(X)        
+        self.update_splits(X)        
         return self.pipeline.fit(X, y, **fit_params)
     
     @property    
