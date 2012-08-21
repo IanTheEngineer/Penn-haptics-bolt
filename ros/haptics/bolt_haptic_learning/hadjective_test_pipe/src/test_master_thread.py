@@ -17,7 +17,8 @@ from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from std_msgs.msg import Int8, String
 
 import matplotlib.pyplot as plt
-import pickle
+
+import cPickle
 
 from pylab import *
 
@@ -248,17 +249,22 @@ def main(argv):
             #if num_tasks is 1:
             #    current_bolt_pr2_motion_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
             current_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
-            normalize_data(current_obj, False)
+            normalize_data(current_obj, discard_raw_flag=False)
             #extract_features(current_obj)
             #Pickle & Publish
-            pickle_string = pickle.dumps(current_obj, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
+            #print "Length of string %d, first char: %c, last char: %c" \
+            #        % (len(pickle_string), pickle_string[0], pickle_string[len(pickle_string)-1])
+            #import sys
+            #sys.stdout.flush()
+            #rospy.loginfo("string size %d" % len(pickle_string))
             #pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
-            main_thread.pub.publish(String(pickle_string))    
+            main_thread.pub.publish(pickle_string)    
             
             #tasks.put(main_thread.current_motion)
             #Reset current_motion
             main_thread.clear_motion()
-
+            #import pdb; pdb.set_trace()
             #Spin up a new thread
             #new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
             #new_process.start()
