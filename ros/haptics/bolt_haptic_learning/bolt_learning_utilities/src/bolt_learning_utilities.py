@@ -163,12 +163,12 @@ def createFeatureVector(bolt_feature_obj, feature_list):
     """
     # Store the features with their adjectives 
     all_feature_vector = list()
-   
+    
     # Pull out the features from the object
     for feature in feature_list:
         
         feature_vector = eval('bolt_feature_obj.'+ feature)
-        all_feature_vector.append(feature_vector)
+        all_feature_vector += feature_vector
 
 
     return np.array(all_feature_vector)
@@ -211,10 +211,39 @@ def split_data(all_bolt_data, train_size):
     
     return (train_bolt_data, test_bolt_data)
 
-
-# Temp place holder function to test extraction
+# Functions to help extract features from a BoltPR2MotionObj
 def extract_features(bolt_pr2_motion_obj):
+    """ 
+    Given a BoltPR2MotionObj the function will process the streams
+    and pull out specific features that are defined below:
+
+    Histogram of peaks?
+    Poly fit the lines?
+
+    PDC
+        - area under curve
+        - max height of curve
+        - fit line to equation?
+
+    PAC
+        - Bin into 4 equal parts and find power of signal
+        - Central frequency
     
+    Temperature (TAC + TDC) 
+        - Area under the curve
+        - Tau constant
+        - Temperature Final
+
+    Electrodes
+        - PCA + polyfit
+
+    Gripper Aperture
+        - Gripper position
+       
+    Accelerometer
+        - Z channel?
+
+    """
     bolt_feature_obj = BoltFeatureObj()
 
     # Store state information
@@ -227,9 +256,114 @@ def extract_features(bolt_pr2_motion_obj):
 
     # Store labels in class
     bolt_feature_obj.labels = bolt_pr2_motion_obj.labels
+    
+    # PDC Features
+    pdc_area = []
+    pdc_max = []
+    pdc_rise_count = []
 
-    # PURELY TESTING
-    bolt_feature_obj.max_pdc = bolt_pr2_motion_obj.run_number
-    bolt_feature_obj.pdc_area = bolt_pr2_motion_obj.run_number
+    # PAC Features
+    pac_power = []
+    pac_central_frequency = []
+        
+    # Temperature features
+    temperature_area = []
+    temperature_tau = []
+    temperature_final = []
+
+    # Electrode features
+    electrode_polyfit = []
+
+    num_fingers = len(bolt_pr2_motion_obj.electrodes_normalized)
+    
+    # Loop through each finger and store as a list
+    for finger in xrange(num_fingers):
+
+        #textureFeatures(bolt_pr2_motion_obj.pac_flat[finger], bolt__pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+
+        # Compute pdc features 
+        pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger]))
+        pdc_max.append(max(bolt_pr2_motion_obj.pdc_normalized[finger]))
+
+        # Pull the number of steps of the rising curve
+        filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
+         
+        pdc_rise_count.append(max(np.diff(filtered_pdc)))
+
+      # Compute pac features
+        pac_square_split = np.array_split(np.square(bolt_pr2_motion_obj.pac_flat_normalized[finger]), 4)
+        #pac_power.append(np.divide(np.sum(pac_square_split, axis = 1)), np.shape(pac_square_split[0])[0])
+
+        #pac_central_frequency.append()
+
+        # Thermal features
+
+
+        # Compute electrode features
+        #pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
+        #pca.fit(motion.electrodes_normalized[finger])
+        #transf_finger = pca.tranform(motion.electrodes_normalized[finger])
+
+    bolt_feature_obj.pdc_area = pdc_area
+    bolt_feature_obj.pdc_max = pdc_max
+    bolt_feature_obj.pdc_rise_count = pdc_rise_count
 
     return bolt_feature_obj
+
+def smooth(x,window_len=11,window='hanning'):
+    """smooth the data using a window with requested size.
+    
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal 
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+    
+    input:
+        x: the input signal 
+        window_len: the dimension of the smoothing window; should be an odd integer
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+        
+    example:
+
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+    
+    see also: 
+    
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+ 
+    TODO: the window parameter could be the window itself if an array instead of a string
+    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
+    """
+
+    if x.ndim != 1:
+        raise ValueError, "smooth only accepts 1 dimension arrays."
+
+    if x.size < window_len:
+        raise ValueError, "Input vector needs to be bigger than window size."
+
+
+    if window_len<3:
+        return x
+
+
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+
+
+    s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=np.ones(window_len,'d')
+    else:
+        w=eval('np.'+window+'(window_len)')
+
+    y=np.convolve(w/w.sum(),s,mode='valid')
+    return y
+
