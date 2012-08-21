@@ -67,7 +67,7 @@ def extract_features(bolt_obj):
     num_fingers = len(bolt_obj.electrodes_normalized)
     # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
-       
+        thermal_features(bolt_obj.tdc_normalized[finger],bolt_obj.tac_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
         texture_features(bolt_obj.pac_flat_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
         '''#texture_features(bolt_obj.pac_flat[finger], bolt_obj.state, bolt_obj.detailed_state)
         # Compute pdc features 
