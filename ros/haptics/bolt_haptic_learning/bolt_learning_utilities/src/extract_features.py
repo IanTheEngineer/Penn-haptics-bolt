@@ -68,7 +68,8 @@ def extract_features(bolt_obj):
     # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
        
-        textureFeatures(bolt_obj.pac_flat[finger], bolt_obj.state, bolt_obj.detailed_state)
+        texture_features(bolt_obj.pac_flat[finger] ,bolt_obj.pac_flat_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
+        '''#texture_features(bolt_obj.pac_flat[finger], bolt_obj.state, bolt_obj.detailed_state)
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_obj.pdc_normalized[finger])) 
         pdc_max.append(max(bolt_obj.pdc_normalized[finger]))
@@ -85,7 +86,7 @@ def extract_features(bolt_obj):
         # Compute electrode features
         pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
         pca.fit(motion.electrodes_normalized[finger])
-        transf_finger = pca.tranform(motion.electrodes_normalized[finger])
+        transf_finger = pca.tranform(motion.electrodes_normalized[finger])'''
 
 
 
@@ -148,12 +149,14 @@ def rindex(lis, item):
             return i
     raise ValueError("rindex(lis, item): item not in lis")
 
-def texture_features(pac_flat, controller_state, controller_state_detail):
+#from pylab import *
+#import matplotlib as plt
+def texture_features(pac_flat_unnorm, pac_flat, controller_state, controller_state_detail):
     """
     Given one finger's array of pac_flat this function will process textures
     and pull out specific features that are defined below:
 
-    INPUTS: pac_flat - a 22 x n x 1 numpy array of ac pressures for one movement
+    INPUTS: pac_flat - a normalized 22 x n x 1 numpy array of ac pressures for one movement
             controller_state - an integer value signalling the type of movement
             controller_state_detail - an n x 1 array of strings detailing the
                                       current detailed state at 100 Hz
@@ -167,24 +170,33 @@ def texture_features(pac_flat, controller_state, controller_state_detail):
     """
     #Choose sub-states for analysis based on controller state
     k = []
-    if controller_state is BoltPR2MotionObj.THERMAL_HOLD:
-        k.append(22*controller_state_detail.index('HOLD_FOR_10_SECONDS'))
-        k.append(22*(rindex(controller_state_detail,'OPEN_GRIPPER_BY_2CM_FAST')+1))
-    elif controller_state is BoltPR2MotionObj.SLIDE:
-        k.append(22*controller_state_detail.index('SLIDE_5CM'))
-        k.append(22*(rindex(controller_state_detail,'SLIDE_5CM')+1))
-    elif controller_state is BoltPR2MotionObj.SQUEEZE:
-        k.append(22*controller_state_detail.index('SQUEEZE_SET_PRESSURE_SLOW'))
-        k.append(22*(rindex(controller_state_detail,'SQUEEZE_SET_PRESSURE_SLOW')+1))
-    elif controller_state is BoltPR2MotionObj.TAP:
-        k.append(22*controller_state_detail.index('MOVE_GRIPPER_FAST_CLOSE'))
-        k.append(22*(rindex(controller_state_detail,'OPEN_GRIPPER_BY_2CM_FAST')+1))
-    elif controller_state is BoltPR2MotionObj.SLIDE_FAST:
-        k.append(22*controller_state_detail.index('MOVE_DOWN_5CM'))
-        k.append(22*(rindex(controller_state_detail,'MOVE_DOWN_5CM')+1))
-    else:
-        rospy.logerr('Bad Controller State in textureFeatures() with state %d' % controller_state)
-   
+    try:
+        if controller_state is BoltPR2MotionObj.THERMAL_HOLD:
+            controller_state_str = "THERMAL_HOLD"
+            k.append(22*controller_state_detail.index('HOLD_FOR_10_SECONDS'))
+            k.append(22*(rindex(controller_state_detail,'OPEN_GRIPPER_BY_2CM_FAST')+1))
+        elif controller_state is BoltPR2MotionObj.SLIDE:
+            controller_state_str = "SLIDE"
+            k.append(22*controller_state_detail.index('SLIDE_5CM'))
+            k.append(22*(rindex(controller_state_detail,'SLIDE_5CM')+1))
+        elif controller_state is BoltPR2MotionObj.SQUEEZE:
+            controller_state_str = "SQUEEZE"
+            k.append(22*controller_state_detail.index('SQUEEZE_SET_PRESSURE_SLOW'))
+            k.append(22*(rindex(controller_state_detail,'SQUEEZE_SET_PRESSURE_SLOW')+1))
+        elif controller_state is BoltPR2MotionObj.TAP:
+            controller_state_str = "TAP"
+            k.append(22*controller_state_detail.index('MOVE_GRIPPER_FAST_CLOSE'))
+            k.append(22*(rindex(controller_state_detail,'OPEN_GRIPPER_BY_2CM_FAST')+1))
+        elif controller_state is BoltPR2MotionObj.SLIDE_FAST:
+            controller_state_str = "SLIDE_FAST"
+            k.append(22*controller_state_detail.index('MOVE_DOWN_5CM'))
+            k.append(22*(rindex(controller_state_detail,'MOVE_DOWN_5CM')+1))
+        else:
+            rospy.logerr('Bad Controller State in textureFeatures() with state %d' % controller_state)
+    except:
+        
+        rospy.logerr('Detailed Controller State not found in textureFeatures() with state %d' % controller_state)
+        import pdb; pdb.set_trace()
     # Select desired segment for analysis
     texture = pac_flat[k[0]:k[1]]
 
@@ -208,18 +220,32 @@ def texture_features(pac_flat, controller_state, controller_state_detail):
                 -0.002780750937971, -0.002297899162801, -0.000008077427051, -0.001331737017349,-0.001575256697592,
                 -0.000046996391356,-0.000734453028953])
     filt_texture = lfilter(b,1,texture)
-    
+    total = 0
+    for elem in filt_texture.tolist():
+        total = total + elem
+    new_mean = total / len(filt_texture)
     # Remove signal bias after filtering
-    filt_texture = filt_texture - np.mean(filt_texture)
+    filt_texture = filt_texture - new_mean
 
     # Calculate DFT and smooth it with a Bartlett-Hanning window
     L = float(len(filt_texture))
-    texture_fft = fft(filt_texture,L)/L
+    texture_fft = fft(filt_texture,int(L))/L
     fft_freq = sample_freq/2.0*np.linspace(0,1, num=(round(L/2)+1) )
-    win = get_window('barthann',50)
+    #win = get_window('barthann',50)
+    win =np.array([0, 0.012915713114513, 0.032019788779863, 0.057159387310553, 0.088082565902500,
+                   0.124442415526911, 0.165802757166945, 0.211645303865110, 0.261378170980776, 0.314345594919613,
+                   0.369838700753677, 0.427107141928132, 0.485371420930934, 0.543835688620429, 0.601700812046257,
+                   0.658177496190301, 0.712499244169068, 0.763934943091322, 0.811800868911545, 0.855471913159863,
+                   0.894391847205838, 0.928082455517205, 0.956151387945687, 0.978298602105584, 0.994321290061454,
+                   0.994321290061454, 0.978298602105584, 0.956151387945687, 0.928082455517205, 0.894391847205838,
+                   0.855471913159863, 0.811800868911545, 0.763934943091323, 0.712499244169069, 0.658177496190301,
+                   0.601700812046257, 0.543835688620429, 0.485371420930934, 0.427107141928132, 0.369838700753677,
+                   0.314345594919613, 0.261378170980776, 0.211645303865110, 0.165802757166945, 0.124442415526911,
+                   0.088082565902500, 0.057159387310553, 0.032019788779863, 0.012915713114513, 0])
+
     win = win/sum(win)
     texture_fft_bhwin = filtfilt(win,[1],abs(texture_fft)**2)
-
+    
     # Select smoothed spectra up to the max frequency that still contains data
     f_max = 100 # Hz
     k_max = (fft_freq>f_max).tolist().index(True)
@@ -227,7 +253,7 @@ def texture_features(pac_flat, controller_state, controller_state_detail):
     freq = fft_freq[0:k_max]
 
     # Total energy
-    total_energy = trapz(freq, spectrum) / L # is divided by length what we want for comparing different movements?
+    total_energy = trapz(spectrum, freq) #/ L # is divided by length what we want for comparing different movements?
    
     # Spectral Moments - centroid, variance, skewness, excess kurtosis
     SC = sum(spectrum*freq)/sum(spectrum) 
@@ -236,6 +262,13 @@ def texture_features(pac_flat, controller_state, controller_state_detail):
     SK = (sum(spectrum * (freq-SC)**4)/sum(spectrum))/(SV**2) - 3
 
     spectral_moments = (SC, SV, SS, SK)
+    #figure(controller_state)
+    #plot(freq,spectrum)
+    #grid()
+    #ylabel('Spectrum')
+    #xlabel('Freq (Hz)')
+    #title('%s - Total_E=%.4f, SC=%.4f, SV=%.4f, SS=%.4f, SK=%.4f' %(controller_state_str,total_energy, SC, SV, SS, SK), fontsize=12)
+
     return (total_energy, spectral_moments)
 
 
