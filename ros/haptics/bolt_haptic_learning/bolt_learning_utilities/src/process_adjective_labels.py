@@ -21,14 +21,14 @@ def populate_BoltPR2MotionObj(all_data, out_file, adjective_file, save_to_file):
     # Open the h5 file and gets the root and columns
     adjective_data = tables.openFile(adjective_file)
     adjective_root = adjective_data.root
-    column_names = adjective_root.classes.colnames
+    column_names = adjective_root.clases.colnames
 
     all_object_label_mapping = dict()
     # Loops through the adjective table and stores into a dictionary
-    for row_num in xrange(adjective_root.classes.nrows):
+    for row_num in xrange(adjective_root.clases.nrows):
         
         # Pulls out the row from the h5table 
-        row = adjective_root.classes[row_num]
+        row = adjective_root.clases[row_num]
         object_mapping = dict()
 
         object_id = "default"
