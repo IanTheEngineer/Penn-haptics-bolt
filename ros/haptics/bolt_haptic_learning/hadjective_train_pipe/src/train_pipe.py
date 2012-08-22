@@ -14,6 +14,7 @@ from bolt_feature_obj import BoltFeatureObj
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets.samples_generator import make_blobs
+from sklearn.neighbors import KNeighborsClassifier
 
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
@@ -79,7 +80,9 @@ def bolt_obj_2_feature_vector(all_bolt_data, feature_name_list):
     """
     
     # DO PCA Calculations here 
-    
+     
+
+
     # Store in feature class object
     all_features_vector_dict = dict()
     
@@ -136,32 +139,41 @@ def run_kmeans(input_vector, num_clusters, obj_data):
 
     Returns the populated clusters 
     """
-    k_means = KMeans(init='random', k=num_clusters, n_init=100)
+    k_means = KMeans(init='k-means++', k=num_clusters, n_init=100)
 
     k_means.fit(input_vector)
     k_means_labels = k_means.labels_
     k_means_cluster_centers = k_means.cluster_centers_
     k_mean_labels_unique = np.unique(k_means_labels)
 
-    import pdb; pdb.set_trace()
     # Pull clusters out
     clusters = dict()
     cluster_names = dict()
     cluster_ids = dict()
-    cluster_soft = dict() 
+    cluster_all_adjectives = dict()
+    # Get a list of all adjectives
+    adjectives = obj_data[0].labels.keys()
+
+    
     for labels in k_mean_labels_unique:
         idx = np.nonzero(k_means_labels == labels)
         clusters[labels] = [obj_data[i] for i in idx[0]]
         cluster_names[labels] = [obj.name for obj in clusters[labels]]
         cluster_ids[labels] = [obj.object_id for obj in clusters[labels]]
-        cluster_soft[labels] = [obj.labels['soft'] for obj in clusters[labels]]
+   
+    for adj in adjectives:
+        cluster_adj = dict()
+        for labels in k_mean_labels_unique:
+            cluster_adj[labels] = [obj.labels[adj] for obj in clusters[labels]] 
+        
+        cluster_all_adjectives[adj] = cluster_adj
 
     import pdb; pdb.set_trace() 
     
     return (k_means_labels, k_means_cluster_centers, clusters)
 
 
-def train_knn(train_vector, train_labels, N):
+def train_knn(train_vector, train_labels, test_vector, test_labels, N):
     """
     train_knn - expects a vector of features and a nx1 set of
                 corresponding labels.  Finally the number of
@@ -169,7 +181,11 @@ def train_knn(train_vector, train_labels, N):
 
     Returns a trained knn classifier
     """
+    import pdb; pdb.set_trace()
+    knn = KNeighborsClassifier(n_neighbors = N, weights='uniform')
+    knn.fit(train_vector, train_labels)
 
+    knn.score(test_vector, test_labels)
 
 
 def train_svm(train_vector, train_label):
@@ -212,7 +228,11 @@ def main(input_file, adjective_file):
     import pdb; pdb.set_trace()
     # Run k-means
     k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['squeeze'], 3, all_data['squeeze'])
-   
+  
+    # Run KNN
+    motion_name = 'squeeze'
+    train_knn(train_feature_vector[motion_name], train_adjective_dictionary['soft'], test_feature_vector[motion_name], test_adjective_dictionary['soft'], 5)
+
     import pdb; pdb.set_trace()
     print "Ran KMeans"
     
