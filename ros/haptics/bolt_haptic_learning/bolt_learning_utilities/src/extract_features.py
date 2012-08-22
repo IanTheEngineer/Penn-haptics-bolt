@@ -2,7 +2,7 @@
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import numpy as np
-import sklearn.decomposition
+#import sklearn.decomposition
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
@@ -13,6 +13,7 @@ from scipy.signal import get_window
 from scipy.signal import filtfilt
 from scipy.integrate import trapz
 
+from extract_features_thermal import thermal_features
 
 
 # Functions to help extract features from a BoltPR2MotionObj
@@ -67,8 +68,8 @@ def extract_features(bolt_obj):
     num_fingers = len(bolt_obj.electrodes_normalized)
     # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
-       
-        texture_features(bolt_obj.pac_flat[finger] ,bolt_obj.pac_flat_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
+        thermal_features(bolt_obj.tdc_normalized[finger],bolt_obj.tac_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
+        texture_features(bolt_obj.pac_flat_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
         '''#texture_features(bolt_obj.pac_flat[finger], bolt_obj.state, bolt_obj.detailed_state)
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_obj.pdc_normalized[finger])) 
@@ -151,7 +152,7 @@ def rindex(lis, item):
 
 #from pylab import *
 #import matplotlib as plt
-def texture_features(pac_flat_unnorm, pac_flat, controller_state, controller_state_detail):
+def texture_features( pac_flat, controller_state, controller_state_detail):
     """
     Given one finger's array of pac_flat this function will process textures
     and pull out specific features that are defined below:

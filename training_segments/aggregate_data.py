@@ -1,3 +1,7 @@
+#! /usr/bin/python
+"""
+Create pickle files, one for each adjective, using an h5 database with hard links.
+"""
 import tables
 import numpy as np
 import sys
@@ -118,7 +122,7 @@ if __name__ == "__main__":
                   'sparse',
                   'soft']  
     for i, adjective in enumerate(adjectives):
-        print "Adjective %d/%d: %s" % (i, len(adjectives), adjective)
+        print "Adjective %d/%d: %s" % (i+1, len(adjectives), adjective)
         elaborate_file(adjective)
     print "Done"
         

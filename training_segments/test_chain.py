@@ -10,7 +10,6 @@ hmm = hmm_chain.HMMChain(data_splits=splits, n_pca_components=1,
                          resampling_size=50, 
                          n_discretization_symbols=5)
 hmm.update_splits(pdc)
-print hmm.pipeline
 pca = hmm.pca
 pca.fit(vstack(pdc))
 Xt = hmm.splitter.transform(pca.transform(hmm.combiner.transform(pdc)))
@@ -22,5 +21,11 @@ Xt = hmm.splitter2.transform(Xt)
 hmm.hmm.fit(Xt)
 
 print "Score: ", hmm.score(pdc)
+
+print "Using the whole training"
+pdc = bumpy['SLIDE_5CM']['pdc']; 
+hmm.fit(pdc)
+print "Score: ", hmm.score(pdc)
+
 
 print "Done"
