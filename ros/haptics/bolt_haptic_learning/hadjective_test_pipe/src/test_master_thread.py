@@ -250,7 +250,7 @@ def main(argv):
             #    current_bolt_pr2_motion_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
             current_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
             normalize_data(current_obj, discard_raw_flag=False)
-            #extract_features(current_obj)
+            extract_features(current_obj)
             #Pickle & Publish
             pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
             #print "Length of string %d, first char: %c, last char: %c" \
@@ -281,7 +281,7 @@ def main(argv):
         #Release Lock
         main_thread.state_lock.release()
     print "Done!"
-    #show()
+    show()
     '''tasks.close()
     tasks.join_thread()
     result_list = []
