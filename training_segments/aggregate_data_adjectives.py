@@ -116,10 +116,10 @@ if __name__ == "__main__":
                   'solid',
                   'crinkly',
                   'porous',
-                  'warm',
+                  #'warm',
                   'slippery',
                   'thin',
-                  'sparse',
+                  #'sparse',
                   'soft']  
     for i, adjective in enumerate(adjectives):
         print "Adjective %d/%d: %s" % (i+1, len(adjectives), adjective)
