@@ -7,6 +7,7 @@ import os
 from optparse import OptionParser
 import cPickle
 import bolt_learning_utilities as utilities
+import extract_features as extract_features
 import matplotlib.pyplot as plt 
 import sklearn.decomposition
 
@@ -54,7 +55,7 @@ def BoltMotionObjToFeatureObj(all_bolt_data):
         # For all objects
         for motion in motion_list:
             
-            bolt_feature_obj = utilities.extract_features(motion)
+            bolt_feature_obj = extract_features.extract_features(motion)
             
             feature_list.append(bolt_feature_obj)
 
@@ -97,7 +98,7 @@ def bolt_obj_2_feature_vector(all_bolt_data, feature_name_list):
         for motion in motion_list:
             #import pdb; pdb.set_trace() 
             # Create feature vector
-            bolt_feature_obj = utilities.extract_features(motion)
+            bolt_feature_obj = extract_features.extract_features(motion)
             feature_vector = utilities.createFeatureVector(bolt_feature_obj, feature_name_list) 
             feature_vector_list.append(feature_vector)
 

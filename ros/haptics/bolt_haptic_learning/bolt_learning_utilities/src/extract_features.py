@@ -5,6 +5,7 @@ import numpy as np
 #import sklearn.decomposition
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
+from bolt_feature_obj import BoltFeatureObj
 
 #For texture_features
 from scipy.signal import lfilter
@@ -17,7 +18,7 @@ from extract_features_thermal import thermal_features
 
 
 # Functions to help extract features from a BoltPR2MotionObj
-def extract_features(bolt_obj):
+def extract_features(bolt_pr2_motion_obj):
     """
     Given a BoltPR2MotionObj the function will process the streams
     and pull out specific features that are defined below:
@@ -49,14 +50,25 @@ def extract_features(bolt_obj):
         - Z channel?
 
     """
+    bolt_feature_obj = BoltFeatureObj()
+
+    # Store state information
+    bolt_feature_obj.state = bolt_pr2_motion_obj.state
+    bolt_feature_obj.detailed_state = bolt_pr2_motion_obj.detailed_state
+
+    # Store phsyical object information
+    bolt_feature_obj.name = bolt_pr2_motion_obj.name
+    bolt_feature_obj.run_number = bolt_pr2_motion_obj.run_number
+    bolt_feature_obj.object_id = bolt_pr2_motion_obj.object_id
+
+    # Store labels in class
+    bolt_feature_obj.labels = bolt_pr2_motion_obj.labels
+
     # PDC Features
     pdc_area = []
     pdc_max = []
+    pdc_rise_count = []
 
-    # PAC Features
-    pac_power = []
-    pac_central_frequency = []
-    
     # Temperature features
     temperature_area = []
     temperature_tau = []
@@ -65,84 +77,37 @@ def extract_features(bolt_obj):
     # Electrode features
     electrode_polyfit = []
 
-    num_fingers = len(bolt_obj.electrodes_normalized)
-    # Loop through each finger and store as a list
-    for finger in xrange(num_fingers):
-        thermal_features(bolt_obj.tdc_normalized[finger],bolt_obj.tac_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
-        texture_features(bolt_obj.pac_flat_normalized[finger], bolt_obj.state, bolt_obj.detailed_state)
-        '''#texture_features(bolt_obj.pac_flat[finger], bolt_obj.state, bolt_obj.detailed_state)
-        # Compute pdc features 
-        pdc_area.append(np.trapz(bolt_obj.pdc_normalized[finger])) 
-        pdc_max.append(max(bolt_obj.pdc_normalized[finger]))
-
-        # Compute pac features
-        pac_square_split = np.array_split(np.square(bolt_obj.pac_flat_normalized[finger]), 4)
-        pac_power.append(np.divide(np.sum(pac_square_split, axis = 1)), np.shape(pac_square_split[0])[0])
-        
-        pac_central_frequency.append()
-       
-        # Thermal features
-        
-       
-        # Compute electrode features
-        pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
-        pca.fit(motion.electrodes_normalized[finger])
-        transf_finger = pca.tranform(motion.electrodes_normalized[finger])'''
-
-
-
-# Normalizes the given bolt_obj.  Works directly on the object
-def normalize_data(bolt_obj, discard_raw_flag = True):
-    """ 
-    Given a BOLTPR2MotionObj 
-    Normalize the data
-        - Takes the mean and subtract 
-        - Adds a pac_flat field
-    """
+    num_fingers = len(bolt_pr2_motion_obj.electrodes_normalized)
     
-    num_fingers = len(bolt_obj.electrodes)
-
-    # For each finger normalize and store
+# Loop through each finger and store as a list
     for finger in xrange(num_fingers):
-        # Electrodes
-        electrodes = bolt_obj.electrodes[finger]
-        electrodes_mean = bolt_obj.electrodes_mean[finger]
-        bolt_obj.electrodes_normalized.append(-(electrodes - np.mean(electrodes_mean, axis = 0)))
 
-        # PDC
-        pdc = bolt_obj.pdc[finger]
-        pdc_mean = bolt_obj.pdc_mean[finger]
-        bolt_obj.pdc_normalized.append(pdc - np.mean(pdc_mean))
+        thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        # TDC
-        tdc = bolt_obj.tdc[finger]
-        tdc_mean = bolt_obj.tdc_mean[finger]
-        bolt_obj.tdc_normalized.append(tdc - np.mean(tdc_mean))
+        texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        # TAC
-        tac = bolt_obj.tac[finger]
-        tac_mean = bolt_obj.tac_mean[finger]
-        bolt_obj.tac_normalized.append(-(tac - np.mean(tac_mean)))
+        #texture_features(bolt_pr2_motion_obj.pac_flat[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        
+        # Compute pdc features 
+        pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
+        pdc_max.append(max(bolt_pr2_motion_obj.pdc_normalized[finger]))
 
-        # PAC
-        pac = bolt_obj.pac[finger]
-        pac_mean = bolt_obj.pac_mean[finger]
-        pac_norm = -(pac - np.mean(pac_mean, axis = 0)) 
-        bolt_obj.pac_normalized.append(pac_norm)
+        # Pull the number of steps of the rising curve
+        filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
+             
+        pdc_rise_count.append(max(np.diff(filtered_pdc)))
+        
+        # Compute electrode features
+        #pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
+        #pca.fit(motion.electrodes_normalized[finger])
+        #transf_finger = pca.tranform(motion.electrodes_normalized[finger])'''
 
-        # Flatten PAC
-        bolt_obj.pac_flat.append( pac.reshape(1,len(pac)*22)[0])
-        bolt_obj.pac_flat_normalized.append( pac_norm.reshape(1, len(pac_norm)*22)[0])
+    # Insert more features here to add to the final feature class
+    bolt_feature_obj.pdc_area = pdc_area
+    bolt_feature_obj.pdc_max = pdc_max
+    bolt_feature_obj.pdc_rise_count = pdc_rise_count
 
-    if discard_raw_flag: 
-        # Clear out raw values - comment out later if they want to be stored
-        # Will double the amount of data stored
-        del bolt_obj.pdc[:]
-        del bolt_obj.electrodes[:]
-        del bolt_obj.pac[:]
-        del bolt_obj.tdc[:]
-        del bolt_obj.tac[:]
-
+    return bolt_feature_obj
 
 def rindex(lis, item):
     for i in range(len(lis)-1, -1, -1):
@@ -272,6 +237,64 @@ def texture_features( pac_flat, controller_state, controller_state_detail):
 
     return (total_energy, spectral_moments)
 
+
+
+def smooth(x,window_len=11,window='hanning'):
+    """smooth the data using a window with requested size.
+    
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal 
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+    
+    input:
+        x: the input signal 
+        window_len: the dimension of the smoothing window; should be an odd integer
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+        
+    example:
+
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+    
+    see also: 
+    
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+ 
+    TODO: the window parameter could be the window itself if an array instead of a string
+    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
+    """
+
+    if x.ndim != 1:
+        raise ValueError, "smooth only accepts 1 dimension arrays."
+
+    if x.size < window_len:
+        raise ValueError, "Input vector needs to be bigger than window size."
+
+
+    if window_len<3:
+        return x
+
+
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+
+
+    s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=np.ones(window_len,'d')
+    else:
+        w=eval('np.'+window+'(window_len)')
+
+    y=np.convolve(w/w.sum(),s,mode='valid')
+    return y
 
 
 

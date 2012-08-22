@@ -19,7 +19,6 @@ class BoltPR2MotionObj(object):
     LEFT = 1
 
 
-
     def __init__(self):
         self.state_string = {self.DISABLED:'Disabled',
                     self.THERMAL_HOLD:'Thermal Hold',
@@ -77,7 +76,13 @@ class BoltPR2MotionObj(object):
         self.name = ""
         self.run_number = 0 
         self.object_id = 0
-    
+  
+        # rot - n x 4
+        # trans - n x 3
+        # Store gripper information
+        self.l_tool_frame_transform_rot = []
+        self.l_tool_frame_transform_trans = []
+
         # Store the labels in a dictionary
         self.labels = None 
         
