@@ -1,6 +1,47 @@
 import numpy as np
-import scipy
+import scipy.interpolate
 import pylab
+import tables
+import scipy.ndimage
+
+adjectives = ['sticky',
+              'deformable',
+              'hard',
+              'hollow',
+              'springy',
+              'fuzzy',
+              'rough',
+              'thick',
+              'compact',
+              'elastic',
+              'smooth',
+              'metallic',
+              'unpleasant',
+              'plasticky',
+              'meshy',
+              'nice',
+              'hairy',
+              'compressible',
+              'fibrous',
+              'squishy',
+              'gritty',
+              'textured',
+              'bumpy',
+              'grainy',
+              'scratchy',
+              'cool',
+              'absorbant',
+              'stiff',
+              'solid',
+              'crinkly',
+              'porous',
+              #'warm',
+              'slippery',
+              'thin',
+              #'sparse',
+              'soft']
+phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
+sensors = ["electrodes", "pac", "pdc", "tac"]
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
@@ -76,119 +117,6 @@ def nan_helper(y):
 
     return np.isnan(y), lambda z: z.nonzero()[0]
 
-
-def congrid(a, newdims, method='linear', centre=False, minusone=False):
-    '''Arbitrary resampling of source array to new dimension sizes.
-    Currently only supports maintaining the same number of dimensions.
-    To use 1-D arrays, first promote them to shape (x,1).
-    
-    Uses the same parameters and creates the same co-ordinate lookup points
-    as IDL''s congrid routine, which apparently originally came from a VAX/VMS
-    routine of the same name.
-
-    method:
-    neighbour - closest value from original data
-    nearest and linear - uses n x 1-D interpolations using
-                         scipy.interpolate.interp1d
-    (see Numerical Recipes for validity of use of n 1-D interpolations)
-    spline - uses ndimage.map_coordinates
-
-    centre:
-    True - interpolation points are at the centres of the bins
-    False - points are at the front edge of the bin
-
-    minusone:
-    For example- inarray.shape = (i,j) & new dimensions = (x,y)
-    False - inarray is resampled by factors of (i/x) * (j/y)
-    True - inarray is resampled by(i-1)/(x-1) * (j-1)/(y-1)
-    This prevents extrapolation one element beyond bounds of input array.
-    '''
-    if not a.dtype in [np.float64, np.float32]:
-        a = np.cast[float](a)
-    
-    if len(a.shape) == 2 and a.shape[1] == 1:
-        
-        a = a.ravel()
-        newdims = (newdims[0],)
-
-    m1 = np.cast[int](minusone)
-    ofs = np.cast[int](centre) * 0.5
-    old = np.array( a.shape )
-    ndims = len( a.shape )
-    if len( newdims ) != ndims:
-        print "[congrid] dimensions error. " \
-              "This routine currently only support " \
-              "rebinning to the same number of dimensions."
-        return None
-    newdims = np.asarray( newdims, dtype=float )
-    dimlist = []
-
-    if method == 'neighbour':
-        for i in range( ndims ):
-            base = np.indices(newdims)[i]
-            dimlist.append( (old[i] - m1) / (newdims[i] - m1) \
-                            * (base + ofs) - ofs )
-        cd = np.array( dimlist ).round().astype(int)
-        newa = a[list( cd )]
-        return newa
-
-    elif method in ['nearest','linear']:
-        # calculate new dims
-        for i in range( ndims ):
-            base = np.arange( newdims[i] )
-            dimlist.append( (old[i] - m1) / (newdims[i] - m1) \
-                            * (base + ofs) - ofs )
-        # specify old dims
-        olddims = [np.arange(i, dtype = np.float) for i in list( a.shape )]
-
-        # first interpolation - for ndims = any
-        mint = scipy.interpolate.interp1d( olddims[-1], a, kind=method , bounds_error = False)
-        newa = mint( dimlist[-1] )
-
-        trorder = [ndims - 1] + range( ndims - 1 )
-        for i in range( ndims - 2, -1, -1 ):
-            newa = newa.transpose( trorder )
-
-            mint = scipy.interpolate.interp1d( olddims[i], newa, kind=method, bounds_error = False )
-            newa = mint( dimlist[i] )
-
-        if ndims > 1:
-            # need one more transpose to return to original dimensions
-            newa = newa.transpose( trorder )
-        
-            for col in range(newa.shape[1]):
-                y = newa[:,col]
-                nans, x = nan_helper(y)
-                y[nans] =  np.interp(x(nans), x(~nans), y[~nans])
-                
-        return newa
-    elif method in ['spline']:
-        oslices = [ slice(0,j) for j in old ]
-        oldcoords = np.ogrid[oslices]
-        nslices = [ slice(0,j) for j in list(newdims) ]
-        newcoords = np.mgrid[nslices]
-
-        newcoords_dims = range(np.rank(newcoords))
-        #make first index last
-        newcoords_dims.append(newcoords_dims.pop(0))
-        newcoords_tr = newcoords.transpose(newcoords_dims)
-        # makes a view that affects newcoords
-
-        newcoords_tr += ofs
-
-        deltas = (np.asarray(old) - m1) / (newdims - m1)
-        newcoords_tr *= deltas
-
-        newcoords_tr -= ofs
-
-        newa = scipy.ndimage.map_coordinates(a, newcoords)
-        return newa
-    else:
-        print "Congrid error: Unrecognized interpolation type.\n", \
-              "Currently only \'neighbour\', \'nearest\',\'linear\',", \
-              "and \'spline\' are supported."
-        return None
-    
 def plot_database(database):
     """
     
@@ -211,18 +139,6 @@ def plot_database(database):
             pylab.title(sensor)
 
 def resample(a, dimensions, method='linear', center=False, minusone=False):
-    if a.ndim > 1:
-        if dimensions[1] != a.shape[1]:
-            raise ValueError("The new shape should keep the number of columns")
-        
-        ret = [_resample(col, (dimensions[0],), method, center, minusone)
-                        for col in a.T]
-        return np.array(ret).T
-    else:
-        return _resample(a, dimensions, method, center, minusone)
-               
-
-def _resample(a, dimensions, method='linear', center=False, minusone=False):
     """Arbitrary resampling of source array to new dimension sizes.
     Currently only supports maintaining the same number of dimensions.
     To use 1-D arrays, first promote them to shape (x,1).
@@ -251,6 +167,18 @@ def _resample(a, dimensions, method='linear', center=False, minusone=False):
     -----------
     | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
     """
+    if a.ndim > 1:
+        if dimensions[1] != a.shape[1]:
+            raise ValueError("The new shape should keep the number of columns")
+        
+        ret = [_resample(col, (dimensions[0],), method, center, minusone)
+                        for col in a.T]
+        return np.array(ret).T
+    else:
+        return _resample(a, dimensions, method, center, minusone)
+               
+
+def _resample(a, dimensions, method='linear', center=False, minusone=False):
     orig_data = np.asarray(a)
     
     # Verify that number dimensions requested matches original shape
@@ -279,7 +207,7 @@ def _resample(a, dimensions, method='linear', center=False, minusone=False):
 
 def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     """Resample using either linear or nearest interpolation"""
-    import scipy.interpolate
+
 
     dimlist = []
     
@@ -325,7 +253,6 @@ def _resample_neighbor(orig, dimensions, offset, m1):
 
 def _resample_spline(orig, dimensions, offset, m1):
     """Resample using spline-based interpolation"""
-    import scipy.ndimage
     
     oslices = [slice(0, j) for j in orig.shape]
     old_coords = np.ogrid[oslices] #pylint: disable=W0612
@@ -348,3 +275,55 @@ def _resample_spline(orig, dimensions, offset, m1):
 
     return scipy.ndimage.map_coordinates(orig, newcoords)
 
+def dict_from_h5_group(group, phases, sensors):
+    """
+    Creates a dictionary from an h5 group. The dictionary will have fields:
+    name: the name of the object
+    adjectives: a list of strings
+    data: a dictionary with keys being the phases, and values:
+          one dictionary for each sensor, where the key is the sensor and the
+          value is the data in the sensor
+    """
+    assert isinstance(group, tables.Group)
+    ret_d = dict()
+    ret_d["adjectives"] = group.adjectives[:]
+    ret_d["name"] = group._v_name
+    data = dict()
+    ret_d["data"] = data
+    for phase in phases:
+        phase_data = {}
+        for sensor in sensors:
+            
+            #getting the indexes for the phase
+            indexed = (group.state.controller_detail_state.read() == phase)
+            
+            #finger 0
+            finger_0 = group.biotacs.finger_0
+            data_0 = getattr(finger_0, sensor).read()
+            nrows = data_0.shape[0]
+            data_0 = data_0.reshape((nrows,-1))
+            data_0 = data_0[indexed, :]
+
+            #finger_1
+            finger_1 = group.biotacs.finger_1
+            data_1 = getattr(finger_1, sensor).read()
+            nrows = data_1.shape[0]
+            data_1 = data_1.reshape((nrows,-1))
+            data_1 = data_1[indexed, :]        
+            
+            phase_data[sensor] = np.hstack((data_0, data_1))
+        data[phase] = phase_data
+    
+    return ret_d
+            
+def iterator_over_object_groups(database):
+    """Returns an iterator over all the objects (groups) in the h5 database.
+    If database is a string it will be interpreted as a filename, otherwise
+    as an open pytables file.
+    """
+    if type(database) is str:
+        database = tables.openFile(database,"r")
+    
+    return (g for g in database.root._v_children.values()
+                   if g._v_name != "adjectives")
+    
