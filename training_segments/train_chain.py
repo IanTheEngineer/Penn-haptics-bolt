@@ -38,14 +38,19 @@ adjectives = ['sticky',
               'solid',
               'crinkly',
               'porous',
-              'warm',
+              #'warm',
               'slippery',
               'thin',
               'sparse',
               'soft']
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", 
           "SLIDE_5CM", "MOVE_DOWN_5CM"]
-sensors = ["electrodes", "pac", "pdc", "tac", "tdc"]
+sensors = ["electrodes", 
+           "pac", 
+           "pdc", 
+           "tac", 
+           #"tdc",
+           ]
 
 def train_dataset(dataset, parameters):
     chain = hmm_chain.HMMChain()
@@ -77,6 +82,9 @@ def load_dataset(path, adjective, phase, sensor):
 
 def train_single_dataset(path, adjective, phase, sensor):
     dataset = load_dataset(path, adjective, phase, sensor)
+    if len(dataset) is 0:
+        print "Empty dataset???"
+        return
     
     chain_file_name = "_".join(("chain", adjective, phase, sensor)) + ".pkl"
     newpath = os.path.join(path, "chains")
@@ -90,8 +98,8 @@ def train_single_dataset(path, adjective, phase, sensor):
     
     params = dict(n_pca_components = [0.95],
                   n_hidden_components=[5, 8, 11, 14], 
-                  resampling_size=[10,20,30], 
-                  n_discretization_symbols=[3, 4, 5, 6, 7])
+                  resampling_size=[20], 
+                  n_discretization_symbols=[3, 5, 7, 9])
     print "Using parameters:\n", params
     chain = train_dataset(dataset, params)
     
@@ -113,17 +121,27 @@ def main():
         for adjective in adjectives:
             train_single_dataset(path, adjective, phase, sensor)
     elif len(sys.argv) == 3:
-        path, sensor = sys.argv[1:]
-        print "Training all the adjectives and phases for sensor %s" %(
-                    sensor)
-        for adjective, phase in itertools.product(adjectives, phases):
+        path, adjective = sys.argv[1:]
+        print "Training all the phases and sensors for adjective %s" %(
+                    adjective)
+        for phase, sensor in itertools.product(phases, sensors):
             train_single_dataset(path, adjective, phase, sensor)
+    elif len(sys.argv) == 2:
+        path = sys.argv[1]
+        print "Training all combinations of adjectives, phases and sensor"
+        for adjective, phase, sensor in itertools.product(adjectives, 
+                                                          phases, sensors):
+            try:
+                train_single_dataset(path, adjective, phase, sensor)
+            except Exception, e:
+                print "Got a problem, error is: ", e
     else:
         print "Usage:"
         print "%s path adjective phase sensor" % sys.argv[0]
         print "%s path phase sensor" % sys.argv[0]
         print "%s path sensor" % sys.argv[0]
-    
+        print "%s path" % sys.argv[0]
+        print "Files will be saved in path/chains"
 
 if __name__ == "__main__":
     main()
