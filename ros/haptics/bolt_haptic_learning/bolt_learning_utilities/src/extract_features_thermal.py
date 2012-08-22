@@ -85,10 +85,11 @@ def thermal_features(tdc_norm, tac_norm, controller_state, controller_state_deta
     t = np.arange(1.,len(tdc_norm)+1)
     p0 = [np.mean(tdc_norm), np.max(tdc_norm)-np.min(tdc_norm), (np.max(t)-np.min(t))/2]
     
-    popt = scipy.optimize.fmin(erf,p0,args=(tdc_norm, t),xtol=1e-8)
+    popt = scipy.optimize.fmin(erf,p0,args=(tdc_norm, t),xtol=1e-8, disp=0)
    
     dummy_obj = BoltPR2MotionObj()
     tdc_fit = fit_func(tdc_norm,popt)
+    ''' 
     print "Motion %s, TAC_Area %f, POPT (%f,%f,%f)" % (dummy_obj.state_string[controller_state], tac_area, popt[0], popt[1], popt[2])
 	
 
@@ -98,7 +99,7 @@ def thermal_features(tdc_norm, tac_norm, controller_state, controller_state_deta
     xlabel('Sample number')
     ylabel('TDC')
     title('%s' %(controller_state_str))
-
+    '''
 
     return (tac_area,popt)
 

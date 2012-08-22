@@ -93,10 +93,17 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
     # Store accelerometer
     accelerometer = one_run_pytable_ptr.accelerometer[:] 
     motion_object.accelerometer = accelerometer[idx_segment]
-    
+   
+    # Transforms
+    l_tool_frame_transform_rot = one_run_pytable_ptr.transforms.rotation[:]
+    motion_object.l_tool_frame_transform_rot = l_tool_frame_transform_rot[idx_segment]
+   
+    l_tool_frame_transform_trans = one_run_pytable_ptr.transforms.translation[:]
+    motion_object.l_tool_frame_transform_trans = l_tool_frame_transform_trans[idx_segment]
+   
     # Store detailed states
     detailed_state = one_run_pytable_ptr.state.controller_detail_state[:]
-    motion_object.detailed_state = detailed_state[idx_segment]
+    motion_object.detailed_state = detailed_state[idx_segment].tolist()
 
     return motion_object
 
