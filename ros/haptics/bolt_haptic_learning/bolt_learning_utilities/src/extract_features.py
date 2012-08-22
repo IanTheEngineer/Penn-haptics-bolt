@@ -2,7 +2,7 @@
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import numpy as np
-import sklearn.decomposition
+#import sklearn.decomposition
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 
