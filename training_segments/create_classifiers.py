@@ -5,7 +5,7 @@ import utilities
 from sklearn.externals.joblib import Parallel, delayed
 import sys
 import tables
-import thread
+
 
 adjectives = utilities.adjectives
 #adjectives = ["sticky"]
