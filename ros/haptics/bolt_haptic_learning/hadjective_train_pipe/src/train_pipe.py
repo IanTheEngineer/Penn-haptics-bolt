@@ -16,6 +16,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import cross_validation
 
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
@@ -25,7 +26,7 @@ def loadDataFromH5File(input_file, adjective_file):
     all_bolt_data = utilities.convertH5ToBoltObjFile(input_file, None, False);
    
     # Inserts adjectives into the bolt_data  
-    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority3.pkl", adjective_file, True)
+    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority4.pkl", adjective_file, True)
 
     return all_bolt_data_adj
 
@@ -182,11 +183,37 @@ def train_knn(train_vector, train_labels, test_vector, test_labels, N):
 
     Returns a trained knn classifier
     """
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     knn = KNeighborsClassifier(n_neighbors = N, weights='uniform')
     knn.fit(train_vector, train_labels)
 
-    knn.score(test_vector, test_labels)
+    import pdb; pdb.set_trace()
+    knn_score = knn.score(test_vector, test_labels)
+    knn_predict = knn.predict(test_vector)
+    knn_comparison = knn_predict - test_labels
+
+    return(knn_score, knn_predict, knn_comparison)
+
+
+def true_false_results(predicted_labels, true_labels):
+
+    FP = (predicted_labels - true_labels).tolist().count(1)
+    FN = (predicted_labels - true_labels).tolist().count(-1)
+    TP = (predicted_labels & true_labels).tolist().count(1)
+    TN = ((predicted_labels | true_labels) ^ True).tolist().count(1)
+
+
+    return(TP, TN, FP, FN)
+
+
+def mattews_corr_coef(TP,TN,FP,FN):
+    
+    try:
+        MCC = (TP*TN - FP*FN)/(np.sqrt(((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))))
+    except:
+        MCC = (TP*TN - FP*FN)/1
+
+    return MCC
 
 
 def train_svm(train_vector, train_label):
@@ -216,7 +243,7 @@ def main(input_file, adjective_file):
     train_data, test_data = utilities.split_data(all_data, 0.9)
     
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count"]
+    feature_name_list = ["gripper_close"]
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
 
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
@@ -226,16 +253,23 @@ def main(input_file, adjective_file):
     
     print("Created feature vector containing %s" % feature_name_list)
 
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     # Run k-means
-    k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['squeeze'], 3, all_data['squeeze'])
-  
+    # k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['thermal_hold'], 3, all_data['thermal_hold'])
+     
     # Run KNN
     motion_name = 'squeeze'
-    train_knn(train_feature_vector[motion_name], train_adjective_dictionary['soft'], test_feature_vector[motion_name], test_adjective_dictionary['soft'], 5)
+    adjective_name = 'thick'
+    knn_score, knn_predict, knn_comparison = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adjective_name], test_feature_vector[motion_name], test_adjective_dictionary[adjective_name], 5)
+
+    # Give true and false results
+    TP, TN, FP, FN = true_false_results(knn_predict, test_adjective_dictionary[adjective_name])
+
+    # Give Mattews Correlation Coefficient
+    MCC = mattews_corr_coef(TP,TN,FP,FN)
 
     import pdb; pdb.set_trace()
-    print "Ran KMeans"
+    print "Ran KNN"
     
 
 # Parse the command line arguments

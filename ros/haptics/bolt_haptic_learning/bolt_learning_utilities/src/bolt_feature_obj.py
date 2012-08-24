@@ -25,6 +25,9 @@ class BoltFeatureObj():
         self.pdc_max = []  
         self.pdc_area = []
 
+	self.tac_area = []
+	self.tdc_exp_fit = []
+
         # Store information about object
         self.state = self.DISABLED
         self.detailed_state = []
