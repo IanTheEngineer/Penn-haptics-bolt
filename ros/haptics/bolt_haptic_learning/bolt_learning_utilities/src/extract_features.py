@@ -69,6 +69,14 @@ def extract_features(bolt_pr2_motion_obj):
     pdc_max = []
     pdc_rise_count = []
 
+    # Texture features
+    texture_energy = []
+    texture_sc = []
+    texture_sv = []
+    texture_ss = []
+    texture_sk = []
+
+
     # Temperature features
     temperature_area = []
     temperature_tau = []
@@ -84,7 +92,7 @@ def extract_features(bolt_pr2_motion_obj):
 
         thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        texture_energy_buf, texture_moments_buf =  texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
         #texture_features(bolt_pr2_motion_obj.pac_flat[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
         
@@ -102,10 +110,22 @@ def extract_features(bolt_pr2_motion_obj):
         #pca.fit(motion.electrodes_normalized[finger])
         #transf_finger = pca.tranform(motion.electrodes_normalized[finger])'''
 
+        texture_energy.append(texture_energy_buf)
+        texture_sc.append(texture_moments_buf[0])
+        texture_sv.append(texture_moments_buf[1])
+        texture_ss.append(texture_moments_buf[2])
+        texture_sk.append(texture_moments_buf[3])
+
     # Insert more features here to add to the final feature class
     bolt_feature_obj.pdc_area = pdc_area
     bolt_feature_obj.pdc_max = pdc_max
     bolt_feature_obj.pdc_rise_count = pdc_rise_count
+    bolt_feature_obj.texture_energy = texture_energy
+    bolt_feature_obj.texture_sc = texture_sc
+    bolt_feature_obj.texture_sv = texture_sv
+    bolt_feature_obj.texture_ss = texture_ss
+    bolt_feature_obj.texture_sk = texture_sk
+
 
     return bolt_feature_obj
 

@@ -24,6 +24,11 @@ class BoltFeatureObj():
         self.pdc_rise_count = []
         self.pdc_max = []  
         self.pdc_area = []
+        self.texture_energy = []
+        self.textue_sc = []
+        self.texture_sv = []
+        self.texture_ss = []
+        self.texture_sk = []
 
         # Store information about object
         self.state = self.DISABLED

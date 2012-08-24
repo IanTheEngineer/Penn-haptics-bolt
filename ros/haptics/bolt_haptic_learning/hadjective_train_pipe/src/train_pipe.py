@@ -16,6 +16,14 @@ from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.cross_validation import cross_val_score
+from sklearn.cross_validation import train_test_split
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import classification_report
 
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
@@ -25,7 +33,7 @@ def loadDataFromH5File(input_file, adjective_file):
     all_bolt_data = utilities.convertH5ToBoltObjFile(input_file, None, False);
    
     # Inserts adjectives into the bolt_data  
-    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority3.pkl", adjective_file, True)
+    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority4.pkl", adjective_file, True)
 
     return all_bolt_data_adj
 
@@ -140,7 +148,7 @@ def run_kmeans(input_vector, num_clusters, obj_data):
 
     Returns the populated clusters 
     """
-    k_means = KMeans(init='k-means++', k=num_clusters, n_init=100)
+    k_means = KMeans(init='k-means++', n_clusters=num_clusters, n_init=100)
 
     k_means.fit(input_vector)
     k_means_labels = k_means.labels_
@@ -169,12 +177,12 @@ def run_kmeans(input_vector, num_clusters, obj_data):
         
         cluster_all_adjectives[adj] = cluster_adj
 
-    import pdb; pdb.set_trace() 
+    #import pdb; pdb.set_trace() 
     
     return (k_means_labels, k_means_cluster_centers, clusters)
 
 
-def train_knn(train_vector, train_labels, test_vector, test_labels, N):
+def train_knn(train_vector, train_labels, test_vector, test_labels):
     """
     train_knn - expects a vector of features and a nx1 set of
                 corresponding labels.  Finally the number of
@@ -182,14 +190,17 @@ def train_knn(train_vector, train_labels, test_vector, test_labels, N):
 
     Returns a trained knn classifier
     """
-    import pdb; pdb.set_trace()
-    knn = KNeighborsClassifier(n_neighbors = N, weights='uniform')
+    
+    # Grid search with nested cross-validation
+    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7]}]
+    knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=5)
     knn.fit(train_vector, train_labels)
+    score = knn.grid_scores_
+    report = classification_report(test_labels, knn.predict(test_vector))
 
-    knn.score(test_vector, test_labels)
+    return (knn, score, report)
 
-
-def train_svm(train_vector, train_label):
+def train_svm(train_vector, train_labels, test_vector, test_labels):
     """
     train_svm - expects a vector of features and a nx1 set of
                 corresponding labels
@@ -197,6 +208,14 @@ def train_svm(train_vector, train_label):
     Returns the a trained SVM classifier
     """
 
+    # Grid search with nested cross-validation
+    parameters = [{'kernel': ['rbf'], 'C': [1, 10, 100, 1000], 'gamma': [1e-3, 1e-4]}, {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
+    svc = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=5)
+    svc.fit(train_vector, train_labels)
+    score = svc.grid_scores_
+    report = classification_report(test_labels, svc.predict(test_vector))
+
+    return (svc, score, report)
 
 
 # MAIN FUNCTION
@@ -216,7 +235,7 @@ def main(input_file, adjective_file):
     train_data, test_data = utilities.split_data(all_data, 0.9)
     
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count"]
+    feature_name_list = ["texture_energy", "texture_sc", "texture_sv", "texture_ss", "texture_sk"]
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
 
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
@@ -226,17 +245,59 @@ def main(input_file, adjective_file):
     
     print("Created feature vector containing %s" % feature_name_list)
 
-    import pdb; pdb.set_trace()
-    # Run k-means
-    k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['squeeze'], 3, all_data['squeeze'])
-  
-    # Run KNN
-    motion_name = 'squeeze'
-    train_knn(train_feature_vector[motion_name], train_adjective_dictionary['soft'], test_feature_vector[motion_name], test_adjective_dictionary['soft'], 5)
+    all_knn_classifiers = dict()
+    all_svm_classifiers = dict()
+    all_knn_scores = dict()
+    all_svm_scores = dict()
+    all_knn_reports = dict()
+    all_svm_reports = dict()
 
-    import pdb; pdb.set_trace()
-    print "Ran KMeans"
+    for motion_name in all_data:
+        
+  
+        # Run k-means
+        k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector[motion_name], 3, all_data[motion_name])
+        print "Ran KMeans"
+
+        # Run KNN
+        adjectives = all_data[motion_name][0].labels.keys()
+        knn_classifiers = dict()
+        knn_scores = dict()
+        knn_reports = dict()
+
+        for adj in adjectives:
+            knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+            knn_classifiers[adj] = knn
+            knn_scores[adj] = score
+            knn_reports[adj] = report
+
+        all_knn_classifiers[motion_name] = knn_classifiers
+        all_knn_scores[motion_name] = knn_scores
+        all_knn_reports[motion_name] = knn_reports
+        print "Ran KNearestNeighbors"
+        #import pdb; pdb.set_trace()
     
+        # Run SVM
+        svm_classifiers = dict()
+        svm_scores = dict()
+        svm_reports = dict()
+    
+        for adj in adjectives:
+            svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+            svm_classifiers[adj] = svm
+            svm_scores[adj] = score
+            svm_reports[adj] = report
+
+        all_svm_classifiers[motion_name] = svm_classifiers
+        all_svm_scores[motion_name] = svm_scores
+        all_svm_reports[motion_name] = svm_reports
+        print "Ran SVM"
+        import pdb; pdb.set_trace()
+        pass
+        
+    import pdb; pdb.set_trace()
+    pass
+
 
 # Parse the command line arguments
 def parse_arguments():
