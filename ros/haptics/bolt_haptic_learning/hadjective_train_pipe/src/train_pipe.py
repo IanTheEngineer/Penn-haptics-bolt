@@ -14,6 +14,7 @@ import sklearn.decomposition
 from bolt_feature_obj import BoltFeatureObj
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.metrics import classification_report
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import cross_validation
@@ -192,6 +193,9 @@ def train_knn(train_vector, train_labels, test_vector, test_labels, N):
     knn_predict = knn.predict(test_vector)
     knn_comparison = knn_predict - test_labels
 
+    report = classification_report(test_labels, knn_predict, labels=None, target_names = None)
+    print report
+
     return(knn_score, knn_predict, knn_comparison)
 
 
@@ -239,28 +243,43 @@ def main(input_file, adjective_file):
 
     print "loaded data"
 
+    import pdb;pdb.set_trace()
+   
+    all_knn_results = dict()
+
+    #If the input is a single pickle file
+    #for i in range (36)
+    #adjective_name = all_data['squeeze'][0].labels.keys()[i]
+    #all_knn_results[adjective_name] = dict()
+    #for motion_name in all_data.get(motion_name)
+    #all_knn_results[adjective].motion_name = []
+   
+
     # Split the data into train and test
     train_data, test_data = utilities.split_data(all_data, 0.9)
     
     # Take loaded data and extract out features
     feature_name_list = ["gripper_close"]
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
-
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
 
     # Do for all data for clustering purposes
     all_feature_vector, all_adjective_dictionary = bolt_obj_2_feature_vector(all_data, feature_name_list)
-    
+   
     print("Created feature vector containing %s" % feature_name_list)
 
     #import pdb; pdb.set_trace()
     # Run k-means
     # k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['thermal_hold'], 3, all_data['thermal_hold'])
-     
+   
     # Run KNN
-    motion_name = 'squeeze'
-    adjective_name = 'thick'
+
+    #motion_name = 'squeeze'
+    #adjective_name = 'bumpy'
+
     knn_score, knn_predict, knn_comparison = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adjective_name], test_feature_vector[motion_name], test_adjective_dictionary[adjective_name], 5)
+        
+    all_knn_results[adjective_name][motion_name]
 
     # Give true and false results
     TP, TN, FP, FN = true_false_results(knn_predict, test_adjective_dictionary[adjective_name])
