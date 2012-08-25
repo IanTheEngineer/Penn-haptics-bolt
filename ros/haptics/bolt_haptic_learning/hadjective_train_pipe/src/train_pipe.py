@@ -24,6 +24,7 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import classification_report
+from sklearn import cross_validation
 
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
@@ -200,6 +201,27 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
 
     return (knn, score, report)
 
+
+def true_false_results(predicted_labels, true_labels):
+
+    FP = (predicted_labels - true_labels).tolist().count(1)
+    FN = (predicted_labels - true_labels).tolist().count(-1)
+    TP = (predicted_labels & true_labels).tolist().count(1)
+    TN = ((predicted_labels | true_labels) ^ True).tolist().count(1)
+
+
+    return(TP, TN, FP, FN)
+
+
+def matthews_corr_coef(TP,TN,FP,FN):
+    
+    try:
+        MCC = (TP*TN - FP*FN)/(np.sqrt(((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))))
+    except:
+        MCC = (TP*TN - FP*FN)/1
+
+    return (MCC)
+
 def train_svm(train_vector, train_labels, test_vector, test_labels):
     """
     train_svm - expects a vector of features and a nx1 set of
@@ -219,7 +241,7 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
 
 
 # MAIN FUNCTION
-def main(input_file, adjective_file):
+def main(input_file, adjective_file, train_once_flag = False):
  
     # Load data into the pipeline, either from an h5 and adjective
     # File or directly from a saved pkl file
@@ -236,6 +258,7 @@ def main(input_file, adjective_file):
     
     # Take loaded data and extract out features
     feature_name_list = ["texture_energy", "texture_sc", "texture_sv", "texture_ss", "texture_sk"]
+ 
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
 
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
@@ -245,58 +268,80 @@ def main(input_file, adjective_file):
     
     print("Created feature vector containing %s" % feature_name_list)
 
-    all_knn_classifiers = dict()
-    all_svm_classifiers = dict()
-    all_knn_scores = dict()
-    all_svm_scores = dict()
-    all_knn_reports = dict()
-    all_svm_reports = dict()
-
-    for motion_name in all_data:
+    if train_once_flag:
+        motion_name = 'slide'
+        adj = 'rough'
         
-  
         # Run k-means
         k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector[motion_name], 3, all_data[motion_name])
         print "Ran KMeans"
-
+        
         # Run KNN
-        adjectives = all_data[motion_name][0].labels.keys()
-        knn_classifiers = dict()
-        knn_scores = dict()
-        knn_reports = dict()
+        knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+        print "Ran KNN"
 
-        for adj in adjectives:
-            knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-            knn_classifiers[adj] = knn
-            knn_scores[adj] = score
-            knn_reports[adj] = report
-
-        all_knn_classifiers[motion_name] = knn_classifiers
-        all_knn_scores[motion_name] = knn_scores
-        all_knn_reports[motion_name] = knn_reports
-        print "Ran KNearestNeighbors"
-        #import pdb; pdb.set_trace()
-    
         # Run SVM
-        svm_classifiers = dict()
-        svm_scores = dict()
-        svm_reports = dict()
-    
-        for adj in adjectives:
-            svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-            svm_classifiers[adj] = svm
-            svm_scores[adj] = score
-            svm_reports[adj] = report
-
-        all_svm_classifiers[motion_name] = svm_classifiers
-        all_svm_scores[motion_name] = svm_scores
-        all_svm_reports[motion_name] = svm_reports
+        svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
         print "Ran SVM"
+
+        # Give true and false results
+        TP, TN, FP, FN = true_false_results(knn.predict(test_feature_vector[motion_name]), test_adjective_dictionary[adj])
+
+        # Give Mattews Correlation Coefficient
+        MCC = matthews_corr_coef(TP,TN,FP,FN)
+
         import pdb; pdb.set_trace()
         pass
+
+    else:
+
+        all_knn_classifiers = dict()
+        all_svm_classifiers = dict()
+        all_knn_scores = dict()
+        all_svm_scores = dict()
+        all_knn_reports = dict()
+        all_svm_reports = dict()
+
+        for motion_name in all_data:
+
+            # Run KNN
+            adjectives = all_data[motion_name][0].labels.keys()
+            knn_classifiers = dict()
+            knn_scores = dict()
+            knn_reports = dict()
+
+            for adj in adjectives:
+                knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+                knn_classifiers[adj] = knn
+                knn_scores[adj] = score
+                knn_reports[adj] = report
+
+            all_knn_classifiers[motion_name] = knn_classifiers
+            all_knn_scores[motion_name] = knn_scores
+            all_knn_reports[motion_name] = knn_reports
+            print "Ran KNN"
+            #import pdb; pdb.set_trace()
+    
+            # Run SVM
+            svm_classifiers = dict()
+            svm_scores = dict()
+            svm_reports = dict()
+
+            for adj in adjectives:
+                svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+                svm_classifiers[adj] = svm
+                svm_scores[adj] = score
+                svm_reports[adj] = report
+
+            all_svm_classifiers[motion_name] = svm_classifiers
+            all_svm_scores[motion_name] = svm_scores
+            all_svm_reports[motion_name] = svm_reports
+            print "Ran SVM"
+            import pdb; pdb.set_trace()
+            pass
         
-    import pdb; pdb.set_trace()
-    pass
+        import pdb; pdb.set_trace()
+        pass
 
 
 # Parse the command line arguments

@@ -30,6 +30,9 @@ class BoltFeatureObj():
         self.texture_ss = []
         self.texture_sk = []
 
+	self.tac_area = []
+	self.tdc_exp_fit = []
+
         # Store information about object
         self.state = self.DISABLED
         self.detailed_state = []
