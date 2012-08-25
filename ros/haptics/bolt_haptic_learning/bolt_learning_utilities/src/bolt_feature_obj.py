@@ -25,13 +25,13 @@ class BoltFeatureObj():
         self.pdc_max = []  
         self.pdc_area = []
         self.texture_energy = []
-        self.textue_sc = []
+        self.texture_sc = []
         self.texture_sv = []
         self.texture_ss = []
         self.texture_sk = []
 
-	self.tac_area = []
-	self.tdc_exp_fit = []
+        self.tac_area = []
+    	self.tdc_exp_fit = []
 
         # Store information about object
         self.state = self.DISABLED
