@@ -211,4 +211,72 @@ def split_data(all_bolt_data, train_size):
     
     return (train_bolt_data, test_bolt_data)
 
+# Compute precision, recall and f1 score
+def compute_statistics(predicted_label, truth_label):
+    '''
+    Given the predicted label from a supervised machine
+    learning classifier, will return metrics about 
+    how well the classifier performed.
+
+    Recall - measure of how many true positives pulled
+             from the dataset.
+             Ex. if there are 20 objects that are "soft"
+                 and only 15 are found, the recall is
+                 15/20 = 75%
+
+    Precision - measure of how accurate the classifier
+                was (number of false negatives found)
+                Ex. if the classifier returned 10 objects
+                    that are soft and only 6 of them are
+                    actually soft, the precision is
+                    6/10 = 60%
+
+    F1 score -  combining recall and precision into one
+                score.  F1 score is the equally weighted
+                mean of the two
+    
+    NOTE: This function makes the assumption that the
+          labels are binary (1 and 0)
+    '''
+
+    # Subtract the true label from the predicted label
+    label_sub = predicted_label - truth_label
+
+    # Get total number of objects that were labeled true
+    num_objects_found = float(sum(predicted_label))
+    
+    # Get total number of objects that should be true
+    num_objects_truth = float(sum(truth_label))
+
+    # If there is a -1 in the label_sub - that means that
+    # the classifier missed labeling the object as true
+    # This is used for recall
+    num_objects_missed = float(np.shape(np.nonzero(label_sub == -1)[0])[0]) 
+
+    # If there is a 1 in the label_sub - that means that
+    # the classifier returned true for that object
+    # when it should have been false - this make it
+    # a false positive
+    num_objects_wrong = float(np.shape(np.nonzero(label_sub == 1)[0])[0])
+
+    import pdb; pdb.set_trace()
+    # Calculate precision
+    precision = (num_objects_found-num_objects_wrong)/num_objects_found
+
+    # Calculate recall
+    recall = (num_objects_truth-num_objects_missed)/num_objects_truth
+
+    # Calculate fscore
+    f1 = 2* ((precision * recall)/(precision + recall))
+
+    return precision, recall, f1
+
+ 
+
+
+
+
+
+
+
 
