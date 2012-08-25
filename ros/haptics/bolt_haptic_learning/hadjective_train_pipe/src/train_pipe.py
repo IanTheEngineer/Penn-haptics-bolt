@@ -223,7 +223,7 @@ def matthews_corr_coef(TP,TN,FP,FN):
 
     return (MCC)
 
-def train_svm(train_vector, train_labels, test_vector, test_labels):
+#def train_svm(train_vector, train_labels, test_vector, test_labels):
     """
     train_svm - expects a vector of features and a nx1 set of
                 corresponding labels
@@ -232,13 +232,13 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     """
 
     # Grid search with nested cross-validation
-    parameters = [{'kernel': ['rbf'], 'C': [1, 10, 100, 1000], 'gamma': [1e-3, 1e-4]}, {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
-    svc = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=5)
-    svc.fit(train_vector, train_labels)
-    score = svc.grid_scores_
-    report = classification_report(test_labels, svc.predict(test_vector))
+#    parameters = [{'kernel': ['rbf'], 'C': [1, 10, 100, 1000], 'gamma': [1e-3, 1e-4]}, {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
+#    svc = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=5)
+#    svc.fit(train_vector, train_labels)
+#    score = svc.grid_scores_
+#    report = classification_report(test_labels, svc.predict(test_vector))
 
-    return (svc, score, report)
+#    return (svc, score, report)
 
 
 # MAIN FUNCTION
@@ -270,7 +270,9 @@ def main(input_file, adjective_file, train_once_flag = False):
     train_data, test_data = utilities.split_data(all_data, 0.9)
     
     # Take loaded data and extract out features
-    feature_name_list = ["texture_energy", "texture_sc", "texture_sv", "texture_ss", "texture_sk"]
+    # feature_name_list = ["texture_energy", "texture_sc", "texture_sv", "texture_ss", "texture_sk"]
+    feature_name_list = [ "tac_area", "tdc_exp_fit"]
+    #feature_name_list = [ "gripper_mean","gripper_min", "gripper_close"]
  
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
@@ -281,28 +283,28 @@ def main(input_file, adjective_file, train_once_flag = False):
     print("Created feature vector containing %s" % feature_name_list)
 
     if train_once_flag:
-        motion_name = 'slide'
-        adj = 'rough'
+        motion_name_test = 'slide'
+        adj_test = 'rough'
         
         # Run k-means
-        k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector[motion_name], 3, all_data[motion_name])
+        k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector[motion_name_test], 3, all_data[motion_name_test])
         print "Ran KMeans"
         
         # Run KNN
-        knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+        knn, score, report = train_knn(train_feature_vector[motion_name_test], train_adjective_dictionary[adj_test], test_feature_vector[motion_name_test], test_adjective_dictionary[adj_test])
         print "Ran KNN"
 
         # Run SVM
-        svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-        print "Ran SVM"
+        # svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+        # print "Ran SVM"
 
         # Give true and false results
-        TP, TN, FP, FN = true_false_results(knn.predict(test_feature_vector[motion_name]), test_adjective_dictionary[adj])
+        TP, TN, FP, FN = true_false_results(knn.predict(test_feature_vector[motion_name_test]), test_adjective_dictionary[adj_test])
 
         # Give Mattews Correlation Coefficient
         MCC = matthews_corr_coef(TP,TN,FP,FN)
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         pass
 
     else:
@@ -335,22 +337,22 @@ def main(input_file, adjective_file, train_once_flag = False):
             #import pdb; pdb.set_trace()
     
             # Run SVM
-            svm_classifiers = dict()
-            svm_scores = dict()
-            svm_reports = dict()
+            #svm_classifiers = dict()
+            #svm_scores = dict()
+            #svm_reports = dict()
 
-            for adj in adjectives:
-                svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-                svm_classifiers[adj] = svm
-                svm_scores[adj] = score
-                svm_reports[adj] = report
+            #for adj in adjectives:
+            #    svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+            #    svm_classifiers[adj] = svm
+            #    svm_scores[adj] = score
+            #    svm_reports[adj] = report
 
-            all_svm_classifiers[motion_name] = svm_classifiers
-            all_svm_scores[motion_name] = svm_scores
-            all_svm_reports[motion_name] = svm_reports
-            print "Ran SVM"
-            import pdb; pdb.set_trace()
-            pass
+            #all_svm_classifiers[motion_name] = svm_classifiers
+            #all_svm_scores[motion_name] = svm_scores
+            #all_svm_reports[motion_name] = svm_reports
+            #print "Ran SVM"
+            #import pdb; pdb.set_trace()
+            #pass
         
         import pdb; pdb.set_trace()
         pass
