@@ -82,6 +82,9 @@ def extract_features(bolt_pr2_motion_obj):
     gripper_close = []
     gripper_mean = []
 
+    # Transform features
+    transform_height = []
+
     # Electrode features
     electrode_polyfit = []
 
@@ -94,8 +97,9 @@ def extract_features(bolt_pr2_motion_obj):
 
         texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
       
-        end_gripper, start_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
+	transform_z = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
         #texture_features(bolt_pr2_motion_obj.pac_flat[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
         
         # Compute pdc features 
@@ -108,8 +112,11 @@ def extract_features(bolt_pr2_motion_obj):
 
         # Compute gripper aperture features
         gripper_min.append(end_gripper)
-        gripper_close.append(start_gripper - end_gripper)
+        #gripper_close.append(start_gripper - end_gripper)
         gripper_mean.append(mean_gripper)
+
+	# Extract transform features
+	transform_height.append(transform_z)
 
         # Pull the number of steps of the rising curve
         filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
@@ -130,8 +137,10 @@ def extract_features(bolt_pr2_motion_obj):
     bolt_feature_obj.tdc_exp_fit = tdc_exp_fit
 
     bolt_feature_obj.grippe_min = gripper_min
-    bolt_feature_obj.gripper_close = gripper_close
+    #bolt_feature_obj.gripper_close = gripper_close
     bolt_feature_obj.gripper_mean = gripper_mean
+
+    bolt_feature_obj.transform_height = transform_height
 
     return bolt_feature_obj
 
@@ -266,35 +275,7 @@ def texture_features( pac_flat, controller_state, controller_state_detail):
 
 
 def gripper_features( gripper_position, pdc_norm, controller_state, controller_state_detail ):
-
-    #k = []
-    #try:
-        #if controller_state is BoltPR2MotionObj.THERMAL_HOLD:
-        #    controller_state_str = "THERMAL_HOLD"
-        #    k.append(controller_state_detail.index('HOLD_FOR_10_SECONDS'))
-        #    k.append((rindex(controller_state_detail,'OPEN_GRIPPER_BY_2CM_FAST')+1))
-        #elif controller_state is BoltPR2MotionObj.SLIDE:
-        #    controller_state_str = "SLIDE"
-        #    k.append(controller_state_detail.index('SLIDE_5CM'))
-        #    k.append((rindex(controller_state_detail,'SLIDE_5CM')+1))
-        #elif controller_state is BoltPR2MotionObj.SQUEEZE:
-        #    controller_state_str = "SQUEEZE"
-        #    k.append(controller_state_detail.index('SQUEEZE_SET_PRESSURE_SLOW'))
-        #    k.append((rindex(controller_state_detail,'SQUEEZE_SET_PRESSURE_SLOW')+1))
-        #elif controller_state is BoltPR2MotionObj.TAP:
-            #controller_state_str = "TAP"
-            #k.append(controller_state_detail.index('MOVE_GRIPPER_FAST_CLOSE'))
-            #k.append((rindex(controller_state_detail,'OPEN_GRIPPER_BY_2CM_FAST')+1))
-        #elif controller_state is BoltPR2MotionObj.SLIDE_FAST:
-            #controller_state_str = "SLIDE_FAST"
-            #k.append(controller_state_detail.index('MOVE_DOWN_5CM'))
-            #k.append((rindex(controller_state_detail,'MOVE_DOWN_5CM')+1))
-       # else:
-            #rospy.logerr('Bad Controller State in textureFeatures() with state %d' % controller_state)
-    #except:
-
-        #rospy.logerr('Detailed Controller State not found in textureFeatures() with state %d' % controller_state)
-   
+    """
     if controller_state is BoltPR2MotionObj.TAP:
        threshold = 2
        #print "TAP!!!"
@@ -306,15 +287,15 @@ def gripper_features( gripper_position, pdc_norm, controller_state, controller_s
        #print "SLIDE FAST!!!"
     else:
        threshold = 10
- 
+    """
     gripper_position = gripper_position.tolist()
 
 
     #import pdb;pdb.set_trace()
 
-    pdc_high = pdc_norm > threshold
-    start_index = pdc_high.tolist().index(1)
-    start_gripper = gripper_position[start_index]
+    #pdc_high = pdc_norm > threshold
+    #start_index = pdc_high.tolist().index(1)
+    #start_gripper = gripper_position[start_index]
 
     end_gripper = min(gripper_position)
 
@@ -322,15 +303,22 @@ def gripper_features( gripper_position, pdc_norm, controller_state, controller_s
     
 
  
-    return (end_gripper, start_gripper, mean_gripper)
+    return (end_gripper, mean_gripper)
 
-
-def transform_features(frame_transform)
     
-    height_min = min(frame_transform)
+def transform_features(frame_transform):
+
+    #import pdb;pdb.set_trace()
+    #pass
+
+    num_raw = frame_transform.shape[0]
+    pick = np.array([2]*num_raw)
+    height = frame_transform[np.arange(num_raw),pick]
+    
+    height_min = min(height.tolist())
 
     return height_min
-
+    
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
