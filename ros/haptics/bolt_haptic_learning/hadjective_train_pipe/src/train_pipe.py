@@ -6,6 +6,7 @@ import sys
 import os
 from optparse import OptionParser
 import cPickle
+import pickle
 import bolt_learning_utilities as utilities
 import extract_features as extract_features
 import matplotlib.pyplot as plt 
@@ -219,6 +220,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=5)
     knn.fit(train_vector, train_labels)
     score = knn.grid_scores_
+    knn_best = knn.best_estimator_
     report = classification_report(test_labels, knn.predict(test_vector))
 
     return (knn, score, report)
@@ -261,11 +263,14 @@ def single_train(feature_vector, labels):
     print "Ran KNN"
 
     # Run SVM
-    svm, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
+    #svm, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
+    svm_report = 'Skip the svm'
     print "Ran SVM"
 
     import pdb; pdb.set_trace()
     pass
+
+    return(knn_report, svm_report)
 
 
 def full_train(feature_vector, labels):
@@ -318,7 +323,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
 
     # Take loaded data and extract out features
     feature_name_list = ["texture_energy", "texture_sc", "texture_sv", "texture_ss", "texture_sk", "tac_area", "tdc_exp_fit"]
-    
+    #feature_name_list = ["transform_height"]    
+
     # Pull desired features from feature objects
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_all_features_obj_dict, feature_name_list)
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_all_features_obj_dict, feature_name_list)
@@ -326,10 +332,140 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     print("Created feature vector containing %s" % feature_name_list)
 
 
-    motion_name = 'slide'
-    adjective = 'rough'
-    single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective])
+    """ 
+    # Run a single training for test
 
+    # Create a file for storing the scores and reports
+    report_file = open("Single Train Reports.txt", "a")
+
+    motion_name = 'slide'
+    adjective = 'sticky'
+    knn_report, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective])
+    
+    report_file.write('Motion name: ')
+    report_file.write(motion_name)
+    report_file.write('\nAdjective: ')
+    report_file.write(adjective)
+    report_file.write('\nKNN report\n')
+    report_file.write(knn_report)
+    report_file.write('\nSVM report\n')
+    report_file.write(svm_report)
+    report_file.write('\n\n')
+
+    report_file.close()
+    """
+
+    # Generate 36*5 classifiers
+    report_file = open("Full_SVM_reports.txt", "a")
+    
+    all_knn_classifiers = dict()
+    all_knn_scores = dict()
+    all_knn_reports = dict()
+    all_svm_classifiers = dict()
+    all_svm_scores = dict()
+    all_svm_reports = dict()
+
+    #import pdb;pdb.set_trace()
+
+    adjectives = all_data['tap'][0].labels.keys()
+
+    """
+    # Run KNN
+    for adj in adjectives:
+	knn_classifiers = dict()
+        knn_scores = dict()
+        knn_reports = dict()
+       
+        pkl_file_name = adj.replace("'",'"')
+        pkl_file_suffix = ".pkl"
+	pkl_file_name += pkl_file_suffix
+	
+
+	#import pdb;pdb.set_trace() 	
+	#pass
+
+	for  motion_name in all_data:
+   	     knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+             knn_classifiers[motion_name] = knn
+             knn_scores[motion_name] = score
+	     knn_reports[motion_name] = report
+             
+	     # Store the report into a text file
+             report_file.write('Adjective: ')
+             report_file.write(adj)
+	     report_file.write('    Motion name: ')
+    	     report_file.write(motion_name)
+    	     report_file.write('\nKNN report\n')
+	     report_file.write(report)
+	     report_file.write('\n\n')
+
+	# When trainings for a certain adjective with all five motions are done, save this classifier
+        # cPickle.dump(knn_classifiers, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
+        # del pkl_file_name
+              
+        all_knn_classifiers[adj] = knn_classifiers
+        all_knn_scores[adj] = knn_scores
+        all_knn_reports[adj] = knn_reports
+
+        #import pdb;pdb.set_trace()
+        #pass
+
+    print "Ran KNN"
+
+    #import pdb;pdb.set_trace()
+    #pass
+    """
+
+    # Run SVM
+
+    for adj in adjectives:
+        svm_classifiers = dict()
+        svm_scores = dict()
+        svm_reports = dict()
+        """
+        pkl_file_name = adj.replace("'",'"')
+        pkl_file_suffix = ".pkl"
+        pkl_file_name += pkl_file_suffix
+        """
+
+        #import pdb;pdb.set_trace()     
+        #pass
+
+        for  motion_name in all_data:
+	     svm_classifiers = dict()
+             svm_scores = dict()
+             svm_reports = dict()
+
+             svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+             svm_classifiers[adj] = svm
+             svm_scores[adj] = score
+             svm_reports[adj] = report
+
+             
+	     # Store the report into a text file
+             report_file.write('Adjective: ')
+             report_file.write(adj)
+             report_file.write('    Motion name: ')
+             report_file.write(motion_name)
+             report_file.write('\nSVM report\n')
+             report_file.write(report)
+             report_file.write('\n\n')
+
+        # When trainings for a certain adjective with all five motions are done, save this classifier
+        # cPickle.dump(knn_classifiers, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
+        # del pkl_file_name
+
+        all_svm_classifiers[adj] = svm_classifiers
+        all_svm_scores[adj] = svm_scores
+        all_svm_reports[adj] = svm_reports
+
+        #import pdb;pdb.set_trace()
+        #pass
+
+    print "Ran SVM"
+        
+
+    # Generate (5*36)*2 classifiers
     """
 
         all_knn_classifiers = dict()
