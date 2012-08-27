@@ -28,6 +28,8 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import classification_report
 from sklearn import cross_validation
 
+from sklearn import preprocessing
+
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
 def loadDataFromH5File(input_file, adjective_file):
@@ -215,13 +217,20 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     Returns a trained knn classifier
     """
     
+    # Data scaling
+    train_vector_scaled = preprocessing.scale(train_vector)
+    test_vector_scaled = preprocessing.scale(test_vector)
+
     # Grid search with nested cross-validation
-    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7]}]
+    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}]
     knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=5)
-    knn.fit(train_vector, train_labels)
+    knn.fit(train_vector_scaled, train_labels)
     score = knn.grid_scores_
     knn_best = knn.best_estimator_
-    report = classification_report(test_labels, knn.predict(test_vector))
+    report = classification_report(test_labels, knn.predict(test_vector_scaled))
+
+    import pdb; pdb.set_trace()
+    pass
 
     return (knn, score, report)
 
@@ -233,16 +242,23 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
 
     Returns a trained SVM classifier
     """
-    import pdb; pdb.set_trace()
+    
+    # Data scaling
+    train_vector_scaled = preprocessing.scale(train_vector)
+    test_vector_scaled = preprocessing.scale(test_vector)
+    
     # Grid search with nested cross-validation
-    #parameters = [{'kernel': ['rbf'], 'C': [1, 10, 100, 1000], 'gamma': [1e-3, 1e-4]}, {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
-    #svc = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=5)
-    svc = SVC(C = 1, kernel = 'linear')
-    svc.fit(train_vector, train_labels)
-    score = svc.grid_scores_
-    report = classification_report(test_labels, svc.predict(test_vector))
+    parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
+    #parameters = {'kernel': ['poly'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]} 
+    svm = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=8)
+    svm.fit(train_vector_scaled, train_labels)
+    score = svm.grid_scores_
+    #score = svm.score(test_vector, test_labels)
 
-    return (svc, score, report)
+    import pdb; pdb.set_trace()
+    pass
+
+    return (svm, score, report)
 
 
 def single_train(feature_vector, labels):
@@ -256,19 +272,16 @@ def single_train(feature_vector, labels):
     """
 
     # Split data
-    train_vector, test_vector, train_labels, test_labels = train_test_split(feature_vector, labels, test_size=0.75)
+    train_vector, test_vector, train_labels, test_labels = train_test_split(feature_vector, labels, test_size=0.25)
 
     # Run KNN
     knn, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
     print "Ran KNN"
 
     # Run SVM
-    #svm, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
-    svm_report = 'Skip the svm'
+    svm, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
-    import pdb; pdb.set_trace()
-    pass
 
     return(knn_report, svm_report)
 
@@ -322,8 +335,9 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
         print "loaded data"
 
     # Take loaded data and extract out features
-    feature_name_list = ["texture_energy", "texture_sc", "texture_sv", "texture_ss", "texture_sk", "tac_area", "tdc_exp_fit"]
-    #feature_name_list = ["transform_height"]    
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit"]
+
+
 
     # Pull desired features from feature objects
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_all_features_obj_dict, feature_name_list)
@@ -331,30 +345,29 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
 
     print("Created feature vector containing %s" % feature_name_list)
 
+    
 
-    """ 
+
+    
     # Run a single training for test
 
     # Create a file for storing the scores and reports
-    report_file = open("Single Train Reports.txt", "a")
+    report_file = open("Single_Train_Reports.txt", "a")
 
     motion_name = 'slide'
-    adjective = 'sticky'
+    adjective = 'hard'
     knn_report, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective])
     
-    report_file.write('Motion name: ')
-    report_file.write(motion_name)
-    report_file.write('\nAdjective: ')
-    report_file.write(adjective)
-    report_file.write('\nKNN report\n')
-    report_file.write(knn_report)
-    report_file.write('\nSVM report\n')
-    report_file.write(svm_report)
+    report_file.write('Motion name: '+motion_name)
+    report_file.write('\nAdjective: '+adjective)
+    report_file.write('\nKNN report\n'+knn_report)
+    report_file.write('\nSVM report\n'+svm_report)
     report_file.write('\n\n')
 
     report_file.close()
-    """
 
+    
+    """
     # Generate 36*5 classifiers
     report_file = open("Full_SVM_reports.txt", "a")
     
@@ -368,7 +381,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     #import pdb;pdb.set_trace()
 
     adjectives = all_data['tap'][0].labels.keys()
-
+    """
     """
     # Run KNN
     for adj in adjectives:
@@ -415,18 +428,18 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     #import pdb;pdb.set_trace()
     #pass
     """
-
+    """
     # Run SVM
 
     for adj in adjectives:
         svm_classifiers = dict()
         svm_scores = dict()
         svm_reports = dict()
-        """
+        
         pkl_file_name = adj.replace("'",'"')
         pkl_file_suffix = ".pkl"
         pkl_file_name += pkl_file_suffix
-        """
+        
 
         #import pdb;pdb.set_trace()     
         #pass
@@ -463,59 +476,9 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
         #pass
 
     print "Ran SVM"
-        
+    """ 
 
-    # Generate (5*36)*2 classifiers
-    """
 
-        all_knn_classifiers = dict()
-        all_svm_classifiers = dict()
-        all_knn_scores = dict()
-        all_svm_scores = dict()
-        all_knn_reports = dict()
-        all_svm_reports = dict()
-
-        for motion_name in all_data:
-
-            # Run KNN
-            adjectives = all_data[motion_name][0].labels.keys()
-            knn_classifiers = dict()
-            knn_scores = dict()
-            knn_reports = dict()
-
-            for adj in adjectives:
-                knn, score, report = train_knn(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-                knn_classifiers[adj] = knn
-                knn_scores[adj] = score
-                knn_reports[adj] = report
-
-            all_knn_classifiers[motion_name] = knn_classifiers
-            all_knn_scores[motion_name] = knn_scores
-            all_knn_reports[motion_name] = knn_reports
-            print "Ran KNN"
-            #import pdb; pdb.set_trace()
-    
-            # Run SVM
-            #svm_classifiers = dict()
-            #svm_scores = dict()
-            #svm_reports = dict()
-
-            #for adj in adjectives:
-            #    svm, score, report = train_svm(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-            #    svm_classifiers[adj] = svm
-            #    svm_scores[adj] = score
-            #    svm_reports[adj] = report
-
-            #all_svm_classifiers[motion_name] = svm_classifiers
-            #all_svm_scores[motion_name] = svm_scores
-            #all_svm_reports[motion_name] = svm_reports
-            #print "Ran SVM"
-            #import pdb; pdb.set_trace()
-            #pass
-        
-        import pdb; pdb.set_trace()
-        pass
-    """
 
 # Parse the command line arguments
 def parse_arguments():
