@@ -76,12 +76,7 @@ def extract_features(bolt_pr2_motion_obj):
     texture_ss = []
     texture_sk = []
 
-
     # Temperature features
-    temperature_area = []
-    temperature_tau = []
-    temperature_final = []
-    
     tac_area = []    
     tdc_exp_fit = []
 
@@ -104,7 +99,6 @@ def extract_features(bolt_pr2_motion_obj):
       
         end_gripper, start_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        #texture_features(bolt_pr2_motion_obj.pac_flat[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
         
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
