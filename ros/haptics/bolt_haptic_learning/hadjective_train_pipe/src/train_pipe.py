@@ -235,7 +235,6 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
 
     Returns a trained SVM classifier
     """
-    
     # Grid search with nested cross-validation
     #parameters = [{'kernel': ['rbf'], 'C': [1, 10, 100, 1000], 'gamma': [1e-3, 1e-4]}, {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
     #svc = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=5)
