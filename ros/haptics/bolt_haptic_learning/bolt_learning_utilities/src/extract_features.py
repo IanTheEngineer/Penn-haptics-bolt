@@ -70,11 +70,11 @@ def extract_features(bolt_pr2_motion_obj):
     pdc_rise_count = []
 
     # Texture features
-    texture_energy = []
-    texture_sc = []
-    texture_sv = []
-    texture_ss = []
-    texture_sk = []
+    pac_energy = []
+    pac_sc = []
+    pac_sv = []
+    pac_ss = []
+    pac_sk = []
 
     # Temperature features
     tac_area = []    
@@ -98,28 +98,34 @@ def extract_features(bolt_pr2_motion_obj):
 
         tac_area_buf, tdc_exp_fit_buf = thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        pac_energy_buf, pac_moments_buf = texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
       
         end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-	transform_z = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
-        #texture_features(bolt_pr2_motion_obj.pac_flat[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        transform_z = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
         
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
         pdc_max.append(max(bolt_pr2_motion_obj.pdc_normalized[finger]))
 
+        # Compute texture features
+        pac_energy.append(pac_energy_buf)
+        pac_sc.append(pac_moments_buf[0])
+        pac_sv.append(pac_moments_buf[1])
+        pac_ss.append(pac_moments_buf[2])
+        pac_sk.append(pac_moments_buf[3])
+        
         # Compute thermal features
         tac_area.append(tac_area_buf)
-	tdc_exp_fit.append(tdc_exp_fit_buf[2])
+        tdc_exp_fit.append(tdc_exp_fit_buf[2])
 
         # Compute gripper aperture features
         gripper_min.append(end_gripper)
         #gripper_close.append(start_gripper - end_gripper)
         gripper_mean.append(mean_gripper)
 
-	# Extract transform features
-	transform_height.append(transform_z)
+        # Extract transform features
+        transform_height.append(transform_z)
 
         # Pull the number of steps of the rising curve
         filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
@@ -136,14 +142,20 @@ def extract_features(bolt_pr2_motion_obj):
     bolt_feature_obj.pdc_max = pdc_max
     bolt_feature_obj.pdc_rise_count = pdc_rise_count
 
+    bolt_feature_obj.pac_energy = pac_energy
+    bolt_feature_obj.pac_sc = pac_sc
+    bolt_feature_obj.pac_sv = pac_sv
+    bolt_feature_obj.pac_ss = pac_ss
+    bolt_feature_obj.pac_sk = pac_sk
+
     bolt_feature_obj.tac_area = tac_area
     bolt_feature_obj.tdc_exp_fit = tdc_exp_fit
 
-    bolt_feature_obj.grippe_min = gripper_min
+    #bolt_feature_obj.gripper_min = gripper_min
     #bolt_feature_obj.gripper_close = gripper_close
-    bolt_feature_obj.gripper_mean = gripper_mean
+    #bolt_feature_obj.gripper_mean = gripper_mean
 
-    bolt_feature_obj.transform_height = transform_height
+    #bolt_feature_obj.transform_height = transform_height
 
     return bolt_feature_obj
 

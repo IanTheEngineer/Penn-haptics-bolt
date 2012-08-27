@@ -20,15 +20,16 @@ class BoltFeatureObj():
 
     def __init__(self):
 
-        # Store features by channel?
+        # Store features by channel
         self.pdc_rise_count = []
         self.pdc_max = []  
         self.pdc_area = []
-        self.texture_energy = []
-        self.texture_sc = []
-        self.texture_sv = []
-        self.texture_ss = []
-        self.texture_sk = []
+
+        self.pac_energy = []
+        self.pac_sc = []
+        self.pac_sv = []
+        self.pac_ss = []
+        self.pac_sk = []
 
         self.tac_area = []
     	self.tdc_exp_fit = []
