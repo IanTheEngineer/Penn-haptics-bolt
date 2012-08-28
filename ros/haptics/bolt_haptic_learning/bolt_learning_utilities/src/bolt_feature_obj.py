@@ -34,6 +34,11 @@ class BoltFeatureObj():
         self.tac_area = []
     	self.tdc_exp_fit = []
 
+        self.gripper_min = []
+        self.gripper_mean = []
+        
+        self.transform_distance = []
+
         # Store information about object
         self.state = self.DISABLED
         self.detailed_state = []

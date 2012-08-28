@@ -82,11 +82,11 @@ def extract_features(bolt_pr2_motion_obj):
 
     # Gripper aperture features
     gripper_min = []
-    gripper_close = []
+    #gripper_close = []
     gripper_mean = []
 
     # Transform features
-    transform_height = []
+    transform_distance = []
 
     # Electrode features
     electrode_polyfit = []
@@ -102,7 +102,7 @@ def extract_features(bolt_pr2_motion_obj):
       
         end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        transform_z = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
+        distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
         
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
@@ -125,7 +125,7 @@ def extract_features(bolt_pr2_motion_obj):
         gripper_mean.append(mean_gripper)
 
         # Extract transform features
-        transform_height.append(transform_z)
+        transform_distance.append(distance)
 
         # Pull the number of steps of the rising curve
         filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
@@ -151,11 +151,11 @@ def extract_features(bolt_pr2_motion_obj):
     bolt_feature_obj.tac_area = tac_area
     bolt_feature_obj.tdc_exp_fit = tdc_exp_fit
 
-    #bolt_feature_obj.gripper_min = gripper_min
+    bolt_feature_obj.gripper_min = gripper_min
     #bolt_feature_obj.gripper_close = gripper_close
-    #bolt_feature_obj.gripper_mean = gripper_mean
+    bolt_feature_obj.gripper_mean = gripper_mean
 
-    #bolt_feature_obj.transform_height = transform_height
+    bolt_feature_obj.transform_distance = transform_distance
 
     return bolt_feature_obj
 
@@ -306,12 +306,6 @@ def gripper_features( gripper_position, pdc_norm, controller_state, controller_s
     gripper_position = gripper_position.tolist()
 
 
-    #import pdb;pdb.set_trace()
-
-    #pdc_high = pdc_norm > threshold
-    #start_index = pdc_high.tolist().index(1)
-    #start_gripper = gripper_position[start_index]
-
     end_gripper = min(gripper_position)
 
     mean_gripper = np.mean(gripper_position)
@@ -331,8 +325,9 @@ def transform_features(frame_transform):
     height = frame_transform[np.arange(num_raw),pick]
     
     height_min = min(height.tolist())
+    distance = height.tolist()[0] - height_min
 
-    return height_min
+    return distance
     
 
 def smooth(x,window_len=11,window='hanning'):
