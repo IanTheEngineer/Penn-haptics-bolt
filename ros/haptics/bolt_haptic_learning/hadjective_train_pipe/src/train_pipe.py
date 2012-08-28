@@ -30,7 +30,6 @@ from sklearn import cross_validation
 from sklearn import preprocessing
 
 
-from sklearn import preprocessing
 
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
