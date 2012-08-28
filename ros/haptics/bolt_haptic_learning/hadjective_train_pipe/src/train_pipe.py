@@ -278,7 +278,7 @@ def single_train(feature_vector, labels):
     return(knn, knn_report, svm_report)
 
 
-def full_train(feature_vector, labels):
+def full_train(all_data, train_feature_vector, adjective_dictionary):
     
 
     
@@ -293,7 +293,7 @@ def full_train(feature_vector, labels):
     all_svm_scores = dict()
     all_svm_reports = dict()
    
-    adjectives = train_adjective_dictionary.keys()
+    adjectives = adjective_dictionary.keys()
     
 
     """
@@ -485,7 +485,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     """   
 
     # Run full train
-    full_train(train_feature_vector, train_adjective_dictionary)
+    full_train(all_data, train_feature_vector, train_adjective_dictionary)
 
 
 
