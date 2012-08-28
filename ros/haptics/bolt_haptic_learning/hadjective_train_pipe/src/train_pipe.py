@@ -249,11 +249,12 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     # Grid search with nested cross-validation
     parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
     #parameters = {'kernel': ['poly'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'degree': [1, 2, 3, 4, 5], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]} 
-    svm = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=8)
+    
+    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=8)
     svm.fit(train_vector_scaled, train_labels)
     score = svm.grid_scores_
     svm_best = svm.best_estimator_
-    report = classification_report(test_labels, svm.predict(test_vector_scaled))
+    report = classification_report(test_labels, svm.predict_proba(test_vector_scaled))
 
     return (svm_best, score, report)
 
@@ -298,8 +299,6 @@ def full_train(train_feature_vector, adjective_dictionary):
         knn_classifiers = dict()
         svm_classifiers = dict()
          
-        #pkl_file_name = adj.replace("'",'"')
-             
         for motion_name in train_feature_vector:
             
             print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
