@@ -492,7 +492,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
 
 # Parse the command line arguments
 def parse_arguments():
-    """Parses the arguments provided at command line.
+    """
+    Parses the arguments provided at command line.
     
     Returns:
     (input_file, adjective_file, range)
