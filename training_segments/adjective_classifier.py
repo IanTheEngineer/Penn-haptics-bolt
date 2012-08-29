@@ -2,13 +2,15 @@ import cPickle
 import os
 from collections import defaultdict
 import numpy as np
+import tables
+
 import utilities
 from sklearn.base import ClassifierMixin
-from sklearn.svm import SVC
-
+from sklearn.svm import SVC, LinearSVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import f1_score
 from sklearn import cross_validation
+
 
 class AdjectiveClassifier(ClassifierMixin):
     def __init__(self, adjective, base_directory = None):
@@ -19,7 +21,7 @@ class AdjectiveClassifier(ClassifierMixin):
         if base_directory is not None:
             self.load_directory(base_directory)
         
-        self.svc = SVC()
+        self.svc = LinearSVC()
         
     def load_directory(self, base_directory):
         for f in os.listdir(base_directory):
@@ -42,6 +44,12 @@ class AdjectiveClassifier(ClassifierMixin):
         X: list of dictionaries d, each with the structure:
             d[phase][sensor] = data
         """
+        if isinstance(X, tables.Group):
+            X = utilities.dict_from_h5_group(X,
+                                             utilities.phases,
+                                             utilities.sensors,
+                                             )        
+        
         if type(X) is not list:
             X = [X]
         ret = []
@@ -85,13 +93,36 @@ class AdjectiveClassifier(ClassifierMixin):
                 labels.append(1)
             else:
                 labels.append(0)
+            
+            print "Group: ", group._v_name, " label: ", labels[-1]
         
         self.features = np.array(features).squeeze()
         self.labels = np.array(labels).flatten()
         return self.features, self.labels
 
     def predict(self, X):
-        return self.svc.predict(X)
+        if isinstance(X, tables.Group):
+            data_dict = utilities.dict_from_h5_group(X,
+                                                     utilities.phases,
+                                                     utilities.sensors,
+                                                     )          
+            features = self.extract_features(data_dict["data"])
+        else:
+            features = X
+            
+        return self.svc.predict(features)
+
+    def test_on_database(self, database):
+        score = 0.0
+        tots = 0.0
+        for g in utilities.iterator_over_object_groups(database):
+            p = self.predict(g)
+            label = (p[0] == 1)            
+            in_adjective = (self.adjective in g.adjectives[:])
+            if in_adjective == label:
+                score += 1
+            tots += 1
+        return score / tots 
     
     def train_on_features(self):
         """Train a support vector machine classifier on the features and labels
@@ -102,21 +133,19 @@ class AdjectiveClassifier(ClassifierMixin):
         if not hasattr(self, "labels"):
             raise ValueError("No labels present, have you run create_features_set?")        
         if not hasattr(self, "svc"):
-            self.svc = SVC()
+            self.svc = LinearSVC()
         
         
-        score_func = f1_score
-        
-        #gammas = [1, 1e-1, 1e-2, 1e-3]
-        gammas = np.logspace(1e-4, 10, 200)
-        #gammas = [1.000230]
-        tuned_parameters = [{'kernel': ['rbf'], 'gamma': gammas,
-                             'C': [1, 10, 100, 1000]},
-                            ]        
-        
-        cv = cross_validation.StratifiedKFold(self.labels, 5)
-        grid = GridSearchCV(self.svc, tuned_parameters, score_func=score_func,
-                            cv=cv, verbose = 0, n_jobs=6)
+        score_func = f1_score        
+        cv = cross_validation.StratifiedShuffleSplit((self.labels), 
+                                                     test_size=1/2.,
+                                                     n_iterations=200)
+        grid = GridSearchCV(self.svc, 
+                            {"dual":[False, False]}, 
+                            score_func=score_func, 
+                            cv=cv, 
+                            verbose=0, n_jobs=1
+                            )
         grid.fit(self.features, self.labels)
         self.svc = grid.best_estimator_
         return self

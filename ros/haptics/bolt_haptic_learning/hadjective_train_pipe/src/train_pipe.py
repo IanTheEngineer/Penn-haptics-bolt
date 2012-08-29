@@ -230,6 +230,9 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     knn_best = knn.best_estimator_
     report = classification_report(test_labels, knn.predict(test_vector_scaled))
 
+    import pdb; pdb.set_trace()
+    pass
+
     return (knn_best, score, report)
 
 
@@ -248,17 +251,20 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     
     # Grid search with nested cross-validation
     parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
-    #parameters = {'kernel': ['poly'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'degree': [1, 2, 3, 4, 5], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]} 
-    svm = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=8)
+    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=8)
     svm.fit(train_vector_scaled, train_labels)
     score = svm.grid_scores_
     svm_best = svm.best_estimator_
+    probabilities = svm.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
 
-    return (svm_best, score, report)
+    import pdb; pdb.set_trace()
+    pass
+
+    return (svm_best, score, report, probabilities)
 
 
-def single_train(feature_vector, labels):
+def single_train(train_vector, train_labels, test_vector, test_labels):
     """
     single_train - expects a vector of features and an nx1 set of
                    corresponding labels to train a single classifier
@@ -268,16 +274,12 @@ def single_train(feature_vector, labels):
     using grid search
     """
 
-
-    # Split data
-    train_vector, test_vector, train_labels, test_labels = train_test_split(feature_vector, labels, test_size=0.25)
-
     # Run KNN
     knn, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
     print "Ran KNN"
 
     # Run SVM
-    svm, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
+    svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
     return(knn, knn_report, svm, svm_report)
@@ -298,8 +300,6 @@ def full_train(train_feature_vector, adjective_dictionary):
         knn_classifiers = dict()
         svm_classifiers = dict()
          
-        #pkl_file_name = adj.replace("'",'"')
-             
         for motion_name in train_feature_vector:
             
             print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
@@ -311,9 +311,9 @@ def full_train(train_feature_vector, adjective_dictionary):
             svm_classifiers[motion_name] = svm
  
             # Store the reports into text files
-            report_file_knn.write('Adjective: '+adj+'   Motion name: '+motion_name)
+            report_file_knn.write('Adjective: '+adj+'    Motion name: '+motion_name)
             report_file_knn.write('\nKNN report\n'+knn_report+'\n\n')
-            report_file_svm.write('Adjective: '+adj+'   Motion name: '+motion_name)
+            report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
             report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
   
         # When trainings for a certain adjective with all five motions are done, save these classifiers
@@ -371,9 +371,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
         print "loaded data"
 
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit"]
-
-
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance"]
 
 
     # Pull desired features from feature objects
@@ -385,12 +383,12 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     
 
     motion_name = 'squeeze'    
-    adjective = 'sticky'
+    adjective = 'rough'
     report_file = open("Single_Train_Reports.txt","a")
-    knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective])
+    
+    knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
 
-    report_file.write('Motion name: '+motion_name)
-    report_file.write('\nAdjective: '+adjective)
+    report_file.write('Adjective: '+adjective+'    Motion name: '+motion_name)
     report_file.write('\nKNN report\n'+knn_report)
     report_file.write('\nSVM report\n'+svm_report+'\n\n')
     report_file.close()
@@ -404,7 +402,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
 
 
     # Run full train
-    full_train(train_feature_vector, train_adjective_dictionary)
+    #full_train(train_feature_vector, train_adjective_dictionary)
 
  
 
