@@ -286,7 +286,7 @@ def single_train(feature_vector, labels):
 def full_train(train_feature_vector, adjective_dictionary):
     
 
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
 
     # Fun full training
     report_file_knn = open("Full_KNN_reports.txt", "a")

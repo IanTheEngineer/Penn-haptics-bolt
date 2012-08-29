@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest("language_train_pipe")
+import roslib; roslib.load_manifest("hadjective_train_pipe")
 import rospy
 import sys
 import numpy as np
