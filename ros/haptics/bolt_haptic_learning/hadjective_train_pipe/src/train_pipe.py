@@ -6,6 +6,7 @@ import sys
 import os
 from optparse import OptionParser
 import cPickle
+import pickle
 import bolt_learning_utilities as utilities
 import extract_features as extract_features
 import matplotlib.pyplot as plt 
@@ -14,8 +15,21 @@ import sklearn.decomposition
 from bolt_feature_obj import BoltFeatureObj
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.metrics import classification_report
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.cross_validation import cross_val_score
+from sklearn.cross_validation import train_test_split
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import classification_report
+from sklearn import cross_validation
+from sklearn import preprocessing
+
+
 
 # Loads the data from h5 table and adds labels
 # Returns the dictionary of objects
@@ -25,7 +39,7 @@ def loadDataFromH5File(input_file, adjective_file):
     all_bolt_data = utilities.convertH5ToBoltObjFile(input_file, None, False);
    
     # Inserts adjectives into the bolt_data  
-    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority3.pkl", adjective_file, True)
+    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority4.pkl", adjective_file, True)
 
     return all_bolt_data_adj
 
@@ -48,14 +62,14 @@ def BoltMotionObjToFeatureObj(all_bolt_data):
     all_features_obj_dict = dict();
 
     for motion_name in all_bolt_data:
-        motion_list = all_bolt_data.get(motion_name)
+        trial_list = all_bolt_data.get(motion_name)
         print motion_name
 
         feature_list = list()
         # For all objects
-        for motion in motion_list:
+        for trial in trial_list:
             
-            bolt_feature_obj = extract_features.extract_features(motion)
+            bolt_feature_obj = extract_features.extract_features(trial)
             
             feature_list.append(bolt_feature_obj)
 
@@ -65,7 +79,7 @@ def BoltMotionObjToFeatureObj(all_bolt_data):
     return all_features_obj_dict        
     
 
-def bolt_obj_2_feature_vector(all_bolt_data, feature_name_list):
+def bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
     """
     Pull out PCA components from all data
 
@@ -88,22 +102,22 @@ def bolt_obj_2_feature_vector(all_bolt_data, feature_name_list):
     all_features_vector_dict = dict()
     
     # Store labels
-    for motion_name in all_bolt_data:
-        motion_list = all_bolt_data.get(motion_name)
-        print motion_name
+    for motion_name in all_features_obj_dict:
+        
+        feature_obj_list = all_features_obj_dict.get(motion_name)
 
         all_adjective_labels_dict = dict()
         feature_vector_list = list()
+
         # For all objects
-        for motion in motion_list:
-            #import pdb; pdb.set_trace() 
+        for bolt_feature_obj in feature_obj_list:
+
             # Create feature vector
-            bolt_feature_obj = extract_features.extract_features(motion)
             feature_vector = utilities.createFeatureVector(bolt_feature_obj, feature_name_list) 
             feature_vector_list.append(feature_vector)
 
             # Create label dictionary
-            labels = motion.labels
+            labels = bolt_feature_obj.labels
             for adjective in labels:
                 # Check if it is the first time adjective added
                 if (all_adjective_labels_dict.has_key(adjective)):
@@ -117,7 +131,8 @@ def bolt_obj_2_feature_vector(all_bolt_data, feature_name_list):
 
         # Store all of the objects away
         all_features_vector_dict[motion_name] = np.array(feature_vector_list)
-     
+        
+    
     return (all_features_vector_dict, all_adjective_labels_dict)      
 
 
@@ -140,7 +155,7 @@ def run_kmeans(input_vector, num_clusters, obj_data):
 
     Returns the populated clusters 
     """
-    k_means = KMeans(init='k-means++', k=num_clusters, n_init=100)
+    k_means = KMeans(init='k-means++', n_clusters=num_clusters, n_init=100)
 
     k_means.fit(input_vector)
     k_means_labels = k_means.labels_
@@ -169,12 +184,32 @@ def run_kmeans(input_vector, num_clusters, obj_data):
         
         cluster_all_adjectives[adj] = cluster_adj
 
-    import pdb; pdb.set_trace() 
+    #import pdb; pdb.set_trace() 
     
     return (k_means_labels, k_means_cluster_centers, clusters)
 
+def true_false_results(predicted_labels, true_labels):
+ 
+    FP = (predicted_labels - true_labels).tolist().count(1)
+    FN = (predicted_labels - true_labels).tolist().count(-1)
+    TP = (predicted_labels & true_labels).tolist().count(1)
+    TN = ((predicted_labels | true_labels) ^ True).tolist().count(1)
 
-def train_knn(train_vector, train_labels, test_vector, test_labels, N):
+
+    return(TP, TN, FP, FN)
+
+
+def matthews_corr_coef(TP,TN,FP,FN):
+
+    try:
+        MCC = (TP*TN - FP*FN)/(np.sqrt(((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))))
+    except:
+        MCC = (TP*TN - FP*FN)/1
+
+    return (MCC)
+
+
+def train_knn(train_vector, train_labels, test_vector, test_labels):
     """
     train_knn - expects a vector of features and a nx1 set of
                 corresponding labels.  Finally the number of
@@ -182,65 +217,200 @@ def train_knn(train_vector, train_labels, test_vector, test_labels, N):
 
     Returns a trained knn classifier
     """
+    
+    # Data scaling
+    train_vector_scaled = preprocessing.scale(train_vector)
+    test_vector_scaled = preprocessing.scale(test_vector)
+
+    # Grid search with nested cross-validation
+    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}]
+    knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=8)
+    knn.fit(train_vector_scaled, train_labels)
+    score = knn.grid_scores_
+    knn_best = knn.best_estimator_
+    report = classification_report(test_labels, knn.predict(test_vector_scaled))
+
     import pdb; pdb.set_trace()
-    knn = KNeighborsClassifier(n_neighbors = N, weights='uniform')
-    knn.fit(train_vector, train_labels)
+    pass
 
-    knn.score(test_vector, test_labels)
+    return (knn_best, score, report)
 
 
-def train_svm(train_vector, train_label):
+
+def train_svm(train_vector, train_labels, test_vector, test_labels):
     """
     train_svm - expects a vector of features and a nx1 set of
                 corresponding labels
 
-    Returns the a trained SVM classifier
+    Returns a trained SVM classifier
+    """
+    
+    # Data scaling
+    train_vector_scaled = preprocessing.scale(train_vector)
+    test_vector_scaled = preprocessing.scale(test_vector)
+    
+    # Grid search with nested cross-validation
+    parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
+    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=8)
+    svm.fit(train_vector_scaled, train_labels)
+    score = svm.grid_scores_
+    svm_best = svm.best_estimator_
+    probabilities = svm.predict_proba(test_vector_scaled)
+    report = classification_report(test_labels, svm.predict(test_vector_scaled))
+
+    import pdb; pdb.set_trace()
+    pass
+
+    return (svm_best, score, report, probabilities)
+
+
+def single_train(train_vector, train_labels, test_vector, test_labels):
+    """
+    single_train - expects a vector of features and an nx1 set of
+                   corresponding labels to train a single classifier
+                   on 1 motion
+
+    Returns trained KNN and SVM classifiers that have been optimized
+    using grid search
     """
 
+    # Run KNN
+    knn, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
+    print "Ran KNN"
+
+    # Run SVM
+    svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
+    print "Ran SVM"
+
+    return(knn, knn_report, svm, svm_report)
+
+
+def full_train(train_feature_vector, adjective_dictionary):
+    
+
+    import pdb; pdb.set_trace()
+
+    # Fun full training
+    report_file_knn = open("Full_KNN_reports.txt", "a")
+    report_file_svm = open("Full_SVM_reports.txt", "a")
+    
+    adjectives = adjective_dictionary.keys()
+    
+    for adj in adjectives:
+        knn_classifiers = dict()
+        svm_classifiers = dict()
+         
+        for motion_name in train_feature_vector:
+            
+            print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
+            
+            knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], adjective_dictionary[adj])
+
+            # Store classifiers for each motion
+            knn_classifiers[motion_name] = knn
+            svm_classifiers[motion_name] = svm
+ 
+            # Store the reports into text files
+            report_file_knn.write('Adjective: '+adj+'    Motion name: '+motion_name)
+            report_file_knn.write('\nKNN report\n'+knn_report+'\n\n')
+            report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
+            report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
+  
+        # When trainings for a certain adjective with all five motions are done, save these classifiers
+        cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+        cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+        
+        print "Stored KNN and SVM classifiers for adjective %s in the directory adjective_classifiers " %(adj)
+
+    
+    report_file_knn.close()
+    report_file_svm.close()
+    
 
 
 # MAIN FUNCTION
-def main(input_file, adjective_file):
- 
-    # Load data into the pipeline, either from an h5 and adjective
-    # File or directly from a saved pkl file
+def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
+
+
+    # Load data into the pipeline. First check
+    # for feature object pkl files
     print "Loading data from file"
-    if input_file.endswith(".h5"):
-        all_data = loadDataFromH5File(input_file, adjective_file)
+    if train_feature_pkl == None or test_feature_pkl == None:
+        # If no features, load data from either an
+        # h5 and adjective file or directly from
+        # a saved pkl file
+        if input_file.endswith(".h5"):
+            all_data = loadDataFromH5File(input_file, adjective_file)
+        else:
+            all_data = utilities.loadBoltObjFile(input_file)
+
+        print "loaded data"
+
+    
+        # Split the data into train and test
+        train_data, test_data = utilities.split_data(all_data, 0.9)
+        
+        # Convert motion objects into feature objects
+        train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data)
+        test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data)
+        file_ptr = open("train_feature_objs.pkl","w")
+        cPickle.dump(train_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
+        file_ptr.close()
+        file_ptr = open("test_feature_objs.pkl","w")
+        cPickle.dump(test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
+
     else:
-        all_data = utilities.loadBoltObjFile(input_file)
+        # Load the saved feature object pkl files
+        file_ptr = open(train_feature_pkl,"r")
+        train_all_features_obj_dict = cPickle.load(file_ptr)
+        file_ptr.close()
+        file_ptr = open(test_feature_pkl,"r")
+        test_all_features_obj_dict = cPickle.load(file_ptr)
+        file_ptr.close()
 
-    print "loaded data"
+        print "loaded data"
 
-    # Split the data into train and test
-    train_data, test_data = utilities.split_data(all_data, 0.9)
-    
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count"]
-    train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_data, feature_name_list)
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance"]
 
-    test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_data, feature_name_list)
 
-    # Do for all data for clustering purposes
-    all_feature_vector, all_adjective_dictionary = bolt_obj_2_feature_vector(all_data, feature_name_list)
-    
+    # Pull desired features from feature objects
+    train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_all_features_obj_dict, feature_name_list)
+    test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_all_features_obj_dict, feature_name_list)
+
     print("Created feature vector containing %s" % feature_name_list)
 
-    import pdb; pdb.set_trace()
-    # Run k-means
-    k_means_labels, k_means_cluster_centers, clusters_idx = run_kmeans(all_feature_vector['squeeze'], 3, all_data['squeeze'])
-  
-    # Run KNN
-    motion_name = 'squeeze'
-    train_knn(train_feature_vector[motion_name], train_adjective_dictionary['soft'], test_feature_vector[motion_name], test_adjective_dictionary['soft'], 5)
-
-    import pdb; pdb.set_trace()
-    print "Ran KMeans"
     
+
+    motion_name = 'squeeze'    
+    adjective = 'rough'
+    report_file = open("Single_Train_Reports.txt","a")
+    
+    knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
+
+    report_file.write('Adjective: '+adjective+'    Motion name: '+motion_name)
+    report_file.write('\nKNN report\n'+knn_report)
+    report_file.write('\nSVM report\n'+svm_report+'\n\n')
+    report_file.close()
+
+    pkl_file_name = adjective.replace("'",'"')
+    pkl_file_suffix = ".pkl"
+    pkl_file_name += pkl_file_suffix
+
+    cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
+
+
+
+    # Run full train
+    #full_train(train_feature_vector, train_adjective_dictionary)
+
+ 
+
 
 # Parse the command line arguments
 def parse_arguments():
-    """Parses the arguments provided at command line.
+    """
+    Parses the arguments provided at command line.
     
     Returns:
     (input_file, adjective_file, range)
@@ -249,6 +419,8 @@ def parse_arguments():
     parser.add_option("-i", "--input_file", action="store", type="string", dest = "in_h5_file")
     parser.add_option("-o", "--output", action="store", type="string", dest = "out_file", default = None) 
     parser.add_option("-a", "--input_adjective", action="store", type="string", dest = "in_adjective_file")
+    parser.add_option("-n", "--input_train_feature_pkl", action="store", type="string", dest = "in_train_feature_pkl", default = None)
+    parser.add_option("-s", "--input_test_feature_pkl", action="store", type="string", dest = "in_test_feature_pkl", default = None)
 
     (options, args) = parser.parse_args()
     input_file = options.in_h5_file #this is required
@@ -264,9 +436,12 @@ def parse_arguments():
     
     adjective_file = options.in_adjective_file
 
-    return input_file, out_file, adjective_file
+    train_feature_pkl = options.in_train_feature_pkl
+    test_feature_pkl = options.in_test_feature_pkl
+
+    return input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl
 
 
 if __name__ == "__main__":
-    input_file, out_file, adjective_file = parse_arguments()
-    main(input_file, adjective_file)
+    input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl = parse_arguments()
+    main(input_file, adjective_file, train_feature_pkl, test_feature_pkl)

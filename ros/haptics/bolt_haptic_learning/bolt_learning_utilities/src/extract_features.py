@@ -69,10 +69,24 @@ def extract_features(bolt_pr2_motion_obj):
     pdc_max = []
     pdc_rise_count = []
 
+    # Texture features
+    pac_energy = []
+    pac_sc = []
+    pac_sv = []
+    pac_ss = []
+    pac_sk = []
+
     # Temperature features
-    temperature_area = []
-    temperature_tau = []
-    temperature_final = []
+    tac_area = []    
+    tdc_exp_fit = []
+
+    # Gripper aperture features
+    gripper_min = []
+    #gripper_close = []
+    gripper_mean = []
+
+    # Transform features
+    transform_distance = []
 
     # Electrode features
     electrode_polyfit = []
@@ -82,15 +96,36 @@ def extract_features(bolt_pr2_motion_obj):
 # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
 
-        thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        tac_area_buf, tdc_exp_fit_buf = thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        pac_energy_buf, pac_moments_buf = texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+      
+        end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        #texture_features(bolt_pr2_motion_obj.pac_flat[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
         
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
         pdc_max.append(max(bolt_pr2_motion_obj.pdc_normalized[finger]))
+
+        # Compute texture features
+        pac_energy.append(pac_energy_buf)
+        pac_sc.append(pac_moments_buf[0])
+        pac_sv.append(pac_moments_buf[1])
+        pac_ss.append(pac_moments_buf[2])
+        pac_sk.append(pac_moments_buf[3])
+        
+        # Compute thermal features
+        tac_area.append(tac_area_buf)
+        tdc_exp_fit.append(tdc_exp_fit_buf[2])
+
+        # Compute gripper aperture features
+        gripper_min.append(end_gripper)
+        #gripper_close.append(start_gripper - end_gripper)
+        gripper_mean.append(mean_gripper)
+
+        # Extract transform features
+        transform_distance.append(distance)
 
         # Pull the number of steps of the rising curve
         filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
@@ -106,6 +141,21 @@ def extract_features(bolt_pr2_motion_obj):
     bolt_feature_obj.pdc_area = pdc_area
     bolt_feature_obj.pdc_max = pdc_max
     bolt_feature_obj.pdc_rise_count = pdc_rise_count
+
+    bolt_feature_obj.pac_energy = pac_energy
+    bolt_feature_obj.pac_sc = pac_sc
+    bolt_feature_obj.pac_sv = pac_sv
+    bolt_feature_obj.pac_ss = pac_ss
+    bolt_feature_obj.pac_sk = pac_sk
+
+    bolt_feature_obj.tac_area = tac_area
+    bolt_feature_obj.tdc_exp_fit = tdc_exp_fit
+
+    bolt_feature_obj.gripper_min = gripper_min
+    #bolt_feature_obj.gripper_close = gripper_close
+    bolt_feature_obj.gripper_mean = gripper_mean
+
+    bolt_feature_obj.transform_distance = transform_distance
 
     return bolt_feature_obj
 
@@ -239,6 +289,47 @@ def texture_features( pac_flat, controller_state, controller_state_detail):
 
 
 
+def gripper_features( gripper_position, pdc_norm, controller_state, controller_state_detail ):
+    """
+    if controller_state is BoltPR2MotionObj.TAP:
+       threshold = 2
+       #print "TAP!!!"
+    elif controller_state is BoltPR2MotionObj.SLIDE_FAST:
+    
+       #import pdb;pdb.set_trace()
+   
+       threshold = 2
+       #print "SLIDE FAST!!!"
+    else:
+       threshold = 10
+    """
+    gripper_position = gripper_position.tolist()
+
+
+    end_gripper = min(gripper_position)
+
+    mean_gripper = np.mean(gripper_position)
+    
+
+ 
+    return (end_gripper, mean_gripper)
+
+    
+def transform_features(frame_transform):
+
+    #import pdb;pdb.set_trace()
+    #pass
+
+    num_raw = frame_transform.shape[0]
+    pick = np.array([2]*num_raw)
+    height = frame_transform[np.arange(num_raw),pick]
+    
+    height_min = min(height.tolist())
+    distance = height.tolist()[0] - height_min
+
+    return distance
+    
+
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
     
@@ -295,7 +386,6 @@ def smooth(x,window_len=11,window='hanning'):
 
     y=np.convolve(w/w.sum(),s,mode='valid')
     return y
-
 
 
 
