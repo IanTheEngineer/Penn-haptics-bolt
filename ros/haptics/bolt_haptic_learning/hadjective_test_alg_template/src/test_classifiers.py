@@ -186,15 +186,15 @@ def bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
     """
 
 
-#def train_svm(train_vector, train_labels, test_vector, test_labels):
-    """
+def train_svm(train_vector, train_labels, test_vector, test_labels):
+    """ 
     train_svm - expects a vector of features and a nx1 set of
                 corresponding labels
 
     Returns a trained SVM classifier
     """
  
-    """
+    
     # Data scaling
     train_vector_scaled = preprocessing.scale(train_vector)
     test_vector_scaled = preprocessing.scale(test_vector)
@@ -209,7 +209,34 @@ def bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
 
     return (svm_best, score, report)
+
+
+def AdjectiveClassifiers(adjectives, test_vector)
+    """ 
+    Feed the probabilities/labels from 5 classifiers for one adjective into a SVM and train.
+    Return a single final classifier for each adjective
     """
+    labels = dict()
+    final_classifiers = dict()
+    num_raw = results[adj][motion_name].shape
+    feature_vector = np.zeros((num_raw,5))
+    results = cPickle.load(open('test_results.pkl',"r"))
+          
+    for adj in adjectives:
+        labels[adj] = adjectives[adj]
+        for motion_name in test_vector  #here the train_vetor should be test_vector
+            feature_vector = np.append(feature_vector, results[adj][motion_name][0].tolist(), 1)
+            
+        # Train on features
+        adj_classifier, grid_search_scores, final_report, probabilities, predicted_results = train_svm(feature_vector, labels[adj], test_vector, labels[adj] )
+        
+        final_classifiers[adj] = adj_classifier
+
+    cPickle.dump(final_classifiers, open("AdjectiveClassifiers.pkl", "w"), cPickle.HIGHEST_PROTOCOL)
+     
+    return final_classifier
+
+
 
 
 #def single_train(feature_vector, labels):
@@ -318,24 +345,6 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     print("Created feature vector containing %s" % feature_name_list)
 
     
-    """
-    motion_name = 'squeeze'    
-    adjective = 'sticky'
-    report_file = open("Single_Train_Reports.txt","a")
-    knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective])
-
-    report_file.write('Motion name: '+motion_name)
-    report_file.write('\nAdjective: '+adjective)
-    report_file.write('\nKNN report\n'+knn_report)
-    report_file.write('\nSVM report\n'+svm_report+'\n\n')
-    report_file.close()
-
-    pkl_file_name = adjective.replace("'",'"')
-    pkl_file_suffix = ".pkl"
-    pkl_file_name += pkl_file_suffix
-
-    cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
-    """
 
 
 
@@ -378,6 +387,9 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     file_name = "test_result.pkl"
     cPickle.dump(results, open(file_name, "w"), cPickle.HIGHEST_PROTOCOL)
 
+
+    # Use the output from classifiers by motions to create a single classifier for each adjective
+    final_classifier = AdjectiveClassifiers(test_adjective_dictionary, test_feature_vector)
 
 # Parse the command line arguments
 def parse_arguments():
