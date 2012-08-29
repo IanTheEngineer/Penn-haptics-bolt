@@ -12,6 +12,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 from discretizer import Resample, KMeansDiscretizer
 from sklearn.decomposition import PCA
+import utilities
+import os
+import cPickle
 
 class HMMChain(BaseEstimator, TransformerMixin):
     def __init__(self,
@@ -24,7 +27,9 @@ class HMMChain(BaseEstimator, TransformerMixin):
                  kmeans_n_init = 100,
                  kmeans_n_jobs= 1,
                  kmeans_max_iter = 300,
-                 data_splits = None
+                 data_splits = None,
+                 my_class = None,
+                 other_classes = None,
                  ):
         
         super(HMMChain, self).__init__()
@@ -61,19 +66,69 @@ class HMMChain(BaseEstimator, TransformerMixin):
                ('HMM', self.hmm)
               ]
         self.pipeline = sklearn.pipeline.Pipeline(seq)
-
+        self.my_class = my_class
+        self.other_classes = other_classes
+    
+        
     def update_splits(self, X):
         neworig_splits = [len(x) for x in X]
         self.splitter.splits = neworig_splits
         
         new_discr_splits = [self.resampling_size for x in X]
         self.splitter2.splits = new_discr_splits
+
+    def __load_adjective(self, path, adjective, 
+                         phase, sensor):
+        
+        filename = os.path.join(path, adjective + ".pkl")
+        with open(filename) as f:
+            data = cPickle.load(f)
+            
+            return data[phase][sensor]        
+        
+    
+    def perform_comparative_score(self, X,
+                                  ):
+        #print "Doing comparative"
+        myclass = self.my_class
+        other_classes = self.other_classes
+        isinstance(other_classes, dict)
+        total = 0.0
+        this_score = self.pipeline.score(X)
+
+        if type(self.other_classes) is tuple:
+            path, phase, sensor = self.other_classes
+            for adjective in utilities.adjectives:
+                if adjective != myclass:
+                    data = self.__load_adjective(path,
+                                                 adjective,
+                                                 phase,
+                                                 sensor)
+                    if type(data) is not list:
+                        data = [data]                                    
+                    self.update_splits(data)                    
+                    score = self.pipeline.score(data)
+                    total += score
+        else:
+            for c, data in other_classes.iteritems():
+                if c != myclass:
+                    if type(data) is not list:
+                        data = [data]                    
+                    self.update_splits(data)                    
+                    score = self.pipeline.score(data)
+                    total += score
+                
+        return score - total
+        
     
     def score(self, X, y=None):
         if type(X) is not list:
             X = [X]
         self.update_splits(X)
-        return self.pipeline.score(X, y)
+        if hasattr(self, "my_class") and self.my_class is not None and self.other_classes is not None:
+            return self.perform_comparative_score(X)
+        else:
+            return self.pipeline.score(X, y)
 
     def transform(self, X):
         if type(X) is not list:

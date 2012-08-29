@@ -6,64 +6,124 @@ import hmm_chain
 import os
 import sys
 import itertools
+from utilities import adjectives, phases, sensors
 
-adjectives = ['sticky',
-              'deformable',
-              'hard',
-              'hollow',
-              'springy',
-              'fuzzy',
-              'rough',
-              'thick',
-              'compact',
-              'elastic',
-              'smooth',
-              'metallic',
-              'unpleasant',
-              'plasticky',
-              'meshy',
-              'nice',
-              'hairy',
-              'compressible',
-              'fibrous',
-              'squishy',
-              'gritty',
-              'textured',
-              'bumpy',
-              'grainy',
-              'scratchy',
-              'cool',
-              'absorbant',
-              'stiff',
-              'solid',
-              'crinkly',
-              'porous',
-              #'warm',
-              'slippery',
-              'thin',
-              'sparse',
-              'soft']
-phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", 
-          "SLIDE_5CM", "MOVE_DOWN_5CM"]
-sensors = ["electrodes", 
-           "pac", 
-           "pdc", 
-           "tac", 
-           #"tdc",
-           ]
+def test_chain(chain, path, original_adjective, phase, sensor):
+    chain.my_class = None
+    chain.other_classes = None
+    
+    def load_data(__adjective):
+        filename = os.path.join(path, __adjective + ".pkl")
+        with open(filename) as f:
+            data = cPickle.load(f)
+            return data[phase][sensor]        
+    
+    original_score = chain.score(load_data(original_adjective))
+    print "Original adjective %s: %f" %(original_adjective,
+                                        original_score)
+    goods = 0.0
+    total = 0.0
+    for adjective in adjectives:
+        if adjective == original_adjective:
+            continue
+        s = chain.score(load_data(adjective))
+        if s > original_score:
+            atchm = "\t\tTHIS IS BAD ======="            
+        else:
+            atchm = "\t\tTHIS IS GOOD"
+            goods += 1
+        total +=1
+        
+        print ("Adjective: %s, score: %.3f" + atchm) % (adjective, 
+                                                      s)
+    print "Negatives: %d, Ratio: %f" % (total-goods, goods/ total)
+                                        
 
-def train_dataset(dataset, parameters):
+def calculate_rations(chain_path, adjectives_path):
+
+    def load_data(__adjective, __phase, __sensor):
+        filename = os.path.join(adjectives_path, __adjective + ".pkl")
+        with open(filename) as f:
+            data = cPickle.load(f)
+            return data[__phase][__sensor]        
+    
+    ratios = []
+    for filename in os.listdir(chain_path):
+        if not filename.endswith('.pkl'):
+            continue        
+        chars = filename.strip(".pkl").split("_")
+        chars = chars[1:] #chain 
+        original_adjective = chars[0]
+        chars = chars[1:] #adjective
+        sensor = chars.pop()
+        phase = "_".join(chars) #silly me for the choice of separator!        
+        chain = cPickle.load(open(os.path.join(chain_path,filename)))
+        
+        original_score = chain.score(load_data(original_adjective,
+                                               phase, 
+                                               sensor))
+        goods = 0.0
+        total = 0.0
+        for adjective in adjectives:
+            if adjective == original_adjective:
+                continue
+            s = chain.score(load_data(adjective, phase, sensor))
+            if s > original_score:
+                pass
+            else:
+                goods += 1
+            total +=1
+            
+        ratio = goods/ total
+        print "Adjective: %s, phase: %s, sensor: %s, ratio: %f" %(original_adjective,
+                                                                  phase,
+                                                                  sensor,
+                                                                  ratio)
+                                                                  
+        ratios.append(ratio)
+    return ratios 
+
+def train_dataset(dataset, all_adjectives, adjective):
+
+    parameters = [
+              dict(n_pca_components = [0.97],
+                   n_hidden_components=[35, 40, 45], 
+                   resampling_size=[20], 
+                   n_discretization_symbols=[25,],
+                   hmm_max_iter = [2000],
+                   #kmeans_max_iter = [1000]
+                   ),  
+              #dict(n_pca_components = [0.97],
+                   #n_hidden_components=[40, 50], 
+                   #resampling_size=[20], 
+                   #n_discretization_symbols=[30, ],
+                   #hmm_max_iter = [2000],
+                   ##kmeans_max_iter = [1000]
+                   #),              
+              ]
+        
+    print "Using parameters:\n", parameters    
+    
     chain = hmm_chain.HMMChain()
     cross_validator = sklearn.cross_validation.ShuffleSplit(len(dataset), 
-                                                            n_iterations=3, 
+                                                            n_iterations=2, 
                                                             train_size=3./4.)
+    
+    for p in parameters:
+        p.update(my_class = [adjective],
+                 other_classes = [all_adjectives]
+                 )
     grid = sklearn.grid_search.GridSearchCV(chain, parameters,
                                             cv = cross_validator,
                                             verbose = 10,
-                                            n_jobs = 6
+                                            n_jobs = 6,
+                                            refit = True                                            
                                             )
     grid.fit(dataset)
-    return grid.best_estimator_
+    chain =  grid.best_estimator_
+    chain.my_class = None
+    chain.other_classes = None
+    return chain
 
 
 def load_dataset(path, adjective, phase, sensor):
@@ -80,8 +140,28 @@ def load_dataset(path, adjective, phase, sensor):
     
     return data[phase][sensor]
 
+def load_all_adjectives(path, phase, sensor):
+    if phase not in phases:
+        raise ValueError("%s is not a known phase" % phase)
+    if sensor not in sensors:
+        raise ValueError("%s is not a known sensor" % sensor)    
+
+    all_data = {}
+    
+    for adjective in adjectives:
+        filename = os.path.join(path, adjective + ".pkl")
+        with open(filename) as f:
+            data = cPickle.load(f)    
+            all_data[adjective] = data[phase][sensor]
+    
+    return all_data
+
 def train_single_dataset(path, adjective, phase, sensor):
+    
     dataset = load_dataset(path, adjective, phase, sensor)
+    #all_adjectives = load_all_adjectives(path, phase, sensor)
+    all_adjectives = (path, phase, sensor)
+    
     if len(dataset) is 0:
         print "Empty dataset???"
         return
@@ -96,17 +176,13 @@ def train_single_dataset(path, adjective, phase, sensor):
     print "Training adjective %s, phase %s, sensor %s" %(
         adjective, phase, sensor)
     
-    params = dict(n_pca_components = [0.95],
-                  n_hidden_components=[5, 8, 11, 14], 
-                  resampling_size=[20], 
-                  n_discretization_symbols=[3, 5, 7, 9])
-    print "Using parameters:\n", params
-    chain = train_dataset(dataset, params)
+    chain = train_dataset(dataset, all_adjectives, adjective)
     
     print "After training, score is ", chain.score(dataset)
     
     
     with open(path_name, "w") as f:
+        print "Saving file: ", path_name
         cPickle.dump(chain, f, protocol=cPickle.HIGHEST_PROTOCOL)    
     
 
@@ -131,15 +207,16 @@ def main():
         print "Training all combinations of adjectives, phases and sensor"
         for adjective, phase, sensor in itertools.product(adjectives, 
                                                           phases, sensors):
-            try:
-                train_single_dataset(path, adjective, phase, sensor)
-            except Exception, e:
-                print "Got a problem, error is: ", e
+            #try:
+                #train_single_dataset(path, adjective, phase, sensor)
+            #except Exception, e:
+                #print "Got a problem, error is: ", e
+            train_single_dataset(path, adjective, phase, sensor)
     else:
         print "Usage:"
         print "%s path adjective phase sensor" % sys.argv[0]
         print "%s path phase sensor" % sys.argv[0]
-        print "%s path sensor" % sys.argv[0]
+        print "%s path adjective" % sys.argv[0]
         print "%s path" % sys.argv[0]
         print "Files will be saved in path/chains"
 
