@@ -7,6 +7,7 @@ import os
 import sys
 import itertools
 from utilities import adjectives, phases, sensors
+import multiprocessing
 
 def test_chain(chain, path, original_adjective, phase, sensor):
     chain.my_class = None
@@ -83,6 +84,24 @@ def calculate_rations(chain_path, adjectives_path):
         ratios.append(ratio)
     return ratios 
 
+
+def train_and_save(parameters, dataset, filename):
+    chain = hmm_chain.HMMChain()
+    chain.set_params(**parameters)
+    chain.my_class = None
+    chain.other_classes = None
+    
+    chain.fit(dataset)
+
+    score = chain.score(dataset)
+    print "After training the score is ", score
+    
+    with open(filename, "w") as f:
+        print "Saving file: ", filename
+        cPickle.dump(chain, f, protocol=cPickle.HIGHEST_PROTOCOL)
+        
+
+
 def train_dataset(dataset, all_adjectives, adjective):
 
     parameters = [
@@ -117,14 +136,11 @@ def train_dataset(dataset, all_adjectives, adjective):
                                             cv = cross_validator,
                                             verbose = 10,
                                             n_jobs = 6,
-                                            refit = True                                            
+                                            refit = False                                            
                                             )
     grid.fit(dataset)
-    chain =  grid.best_estimator_
-    chain.my_class = None
-    chain.other_classes = None
-    return chain
-
+    
+    return grid.best_params_
 
 def load_dataset(path, adjective, phase, sensor):
     if adjective not in adjectives:
@@ -176,15 +192,14 @@ def train_single_dataset(path, adjective, phase, sensor):
     print "Training adjective %s, phase %s, sensor %s" %(
         adjective, phase, sensor)
     
-    chain = train_dataset(dataset, all_adjectives, adjective)
-    
-    print "After training, score is ", chain.score(dataset)
-    
-    
-    with open(path_name, "w") as f:
-        print "Saving file: ", path_name
-        cPickle.dump(chain, f, protocol=cPickle.HIGHEST_PROTOCOL)    
-    
+    parameters = train_dataset(dataset, all_adjectives, adjective)
+    print "Parameters finished, spawning a process to save..."
+        
+    p = multiprocessing.Process(target = train_and_save,
+                                args = (parameters, dataset, path_name)
+                                )
+    p.daemon = False
+    p.start()
 
 def main():
     if len(sys.argv) == 5:

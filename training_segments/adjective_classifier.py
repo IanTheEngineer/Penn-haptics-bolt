@@ -6,7 +6,7 @@ import tables
 
 import utilities
 from sklearn.base import ClassifierMixin
-from sklearn.svm import SVC, LinearSVC
+from sklearn.svm import LinearSVC
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import f1_score
 from sklearn import cross_validation
@@ -21,7 +21,9 @@ class AdjectiveClassifier(ClassifierMixin):
         if base_directory is not None:
             self.load_directory(base_directory)
         
-        self.svc = LinearSVC()
+        self.svc = None
+        self.labels = None
+        self.features = None
         
     def load_directory(self, base_directory):
         for f in os.listdir(base_directory):
@@ -66,7 +68,7 @@ class AdjectiveClassifier(ClassifierMixin):
         return ret
             
 
-    def create_features_set(self, database):
+    def create_features_set(self, database, store = False, verbose = False):
         """
         For each object in the database, run classifier.extract_features. All the
         features are then collected in a matrix.
@@ -85,20 +87,21 @@ class AdjectiveClassifier(ClassifierMixin):
                                                      utilities.phases,
                                                      utilities.sensors,
                                                      )
-
-            #print "Loading object ", data_dict["name"]
+            if verbose:
+                print "Loading object ", data_dict["name"]
             data = data_dict["data"]            
             features.append(self.extract_features(data))
             if self.adjective in data_dict["adjectives"]:
                 labels.append(1)
             else:
                 labels.append(0)
-            
-            print "Group: ", group._v_name, " label: ", labels[-1]
         
-        self.features = np.array(features).squeeze()
-        self.labels = np.array(labels).flatten()
-        return self.features, self.labels
+        features = np.array(features).squeeze()
+        labels = np.array(labels).flatten()
+        if store:
+            self.features = features
+            self.labels = labels
+        return features, labels
 
     def predict(self, X):
         if isinstance(X, tables.Group):
@@ -124,7 +127,7 @@ class AdjectiveClassifier(ClassifierMixin):
             tots += 1
         return score / tots 
     
-    def train_on_features(self):
+    def train_on_features(self, clf = None, parameters = None, cv = None):
         """Train a support vector machine classifier on the features and labels
         that have been produced using self.create_features_set.
         """        
@@ -132,25 +135,77 @@ class AdjectiveClassifier(ClassifierMixin):
             raise ValueError("No features present, have you run create_features_set?")
         if not hasattr(self, "labels"):
             raise ValueError("No labels present, have you run create_features_set?")        
-        if not hasattr(self, "svc"):
+
+        if clf is None:
             self.svc = LinearSVC()
-        
+        else:
+            self.svc = clf
         
         score_func = f1_score        
-        cv = cross_validation.StratifiedShuffleSplit((self.labels), 
-                                                     test_size=1/2.,
-                                                     n_iterations=200)
+        
+        if cv is None:
+            cv = cross_validation.StratifiedShuffleSplit((self.labels), 
+                                                         test_size=1/2.,
+                                                         n_iterations=10)
+        
+        if parameters is None:
+            parameters = {"dual":[False, False]}
+            
         grid = GridSearchCV(self.svc, 
-                            {"dual":[False, False]}, 
+                            parameters, 
                             score_func=score_func, 
                             cv=cv, 
-                            verbose=0, n_jobs=1
+                            verbose=0, 
+                            n_jobs=1
                             )
         grid.fit(self.features, self.labels)
         self.svc = grid.best_estimator_
         return self
+    
+    def train_on_separate_dataset(self, test_X, test_Y, 
+                                  train_X = None, train_Y  = None,
+                                  all_Cs =  None, 
+                                  score_fun = None,
+                                  verbose = True):
+        if train_X is None and not hasattr(self, "features"):
+            raise ValueError("No features present, have you run create_features_set?")
+        if train_Y is None and not hasattr(self, "labels"):
+            raise ValueError("No labels present, have you run create_features_set?")        
         
+        if all_Cs is None:
+            all_Cs = np.linspace(1, 1e6, 1000)
+
+        if train_X is None:
+            train_X = self.features
+        if train_Y is None:
+            train_Y = self.labels
+       
+        scores = []
+        for C in all_Cs:
+            clf = LinearSVC(C=C, dual=False)
+            clf.fit(train_X, train_Y)
+            if score_fun is None:
+                score = clf.score(test_X, test_Y)
+            else:
+                pred_Y = clf.predict(test_X)
+                score = score_fun(test_Y, pred_Y)
+            scores.append(score)
         
+        best_C = np.argmax(all_Cs)
+        self.svc = LinearSVC(C = best_C, dual = False).fit(train_X, train_Y)
+        if verbose:
+            if score_fun is None:
+                score_training = self.svc.score(train_X, train_Y)
+                score_testing = self.svc.score(test_X, test_Y)
+            else:
+                pred_Y = self.svc.predict(train_X)
+                score_training = score_fun(train_Y, pred_Y)
+                
+                pred_Y = self.svc.predict(test_X)
+                score_testing = score_fun(test_Y, pred_Y)                
+            
+            print "Training score: %f, testing score: %f" %(score_training,
+                                                            score_testing)
         
+        return self
         
-           
