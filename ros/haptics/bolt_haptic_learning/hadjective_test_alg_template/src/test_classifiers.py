@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest("hadjective_train_pipe")
+import roslib; roslib.load_manifest("hadjective_test_alg_template")
 import rospy
 import numpy as np
 import sys 
@@ -10,6 +10,7 @@ import pickle
 import bolt_learning_utilities as utilities
 import extract_features as extract_features
 import matplotlib.pyplot as plt 
+import sklearn.decomposition
 
 from bolt_feature_obj import BoltFeatureObj
 from sklearn.cluster import KMeans
@@ -27,7 +28,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import classification_report
 from sklearn import cross_validation
 from sklearn import preprocessing
-from sklearn.decomposition import PCA
+
 
 
 # Loads the data from h5 table and adds labels
@@ -42,28 +43,9 @@ def loadDataFromH5File(input_file, adjective_file):
 
     return all_bolt_data_adj
 
-# Fits PCA for electrode training data
-def fit_electrodes_pca(train_data):
-
-    pca = dict()
-
-    # Fit PCA on all trials, for each motion separately
-    for motion_name in train_data:
-        trial_list = train_data.get(motion_name)
-
-        # Pull out electrode data on both fingers, all trials for one motion
-        electrode_motion_data = np.concatenate((trial_list[0].electrodes_normalized[0],trial_list[0].electrodes_normalized[1]))
-        for trial in range(1,len(trial_list)):
-            electrode_motion_data = np.concatenate((electrode_motion_data,trial_list[trial].electrodes_normalized[0],trial_list[trial].electrodes_normalized[1]))
-        
-        # Store PCA by motion
-        pca[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
-
-    return(pca)
-
 
 # Takes the bolt data and extracts features to run
-def BoltMotionObjToFeatureObj(all_bolt_data, electrode_pca):
+def BoltMotionObjToFeatureObj(all_bolt_data):
     """
     Pull out PCA components from all data
 
@@ -74,7 +56,8 @@ def BoltMotionObjToFeatureObj(all_bolt_data, electrode_pca):
                      "thermal_hold", "squeeze"
 
     """
-
+    # DO PCA Calculations here 
+    
     # Store in feature class object
     all_features_obj_dict = dict();
 
@@ -86,7 +69,7 @@ def BoltMotionObjToFeatureObj(all_bolt_data, electrode_pca):
         # For all objects
         for trial in trial_list:
             
-            bolt_feature_obj = extract_features.extract_features(trial, electrode_pca[motion_name])
+            bolt_feature_obj = extract_features.extract_features(trial)
             
             feature_list.append(bolt_feature_obj)
 
@@ -111,6 +94,10 @@ def bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
 
     """
     
+    # DO PCA Calculations here 
+     
+
+
     # Store in feature class object
     all_features_vector_dict = dict()
     
@@ -149,58 +136,20 @@ def bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
     return (all_features_vector_dict, all_adjective_labels_dict)      
 
 
-def run_kmeans(input_vector, num_clusters, obj_data):
+
     """
-    run_kmeans - expects a vector of features and the number of
-                 clusters to generate
-
-    Returns the populated clusters 
-    """
-    k_means = KMeans(init='k-means++', n_clusters=num_clusters, n_init=100)
-
-    k_means.fit(input_vector)
-    k_means_labels = k_means.labels_
-    k_means_cluster_centers = k_means.cluster_centers_
-    k_mean_labels_unique = np.unique(k_means_labels)
-
-    # Pull clusters out
-    clusters = dict()
-    cluster_names = dict()
-    cluster_ids = dict()
-    cluster_all_adjectives = dict()
-    
-    # Get a list of all adjectives
-    adjectives = obj_data[0].labels.keys()
-
-    
-    for labels in k_mean_labels_unique:
-        idx = np.nonzero(k_means_labels == labels)
-        clusters[labels] = [obj_data[i] for i in idx[0]]
-        cluster_names[labels] = [obj.name for obj in clusters[labels]]
-        cluster_ids[labels] = [obj.object_id for obj in clusters[labels]]
-   
-    for adj in adjectives:
-        cluster_adj = dict()
-        for labels in k_mean_labels_unique:
-            cluster_adj[labels] = [obj.labels[adj] for obj in clusters[labels]] 
-        
-        cluster_all_adjectives[adj] = cluster_adj
-
-    
-    return (k_means_labels, k_means_cluster_centers, clusters)
-
-def true_false_results(predicted_labels, true_labels):
+    def true_false_results(predicted_labels, true_labels):
  
-    FP = (predicted_labels - true_labels).tolist().count(1)
-    FN = (predicted_labels - true_labels).tolist().count(-1)
-    TP = (predicted_labels & true_labels).tolist().count(1)
-    TN = ((predicted_labels | true_labels) ^ True).tolist().count(1)
+    #FP = (predicted_labels - true_labels).tolist().count(1)
+    #FN = (predicted_labels - true_labels).tolist().count(-1)
+    #TP = (predicted_labels & true_labels).tolist().count(1)
+    #TN = ((predicted_labels | true_labels) ^ True).tolist().count(1)
 
 
     return(TP, TN, FP, FN)
 
 
-def matthews_corr_coef(TP,TN,FP,FN):
+    #def matthews_corr_coef(TP,TN,FP,FN):
 
     try:
         MCC = (TP*TN - FP*FN)/(np.sqrt(((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))))
@@ -208,9 +157,10 @@ def matthews_corr_coef(TP,TN,FP,FN):
         MCC = (TP*TN - FP*FN)/1
 
     return (MCC)
+    """
 
 
-def train_knn(train_vector, train_labels, test_vector, test_labels):
+#def train_knn(train_vector, train_labels, test_vector, test_labels):
     """
     train_knn - expects a vector of features and a nx1 set of
                 corresponding labels.  Finally the number of
@@ -218,7 +168,8 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
 
     Returns a trained knn classifier
     """
-    
+ 
+    """
     # Data scaling
     train_vector_scaled = preprocessing.scale(train_vector)
     test_vector_scaled = preprocessing.scale(test_vector)
@@ -232,16 +183,17 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     report = classification_report(test_labels, knn.predict(test_vector_scaled))
 
     return (knn_best, score, report)
-
+    """
 
 
 def train_svm(train_vector, train_labels, test_vector, test_labels):
-    """
+    """ 
     train_svm - expects a vector of features and a nx1 set of
                 corresponding labels
 
     Returns a trained SVM classifier
     """
+ 
     
     # Data scaling
     train_vector_scaled = preprocessing.scale(train_vector)
@@ -249,17 +201,45 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     
     # Grid search with nested cross-validation
     parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
-    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=8)
+    #parameters = {'kernel': ['poly'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'degree': [1, 2, 3, 4, 5], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]} 
+    svm = GridSearchCV(SVC(), parameters, score_func=f1_score, cv=8)
     svm.fit(train_vector_scaled, train_labels)
     score = svm.grid_scores_
     svm_best = svm.best_estimator_
-    probabilities = svm.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
 
-    return (svm_best, score, report, probabilities)
+    return (svm_best, score, report)
 
 
-def single_train(train_vector, train_labels, test_vector, test_labels):
+def AdjectiveClassifiers(adjectives, test_vector)
+    """ 
+    Feed the probabilities/labels from 5 classifiers for one adjective into a SVM and train.
+    Return a single final classifier for each adjective
+    """
+    labels = dict()
+    final_classifiers = dict()
+    num_raw = results[adj][motion_name].shape
+    feature_vector = np.zeros((num_raw,5))
+    results = cPickle.load(open('test_results.pkl',"r"))
+          
+    for adj in adjectives:
+        labels[adj] = adjectives[adj]
+        for motion_name in test_vector  #here the train_vetor should be test_vector
+            feature_vector = np.append(feature_vector, results[adj][motion_name][0].tolist(), 1)
+            
+        # Train on features
+        adj_classifier, grid_search_scores, final_report, probabilities, predicted_results = train_svm(feature_vector, labels[adj], test_vector, labels[adj] )
+        
+        final_classifiers[adj] = adj_classifier
+
+    cPickle.dump(final_classifiers, open("AdjectiveClassifiers.pkl", "w"), cPickle.HIGHEST_PROTOCOL)
+     
+    return final_classifier
+
+
+
+
+#def single_train(feature_vector, labels):
     """
     single_train - expects a vector of features and an nx1 set of
                    corresponding labels to train a single classifier
@@ -269,47 +249,52 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     using grid search
     """
 
+    """
+    # Split data
+    train_vector, test_vector, train_labels, test_labels = train_test_split(feature_vector, labels, test_size=0.25)
+
     # Run KNN
     knn, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
     print "Ran KNN"
 
     # Run SVM
-    svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
+    svm, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
     return(knn, knn_report, svm, svm_report)
 
 
-def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary):
+    #def full_train(train_feature_vector, adjective_dictionary):
     
 
-    # Open text files for storing classification reports
+    #import pdb; pdb.set_trace()
+
+    # Fun full training
     report_file_knn = open("Full_KNN_reports.txt", "a")
     report_file_svm = open("Full_SVM_reports.txt", "a")
     
     adjectives = adjective_dictionary.keys()
     
-    # Cycle through all 36 adjectives
     for adj in adjectives:
         knn_classifiers = dict()
         svm_classifiers = dict()
          
-        # Cycle through all 5 motions
+        #pkl_file_name = adj.replace("'",'"')
+             
         for motion_name in train_feature_vector:
             
             print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
             
-            # Train KNN and SVM classifiers using grid search with nested cv
-            knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+            knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], adjective_dictionary[adj])
 
             # Store classifiers for each motion
             knn_classifiers[motion_name] = knn
             svm_classifiers[motion_name] = svm
  
             # Store the reports into text files
-            report_file_knn.write('Adjective: '+adj+'    Motion name: '+motion_name)
+            report_file_knn.write('Adjective: '+adj+'   Motion name: '+motion_name)
             report_file_knn.write('\nKNN report\n'+knn_report+'\n\n')
-            report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
+            report_file_svm.write('Adjective: '+adj+'   Motion name: '+motion_name)
             report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
   
         # When trainings for a certain adjective with all five motions are done, save these classifiers
@@ -321,73 +306,90 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     
     report_file_knn.close()
     report_file_svm.close()
-    
+    """
 
 
 # MAIN FUNCTION
 def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
 
 
-    # Load data into the pipeline. First check
-    # for feature object pkl files
     print "Loading data from file"
-    if train_feature_pkl == None or test_feature_pkl == None:
-        # If no features, load data from either an
-        # h5 and adjective file or directly from
-        # a saved pkl file
-        if input_file.endswith(".h5"):
-            all_data = loadDataFromH5File(input_file, adjective_file)
-        else:
-            all_data = utilities.loadBoltObjFile(input_file)
+    # If no features, load data from either an
+    # h5 and adjective file or directly from
+    # a saved pkl file
+    if input_file.endswith(".h5"):
+        all_data = loadDataFromH5File(input_file, adjective_file)
+    else:
+        all_data = utilities.loadBoltObjFile(input_file)
 
-        print "loaded data"
+    print "loaded data"
 
     
-        # Split the data into train and final test
-        train_data, final_test_data = utilities.split_data(all_data, 0.9)
+    # Split the data into train and test
+    train_data, test_data = utilities.split_data(all_data, 0.9)
         
-        # Split the train data again into train and test
-        train_data, test_data = utilities.split_data(train_data, 0.8)
+    # Convert motion objects into feature objects
+    test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data)
 
-        # Fit PCA for electrodes on training data
-        electrode_pca = fit_electrodes_pca(train_data)
-
-        # Convert motion objects into feature objects
-        train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data, electrode_pca)
-        test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data, electrode_pca)
-        file_ptr = open("train_feature_objs.pkl","w")
-        cPickle.dump(train_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
-        file_ptr.close()
-        file_ptr = open("test_feature_objs.pkl","w")
-        cPickle.dump(test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
-
-    else:
-        # Load the saved feature object pkl files
-        file_ptr = open(train_feature_pkl,"r")
-        train_all_features_obj_dict = cPickle.load(file_ptr)
-        file_ptr.close()
-        file_ptr = open(test_feature_pkl,"r")
-        test_all_features_obj_dict = cPickle.load(file_ptr)
-        file_ptr.close()
-
-        print "loaded data"
+    print "loaded data"
 
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit"]
 
 
     # Pull desired features from feature objects
-    train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_all_features_obj_dict, feature_name_list)
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_all_features_obj_dict, feature_name_list)
 
+    # Preprocess the data by scaling
+    test_feature_vector_scaled = preprocessing.scale(test_feature_vector)
     print("Created feature vector containing %s" % feature_name_list)
+
     
 
-    # Run full train
-    full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary)
 
+
+    report_file = open("Test_results.txt","a")
+    results = dict()
+     
+    # adjective_list has NOT been created
+     
+    for adj in test_adjective_dictionary
+        print "Start testing on adjective %s" %(adj)
+         
+        labels = dict()
+        knn_clf_ptr = open('adjective_classifiers/'+adj+'_knn.pkl', "r")
+        svm_clf_ptr = open('adjective_classifiers/'+adj+'_svm.pkl', "r")
+        
+        # Load the pickle file which is the corresponding adjective classifier
+        adj_clf_knn = cPickle.load(knn_clf_ptr)
+        adj_clf_svm = cPickle.load(svm_clf_ptr)
+        report_file.write('----- Adjective: ')
+        report_file.write(adj)
+        report_file.write(' -----\n')
  
+        for motion_name in test_feature_vector
+            knn_predicted = adj_clf_knn[motion_name].predict_proba(test_feature_vector_scaled[motion_name])
+            svm_predicted = adj_clf_svm[motion_name].predict_proba(test_feature_vector_scaled[motion_name])
 
+            report_file.write('Motion:  '+motion_name+'\n')
+            
+            # Is proba a list of float values??
+            report_file.write('KNN labels with proba: ')
+            report_file.write('SVM labels with proba: ')
+
+            labels[motion_name] = [knn_predicted, svm_predicted]
+
+        results[adj] = labels
+        # In the future, we may store the results by motion in the order how well it performs
+
+        print "Tesing on adjective %s is DONE" %(adj)
+
+    file_name = "test_result.pkl"
+    cPickle.dump(results, open(file_name, "w"), cPickle.HIGHEST_PROTOCOL)
+
+
+    # Use the output from classifiers by motions to create a single classifier for each adjective
+    final_classifier = AdjectiveClassifiers(test_adjective_dictionary, test_feature_vector)
 
 # Parse the command line arguments
 def parse_arguments():
@@ -426,4 +428,4 @@ def parse_arguments():
 
 if __name__ == "__main__":
     input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl = parse_arguments()
-    main(input_file, adjective_file, train_feature_pkl, test_feature_pkl)
+    main(input_file, adjective_file)

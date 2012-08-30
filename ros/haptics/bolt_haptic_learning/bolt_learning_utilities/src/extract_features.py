@@ -15,10 +15,10 @@ from scipy.signal import filtfilt
 from scipy.integrate import trapz
 
 from extract_features_thermal import thermal_features
-
+from extract_electrode_features import electrode_features
 
 # Functions to help extract features from a BoltPR2MotionObj
-def extract_features(bolt_pr2_motion_obj):
+def extract_features(bolt_pr2_motion_obj, electrode_pca):
     """
     Given a BoltPR2MotionObj the function will process the streams
     and pull out specific features that are defined below:
@@ -82,7 +82,6 @@ def extract_features(bolt_pr2_motion_obj):
 
     # Gripper aperture features
     gripper_min = []
-    #gripper_close = []
     gripper_mean = []
 
     # Transform features
@@ -90,10 +89,10 @@ def extract_features(bolt_pr2_motion_obj):
 
     # Electrode features
     electrode_polyfit = []
-
+    
     num_fingers = len(bolt_pr2_motion_obj.electrodes_normalized)
     
-# Loop through each finger and store as a list
+    # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
 
         tac_area_buf, tdc_exp_fit_buf = thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
@@ -103,7 +102,9 @@ def extract_features(bolt_pr2_motion_obj):
         end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
         distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
-        
+
+        polyfit = electrode_features(bolt_pr2_motion_obj.electrodes_normalized[finger], electrode_pca, bolt_pr2_motion_obj.state)
+
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
         pdc_max.append(max(bolt_pr2_motion_obj.pdc_normalized[finger]))
@@ -121,7 +122,6 @@ def extract_features(bolt_pr2_motion_obj):
 
         # Compute gripper aperture features
         gripper_min.append(end_gripper)
-        #gripper_close.append(start_gripper - end_gripper)
         gripper_mean.append(mean_gripper)
 
         # Extract transform features
@@ -133,9 +133,7 @@ def extract_features(bolt_pr2_motion_obj):
         pdc_rise_count.append(max(np.diff(filtered_pdc)))
         
         # Compute electrode features
-        #pca = sklearn.decomposition.PCA(n_components = 2, whiten = False)
-        #pca.fit(motion.electrodes_normalized[finger])
-        #transf_finger = pca.tranform(motion.electrodes_normalized[finger])'''
+        electrode_polyfit.append(polyfit)
 
     # Insert more features here to add to the final feature class
     bolt_feature_obj.pdc_area = pdc_area
@@ -152,10 +150,11 @@ def extract_features(bolt_pr2_motion_obj):
     bolt_feature_obj.tdc_exp_fit = tdc_exp_fit
 
     bolt_feature_obj.gripper_min = gripper_min
-    #bolt_feature_obj.gripper_close = gripper_close
     bolt_feature_obj.gripper_mean = gripper_mean
 
     bolt_feature_obj.transform_distance = transform_distance
+
+    bolt_feature_obj.electrode_polyfit = electrode_polyfit
 
     return bolt_feature_obj
 
