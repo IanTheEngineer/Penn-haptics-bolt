@@ -39,6 +39,8 @@ class BoltFeatureObj():
         
         self.transform_distance = []
 
+        self.electrode_polyfit = []
+
         # Store information about object
         self.state = self.DISABLED
         self.detailed_state = []
