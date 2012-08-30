@@ -132,7 +132,6 @@ def bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
         # Store all of the objects away
         all_features_vector_dict[motion_name] = np.array(feature_vector_list)
         
-    
     return (all_features_vector_dict, all_adjective_labels_dict)      
 
 
@@ -230,8 +229,6 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     knn_best = knn.best_estimator_
     report = classification_report(test_labels, knn.predict(test_vector_scaled))
 
-    import pdb; pdb.set_trace()
-    pass
 
     return (knn_best, score, report)
 
@@ -258,8 +255,6 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     probabilities = svm.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
 
-    import pdb; pdb.set_trace()
-    pass
 
     return (svm_best, score, report, probabilities)
 
@@ -285,7 +280,7 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     return(knn, knn_report, svm, svm_report)
 
 
-def full_train(train_feature_vector, adjective_dictionary):
+def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary):
     
 
     #import pdb; pdb.set_trace()
@@ -294,7 +289,7 @@ def full_train(train_feature_vector, adjective_dictionary):
     report_file_knn = open("Full_KNN_reports.txt", "a")
     report_file_svm = open("Full_SVM_reports.txt", "a")
     
-    adjectives = adjective_dictionary.keys()
+    adjectives = train_adjective_dictionary.keys()
     
     for adj in adjectives:
         knn_classifiers = dict()
@@ -304,7 +299,7 @@ def full_train(train_feature_vector, adjective_dictionary):
             
             print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
             
-            knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], adjective_dictionary[adj])
+            knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
 
             # Store classifiers for each motion
             knn_classifiers[motion_name] = knn
@@ -381,7 +376,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     print("Created feature vector containing %s" % feature_name_list)
 
     
-
+    """
     motion_name = 'squeeze'    
     adjective = 'rough'
     report_file = open("Single_Train_Reports.txt","a")
@@ -398,11 +393,11 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
     pkl_file_name += pkl_file_suffix
 
     cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
-
+    """
 
 
     # Run full train
-    #full_train(train_feature_vector, train_adjective_dictionary)
+    full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary)
 
  
 
