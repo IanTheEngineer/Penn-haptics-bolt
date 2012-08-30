@@ -4,44 +4,63 @@ import cPickle
 import utilities
 from sklearn.externals.joblib import Parallel, delayed
 import sys
-import tables
-
+import glob
+import os
 
 adjectives = utilities.adjectives
-#adjectives = ["sticky"]
+#adjectives = ["hard", "nice", "compressible"]
 
-h5_db = None
-chains_directory = None
+def test_adjective(adjective, chains_path, adjectives_path):
+    pattern = "/*"+adjective+"*.pkl"
+    test_len = len(utilities.phases) * len(utilities.sensors)
 
+    number_of_chains = len(glob.glob(chains_path + pattern))
+    test_chain =  number_of_chains >= test_len
+    
+    test_a = len(glob.glob(adjectives_path + pattern)) == 0
+    
+    if not test_chain:
+        print "Adjective %s has only %d chains" % (adjective, number_of_chains)
+    if not test_a:
+        print "Adjective %s already has a file" % adjective    
+        
+    return test_chain and test_a
 
-def create_clf(a):
+def create_clf(a, chains_directory, adjectives_directory, h5_db):
     print "Creating classifier for adjective ", a
     clf = AdjectiveClassifier(a, chains_directory)
-    clf.create_features_set(h5_db)
+    clf.create_features_set(h5_db, store=True, verbose=True)
+    
+    classifier_file = os.path.join(adjectives_directory, 
+                                   clf.adjective + ".pkl")
+    print "Saving file: ", classifier_file
+    with open(classifier_file, "w") as f:
+        cPickle.dump(clf, f)    
+    
     return clf   
 
-def main(db_filename, base_directory, out_filename, nj=6):
+def main(db_filename, base_directory, nj=6):
     
-    global h5_db
-    global chains_directory
+    chains_directory = os.path.join(base_directory, "chains")
+    adjectives_directory = os.path.join(base_directory, "untrained_adjectives")
     
-    h5_db = db_filename
-    chains_directory = base_directory
-    f = open(out_filename, "w")
-    
-    p = Parallel(n_jobs=n_jobs,verbose=10)
-    classifiers = p(delayed(create_clf)(a) 
-                    for a in adjectives)
-    
-    cPickle.dump(classifiers, f, cPickle.HIGHEST_PROTOCOL)
-    
+    p = Parallel(n_jobs=nj,verbose=10)
+    p(delayed(create_clf)(a, chains_directory, 
+                          adjectives_directory,
+                          db_filename) 
+      for a in adjectives 
+      if test_adjective(a, 
+                        chains_directory,
+                        adjectives_directory))
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print "usage: %s database base_directory out_file n_jobs" % sys.argv[0]
+    if len(sys.argv) != 4:
+        print "usage: %s database base_directory n_jobs" % sys.argv[0]
+        print "chains are in base_directory/chains"
+        print "adjectives will be saved in base_directory/untrained_adjectives"
         sys.exit(1)
     
-    db, base_dir, out_file, n_jobs = sys.argv[1:]
+    db, base_dir, n_jobs = sys.argv[1:]
     n_jobs = int(n_jobs)
-    main(db, base_dir, out_file, n_jobs)
+    main(db, base_dir, n_jobs)
 
