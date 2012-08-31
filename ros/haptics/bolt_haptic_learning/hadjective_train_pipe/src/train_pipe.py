@@ -255,7 +255,7 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     
     # Data scaling
     scaler = preprocessing.Scaler().fit(train_vector)
-    train_vector_scaled = scale.transform(train_vector)
+    train_vector_scaled = scaler.transform(train_vector)
     test_vector_scaled = scaler.transform(test_vector)
     
     # Grid search with nested cross-validation
@@ -288,6 +288,7 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
+    #return(knn, knn_report, svm, svm_report, svm_probabilities)
     return(knn, knn_report, svm, svm_report, svm_probabilities)
 
 
@@ -304,7 +305,7 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     
     # Cycle through all 36 adjectives
     for adj in adjectives:
-        if adj=="elastic" or adj=="warm":
+        if adj=="elastic" or adj=="warm" or adj=="porous":
             final_train_vector[adj] = np.zeros((93,10))
         else:
             
@@ -333,13 +334,14 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
                 final_test_proba = svm_classifiers[motion_name].predict_proba(final_test_feature_vector[motion_name])
                 num_raw_test = final_test_proba.shape[0]
                 final_test_vector[adj].append(final_test_proba)
-
+                
+                '''
                 # Store the reports into text files
                 report_file_knn.write('Adjective: '+adj+'    Motion name: '+motion_name)
                 report_file_knn.write('\nKNN report\n'+knn_report+'\n\n')
                 report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
                 report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
-               
+                '''
             # Reshape the vector to make a proper feature_vetor for training and tesing
             final_train_vector[adj] = np.array(final_train_vector[adj])
             final_train_vector[adj] = final_train_vector[adj].reshape(num_raw_train,10)
@@ -386,7 +388,7 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
     import pdb; pdb.set_trace()
     pass
 
-    # cPickle.dump(final_classifiers, open("HadjectiveClassifiers.pkl","2"), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump(final_classifiers, open("HadjectiveClassifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
 
     return final_classifiers
 
@@ -451,7 +453,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
         print "loaded data"
 
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance"] # "electrode_polyfit"]
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance"] #, "electrode_polyfit"]
 
 
     # Pull desired features from feature objects
@@ -461,9 +463,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
 
     print("Created feature vector containing %s" % feature_name_list)
 
-    
+    '''
     # Single trial for debugging
-
     final_train_vector = dict()
     final_test_vector = dict()
     
@@ -488,11 +489,11 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
     #pkl_file_name += pkl_file_suffix
 
     #cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
-    
+    '''
 
 
     # Run full train
-    # final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector)
+    final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector)
 
     # Create the final classifiers for each adjective
     AdjectiveClassifiers(final_train_vector, test_adjective_dictionary, final_test_vector, final_test_adjective_dictionary)
