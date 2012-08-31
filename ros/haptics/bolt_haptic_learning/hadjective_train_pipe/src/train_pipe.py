@@ -219,8 +219,9 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     """
     
     # Data scaling
-    train_vector_scaled = preprocessing.scale(train_vector)
-    test_vector_scaled = preprocessing.scale(test_vector)
+    scaler = preprocessing.Scaler().fit(train_vector)
+    train_vector_scaled = scaler.transform(train_vector)
+    test_vector_scaled = scaler.transform(test_vector)
 
     # Grid search with nested cross-validation
     parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}]
@@ -243,8 +244,9 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     """
     
     # Data scaling
-    train_vector_scaled = preprocessing.scale(train_vector)
-    test_vector_scaled = preprocessing.scale(test_vector)
+    scaler = preprocessing.Scaler().fit(train_vector)
+    train_vector_scaled = scale.transform(train_vector)
+    test_vector_scaled = scaler.transform(test_vector)
     
     # Grid search with nested cross-validation
     parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
@@ -324,7 +326,7 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
 
 
 # MAIN FUNCTION
-def main(input_file, adjective_file, train_feature_pkl, test_feature_plk):
+def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl):
 
 
     # Load data into the pipeline. First check
