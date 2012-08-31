@@ -47,10 +47,7 @@ class AdjectiveClassifier(ClassifierMixin):
             d[phase][sensor] = data
         """
         if isinstance(X, tables.Group):
-            X = utilities.dict_from_h5_group(X,
-                                             utilities.phases,
-                                             utilities.sensors,
-                                             )        
+            X = utilities.dict_from_h5_group(X)        
         
         if type(X) is not list:
             X = [X]
@@ -83,10 +80,7 @@ class AdjectiveClassifier(ClassifierMixin):
         labels = []
         features = []
         for group in utilities.iterator_over_object_groups(database):
-            data_dict = utilities.dict_from_h5_group(group,
-                                                     utilities.phases,
-                                                     utilities.sensors,
-                                                     )
+            data_dict = utilities.dict_from_h5_group(group)
             if verbose:
                 print "Loading object ", data_dict["name"]
             data = data_dict["data"]            
@@ -105,10 +99,7 @@ class AdjectiveClassifier(ClassifierMixin):
 
     def predict(self, X):
         if isinstance(X, tables.Group):
-            data_dict = utilities.dict_from_h5_group(X,
-                                                     utilities.phases,
-                                                     utilities.sensors,
-                                                     )          
+            data_dict = utilities.dict_from_h5_group(X)          
             features = self.extract_features(data_dict["data"])
         else:
             features = X
