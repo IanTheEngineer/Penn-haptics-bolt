@@ -319,6 +319,9 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
             knn_classifiers[motion_name] = knn
             svm_classifiers[motion_name] = svm
 
+            import pdb; pdb.set_trace()
+            pass
+
             # Store the proba as final_train_vector
             final_train_vector[adj] = np.append(final_train_vector[adj], svm_proba.tolist(), 1)
            
@@ -441,7 +444,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk, final_
         print "loaded data"
 
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance"] # "electrode_polyfit"]
 
 
     # Pull desired features from feature objects
@@ -473,7 +476,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_plk, final_
 
 
     # Run full train
-    final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary)
+    final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector)
 
     # Create the final classifiers for each adjective
     AdjectiveClassifiers(final_train_vector, test_adjective_dictionary, final_test_vector, final_test_adjective_dictionary)
