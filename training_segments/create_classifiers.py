@@ -29,13 +29,13 @@ def test_adjective(adjective, chains_path, adjectives_path):
 def create_clf(a, chains_directory, adjectives_directory, h5_db):
     print "Creating classifier for adjective ", a
     clf = AdjectiveClassifier(a, chains_directory)
-    clf.create_features_set(h5_db, store=True, verbose=True)
+    clf.create_features_set(h5_db, store=True, verbose=False)
     
     classifier_file = os.path.join(adjectives_directory, 
                                    clf.adjective + ".pkl")
     print "Saving file: ", classifier_file
     with open(classifier_file, "w") as f:
-        cPickle.dump(clf, f)    
+        cPickle.dump(clf, f, cPickle.HIGHEST_PROTOCOL)    
     
     return clf   
 

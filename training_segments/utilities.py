@@ -3,6 +3,7 @@ import scipy.interpolate
 import pylab
 import tables
 import scipy.ndimage
+import itertools
 
 adjectives = ['sticky',
               'deformable',
@@ -275,7 +276,7 @@ def _resample_spline(orig, dimensions, offset, m1):
 
     return scipy.ndimage.map_coordinates(orig, newcoords)
 
-def dict_from_h5_group(group, phases, sensors):
+def dict_from_h5_group(group, alt_phases = None, alt_sensors = None):
     """
     Creates a dictionary from an h5 group. The dictionary will have fields:
     name: the name of the object
@@ -285,14 +286,23 @@ def dict_from_h5_group(group, phases, sensors):
           value is the data in the sensor
     """
     assert isinstance(group, tables.Group)
+    if alt_phases is not None:
+        all_phases = alt_phases
+    else:
+        all_phases = phases
+    if alt_sensors is not None:
+        all_sensors = alt_sensors
+    else:
+        all_sensors = sensors
+        
     ret_d = dict()
     ret_d["adjectives"] = group.adjectives[:]
     ret_d["name"] = group._v_name
     data = dict()
     ret_d["data"] = data
-    for phase in phases:
+    for phase in all_phases:
         phase_data = {}
-        for sensor in sensors:
+        for sensor in all_sensors:
             
             #getting the indexes for the phase
             indexed = (group.state.controller_detail_state.read() == phase)
@@ -316,14 +326,117 @@ def dict_from_h5_group(group, phases, sensors):
     
     return ret_d
             
-def iterator_over_object_groups(database):
+def iterator_over_object_groups(database, filter_condition = None):
     """Returns an iterator over all the objects (groups) in the h5 database.
     If database is a string it will be interpreted as a filename, otherwise
     as an open pytables file.
-    """
+    """    
     if type(database) is str:
         database = tables.openFile(database,"r")
+
+    if filter_condition is None:
+        filter_condition = lambda g: (g._v_name != "adjectives"
+                                      and g._v_name != "train_test_sets")
     
     return (g for g in database.root._v_children.values()
-                   if g._v_name != "adjectives")
+                   if filter_condition(g))
     
+def get_item_name(item):
+    """
+    Extract the item name from a string encoding.
+    
+    Example: str = 
+    gray_soft_foam_104_01 -> gray_soft_foam
+    kitchen_sponge_114_10 -> kitchen_sponge
+    """
+    
+    if type(item) is tables.Group:
+        item = item._v_name
+    
+    chars = item.split("_")
+    return "_".join(chars[:-2])
+
+def create_train_test_set(adjective_group, training_ratio):
+    """Given an adjective, first groups the objects then splits the
+    groups using the training_ratio. Finally returns two lists: 
+    one with all the subgroups in the first set, the other with the
+    reamining subgrooups.
+    """
+    
+    train_groups = []
+    test_groups = []
+    
+    assert isinstance(adjective_group, tables.Group)
+    object_names = set(get_item_name(g) for g in adjective_group._v_children)
+    
+    if len(object_names) == 1:
+        print "Dealing with a unit lenght"
+        train_groups = adjective_group._v_children.values()
+        test_groups = adjective_group._v_children.values()
+        return train_groups, test_groups
+        
+    train_size = int(training_ratio * len(object_names))
+
+    if train_size == 0:
+        train_size = 1;
+    if train_size == len(object_names):
+        train_size -= 1
+    
+    #training set
+    for name in itertools.islice(object_names, train_size):
+        train_groups.extend( g 
+                             for (g_name, g) in adjective_group._v_children.iteritems()
+                             if name == get_item_name(g_name)
+                            )
+    #test set
+    for name in itertools.islice(object_names, train_size, len(object_names)):
+        test_groups.extend( g 
+                             for (g_name, g) in adjective_group._v_children.iteritems()
+                             if name == get_item_name(g_name)
+                            )    
+    
+    assert len(train_groups) > 0
+    assert len(test_groups) > 0
+    return train_groups, test_groups
+
+def add_train_test_set_to_database(database, training_ratio):
+    if type(database) is str:
+        database = tables.openFile(database, "r+")
+    
+    try:
+        if "/train_test_sets" not in database:
+            print "Creating group /train_test_sets"
+            base_group = database.createGroup("/", "train_test_sets")
+        else:
+            print "Group /train_test_sets already exists"
+            base_group = database.root.train_test_sets
+            
+        adjectives_group = database.root.adjectives
+        
+        for adjective in adjectives:            
+            if adjective in base_group:
+                print "%s already exist" % adjective
+                continue
+            
+            print "\nAdjective: ", adjective
+            
+            newg = database.createGroup(base_group, adjective)
+            train_group = database.createGroup(newg, "train")
+            test_group = database.createGroup(newg, "test")
+            
+            #getting train and test lists
+            a_group = getattr(adjectives_group, adjective)
+            train_list, test_list = create_train_test_set(a_group, training_ratio)
+    
+            #creating the hard links
+            for g in train_list:
+                name = g._v_name
+                print "\tTrain link: ", name 
+                database.createHardLink(train_group, name, g)
+            for g in test_list:
+                name = g._v_name
+                print "\tTest link: ", name 
+                database.createHardLink(test_group, name, g)
+    finally:
+        print "Flushing..."
+        database.flush()
