@@ -47,12 +47,11 @@ def fit_electrodes_pca(train_data):
 
     pca = dict()
 
-    electrode_motion_data = [np.ones(14), np.ones(14)] 
+    #electrode_motion_data = [np.ones(14), np.ones(14)] 
     
-    for motion_name in train_data:
-        pca[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
+    #for motion_name in train_data:
+        #pca[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
      
-    """ 
     # Fit PCA on all trials, for each motion separately
     for motion_name in train_data:
         trial_list = train_data.get(motion_name)
@@ -62,12 +61,9 @@ def fit_electrodes_pca(train_data):
         for trial in range(1,len(trial_list)):
             electrode_motion_data = np.concatenate((electrode_motion_data,trial_list[trial].electrodes_normalized[0],trial_list[trial].electrodes_normalized[1]))
         
-        import pdb; pdb.set_trace()
-        pass
 
         # Store PCA by motion
         pca[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
-    """
 
     return(pca)
 
@@ -234,7 +230,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     test_vector_scaled = scaler.transform(test_vector)
 
     # Grid search with nested cross-validation
-    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}]
+    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6]}]
     knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=8)
     knn.fit(train_vector_scaled, train_labels)
     score = knn.grid_scores_
@@ -255,7 +251,7 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     
     # Data scaling
     scaler = preprocessing.Scaler().fit(train_vector)
-    train_vector_scaled = scale.transform(train_vector)
+    train_vector_scaled = scaler.transform(train_vector)
     test_vector_scaled = scaler.transform(test_vector)
     
     # Grid search with nested cross-validation
@@ -321,8 +317,6 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
             knn_classifiers[motion_name] = knn
             svm_classifiers[motion_name] = svm
 
-            import pdb; pdb.set_trace()
-            pass
 
             # Store the proba as final_train_vector
             final_train_vector[adj] = np.append(final_train_vector[adj], svm_proba.tolist(), 1)
@@ -347,7 +341,7 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
 
     
     report_file_knn.close()
-    report_file_svm.closei()
+    report_file_svm.close()
 
     return(final_train_vector, final_test_vector)
 
@@ -446,7 +440,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
         print "loaded data"
 
     # Take loaded data and extract out features
-    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance"] # "electrode_polyfit"]
+    feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
 
 
     # Pull desired features from feature objects

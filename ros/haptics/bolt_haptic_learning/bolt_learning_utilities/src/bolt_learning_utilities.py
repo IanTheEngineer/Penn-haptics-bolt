@@ -168,8 +168,11 @@ def createFeatureVector(bolt_feature_obj, feature_list):
     for feature in feature_list:
         
         feature_vector = eval('bolt_feature_obj.'+ feature)
-        all_feature_vector += feature_vector
-
+        if feature == "electrode_polyfit":
+            for idx in range(0,len(feature_vector[0])):
+                all_feature_vector += [feature_vector[0][idx], feature_vector[1][idx]]
+        else:
+            all_feature_vector += feature_vector
 
     return np.array(all_feature_vector)
 

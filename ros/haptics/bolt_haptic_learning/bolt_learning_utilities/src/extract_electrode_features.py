@@ -46,7 +46,7 @@ def electrode_features(electrodes, pca, controller_state, controller_state_detai
         elif controller_state is BoltPR2MotionObj.SLIDE_FAST:
             controller_state_str = "SLIDE_FAST"
             k.append(controller_state_detail.index('MOVE_DOWN_5CM'))
-            k.append((extract_features.rindex(controller_state_detail,'OPEN_GRIPPER_FAST_2CM')+1))
+            k.append((extract_features.rindex(controller_state_detail,'MOVE_DOWN_5CM')+1))
         else:
             rospy.logerr('Bad Controller State in textureFeatures() with state %d' % controller_state)
     except:
