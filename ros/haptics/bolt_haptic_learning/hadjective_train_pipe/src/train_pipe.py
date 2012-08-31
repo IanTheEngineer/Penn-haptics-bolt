@@ -46,11 +46,6 @@ def loadDataFromH5File(input_file, adjective_file):
 def fit_electrodes_pca(train_data):
 
     pca = dict()
-
-    #electrode_motion_data = [np.ones(14), np.ones(14)] 
-    
-    #for motion_name in train_data:
-        #pca[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
      
     # Fit PCA on all trials, for each motion separately
     for motion_name in train_data:
@@ -230,8 +225,8 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     test_vector_scaled = scaler.transform(test_vector)
 
     # Grid search with nested cross-validation
-    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15]}]
-    knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=8)
+    parameters = {'n_neighbors': [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15]}
+    knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=5)
     knn.fit(train_vector_scaled, train_labels)
     score = knn.grid_scores_
     knn_best = knn.best_estimator_
@@ -284,11 +279,12 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
-    #return(knn, knn_report, svm, svm_report, svm_probabilities)
+    import pdb; pdb.set_trace()
+
     return(knn, knn_report, svm, svm_report, svm_probabilities)
 
 
-def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector):
+def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary):
     
 
     # Open text files for storing classification reports
@@ -391,13 +387,13 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
 
 
 # MAIN FUNCTION
-def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_test_feature_pkl):
+def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl):
 
 
     # Load data into the pipeline. First check
     # for feature object pkl files
     print "Loading data from file"
-    if train_feature_pkl == None or test_feature_pkl == None:
+    if train_feature_pkl == None or test_feature_pkl == None or ensemble_test_feature_pkl == None:
         # If no features, load data from either an
         # h5 and adjective file or directly from
         # a saved pkl file
@@ -410,7 +406,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
         
     
         # Split the data into train and final test
-        train_data, final_test_data = utilities.split_data(all_data, 0.9)
+        train_data, ensemble_test_data = utilities.split_data(all_data, 0.9)
         
         # Split the train data again into train and test
         train_data, test_data = utilities.split_data(train_data, 0.8)
@@ -421,7 +417,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
         # Convert motion objects into feature objects
         train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data, electrode_pca)
         test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data, electrode_pca)
-        final_test_all_features_obj_dict = BoltMotionObjToFeatureObj(final_test_data, electrode_pca)
+        ensemble_test_all_features_obj_dict = BoltMotionObjToFeatureObj(ensemble_test_data, electrode_pca)
 
         file_ptr = open("train_feature_objs.pkl","w")
         cPickle.dump(train_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
@@ -429,8 +425,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
         file_ptr = open("test_feature_objs.pkl","w")
         cPickle.dump(test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
         file_ptr.close()
-        file_ptr = open("final_test_feature_objs.pkl","w")
-        cPickle.dump(final_test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
+        file_ptr = open("ensemble_test_feature_objs.pkl","w")
+        cPickle.dump(ensemble_test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
         file_ptr.close()
 
     else:
@@ -441,8 +437,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
         file_ptr = open(test_feature_pkl,"r")
         test_all_features_obj_dict = cPickle.load(file_ptr)
         file_ptr.close()
-        file_ptr = open(final_test_feature_pkl,"r")
-        final_test_all_features_obj_dict = cPickle.load(file_ptr)
+        file_ptr = open(ensemble_test_feature_pkl,"r")
+        ensemble_test_all_features_obj_dict = cPickle.load(file_ptr)
         file_ptr.close()
         # Later will add another saved pkl file
 
@@ -455,25 +451,25 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
     # Pull desired features from feature objects
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_all_features_obj_dict, feature_name_list)
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_all_features_obj_dict, feature_name_list)
-    final_test_feature_vector, final_test_adjective_dictionary = bolt_obj_2_feature_vector(final_test_all_features_obj_dict, feature_name_list)
+    ensemble_test_feature_vector, ensemble_test_adjective_dictionary = bolt_obj_2_feature_vector(ensemble_test_all_features_obj_dict, feature_name_list)
 
     print("Created feature vector containing %s" % feature_name_list)
 
-    '''
+    
     # Single trial for debugging
-    final_train_vector = dict()
-    final_test_vector = dict()
+    ensemble_train_vector = dict()
+    ensemble_test_vector = dict()
     
     motion_name = 'slide'    
-    adjective = 'porous'
+    adjective = 'rough'
     report_file = open("Single_Train_Reports.txt","a")
     
     knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
 
-    final_train_vector[adjective] = svm_proba
+    ensemble_train_vector[adjective] = svm_proba
     
-    final_test_proba = svm.predict_proba(final_test_feature_vector[motion_name])
-    final_test_vector[adjective] = final_test_proba
+    ensemble_test_proba = svm.predict_proba(ensemble_test_feature_vector[motion_name])
+    ensemble_test_vector[adjective] = ensemble_test_proba
     
     #report_file.write('Adjective: '+adjective+'    Motion name: '+motion_name)
     #report_file.write('\nKNN report\n'+knn_report)
@@ -485,14 +481,14 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
     #pkl_file_name += pkl_file_suffix
 
     #cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
-    '''
+    
 
 
     # Run full train
-    final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector)
+    #final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector)
 
     # Create the final classifiers for each adjective
-    AdjectiveClassifiers(final_train_vector, test_adjective_dictionary, final_test_vector, final_test_adjective_dictionary)
+    #AdjectiveClassifiers(final_train_vector, test_adjective_dictionary, final_test_vector, final_test_adjective_dictionary)
 
 
 # Parse the command line arguments
@@ -509,7 +505,7 @@ def parse_arguments():
     parser.add_option("-a", "--input_adjective", action="store", type="string", dest = "in_adjective_file")
     parser.add_option("-n", "--input_train_feature_pkl", action="store", type="string", dest = "in_train_feature_pkl", default = None)
     parser.add_option("-s", "--input_test_feature_pkl", action="store", type="string", dest = "in_test_feature_pkl", default = None)
-    parser.add_option("-f", "--input_final_test_feature_pkl", action="store", type="string", dest = "in_final_test_feature_pkl", default = None)
+    parser.add_option("-f", "--input_ensemble_test_feature_pkl", action="store", type="string", dest = "in_ensemble_test_feature_pkl", default = None)
 
     (options, args) = parser.parse_args()
     input_file = options.in_h5_file #this is required
@@ -527,12 +523,11 @@ def parse_arguments():
 
     train_feature_pkl = options.in_train_feature_pkl
     test_feature_pkl = options.in_test_feature_pkl
+    ensemble_test_feature_pkl = options.in_ensemble_test_feature_pkl
 
-    final_test_feature_pkl = options.in_final_test_feature_pkl
-
-    return input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl, final_test_feature_pkl
+    return input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl
 
 
 if __name__ == "__main__":
-    input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl, final_test_feature_pkl = parse_arguments()
-    main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_test_feature_pkl)
+    input_file, out_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl = parse_arguments()
+    main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl)
