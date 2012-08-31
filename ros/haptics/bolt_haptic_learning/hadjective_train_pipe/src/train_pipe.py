@@ -234,7 +234,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     test_vector_scaled = scaler.transform(test_vector)
 
     # Grid search with nested cross-validation
-    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}]
+    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15]}]
     knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=8)
     knn.fit(train_vector_scaled, train_labels)
     score = knn.grid_scores_
@@ -305,7 +305,7 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     
     # Cycle through all 36 adjectives
     for adj in adjectives:
-        if adj=="elastic" or adj=="warm" or adj=="porous":
+        if  adj=="warm" or adj=="elastic" or adj=="porous" or adj=="grainy" or adj=="sparse":
             final_train_vector[adj] = np.zeros((93,10))
         else:
             
@@ -349,8 +349,8 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
             final_test_vector[adj] = final_test_vector[adj].reshape(num_raw_test, 10)
 
             # When trainings for a certain adjective with all five motions are done, save these classifiers
-            #cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
-            #cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
             print "Stored KNN and SVM classifiers for adjective %s in the directory adjective_classifiers " %(adj)
 
     report_file_knn.close()
@@ -468,8 +468,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
     final_train_vector = dict()
     final_test_vector = dict()
     
-    motion_name = 'squeeze'    
-    adjective = 'rough'
+    motion_name = 'slide'    
+    adjective = 'porous'
     report_file = open("Single_Train_Reports.txt","a")
     
     knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
