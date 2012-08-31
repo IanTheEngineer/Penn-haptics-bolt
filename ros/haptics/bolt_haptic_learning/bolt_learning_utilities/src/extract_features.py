@@ -2,7 +2,7 @@
 import roslib; roslib.load_manifest("bolt_learning_utilities")
 import rospy
 import numpy as np
-#import sklearn.decomposition
+import pylab
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 from bolt_feature_obj import BoltFeatureObj
@@ -46,9 +46,6 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
     Gripper Aperture
         - Gripper position
        
-    Accelerometer
-        - Z channel?
-
     """
     bolt_feature_obj = BoltFeatureObj()
 
@@ -103,7 +100,7 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
 
         distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
 
-        polyfit = electrode_features(bolt_pr2_motion_obj.electrodes_normalized[finger], electrode_pca, bolt_pr2_motion_obj.state)
+        polyfit = electrode_features(bolt_pr2_motion_obj.electrodes_normalized[finger], electrode_pca, bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
         # Compute pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
@@ -135,6 +132,7 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
         # Compute electrode features
         electrode_polyfit.append(polyfit)
 
+
     # Insert more features here to add to the final feature class
     bolt_feature_obj.pdc_area = pdc_area
     bolt_feature_obj.pdc_max = pdc_max
@@ -164,8 +162,6 @@ def rindex(lis, item):
             return i
     raise ValueError("rindex(lis, item): item not in lis")
 
-#from pylab import *
-#import matplotlib as plt
 def texture_features( pac_flat, controller_state, controller_state_detail):
     """
     Given one finger's array of pac_flat this function will process textures
