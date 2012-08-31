@@ -7,10 +7,7 @@ import utilities
 
 def test_object(obj, classifiers):
     assert isinstance(obj, tables.Group)
-    data_dict = utilities.dict_from_h5_group(obj,
-                                             utilities.phases,
-                                             utilities.sensors,
-                                             )    
+    data_dict = utilities.dict_from_h5_group(obj)    
     true_adjectives = sorted(data_dict["adjectives"])
     print "Object %s has adjectives %s" %(data_dict["name"],
                                           " ".join(true_adjectives)

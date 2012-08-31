@@ -230,7 +230,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     test_vector_scaled = scaler.transform(test_vector)
 
     # Grid search with nested cross-validation
-    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6]}]
+    parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15]}]
     knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=8)
     knn.fit(train_vector_scaled, train_labels)
     score = knn.grid_scores_
@@ -284,6 +284,7 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
+    #return(knn, knn_report, svm, svm_report, svm_probabilities)
     return(knn, knn_report, svm, svm_report, svm_probabilities)
 
 
@@ -300,46 +301,54 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     
     # Cycle through all 36 adjectives
     for adj in adjectives:
-        knn_classifiers = dict()
-        svm_classifiers = dict()
-        final_train_vector[adj] = np.array([])
-        final_test_vector[adj] = np.array([])
-
-        # Cycle through all 5 motions
-        for motion_name in train_feature_vector:
+        if  adj=="warm" or adj=="elastic" or adj=="porous" or adj=="grainy" or adj=="sparse":
+            final_train_vector[adj] = np.zeros((93,10))
+        else:
             
-            print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
+            knn_classifiers = dict()
+            svm_classifiers = dict()
+            final_train_vector[adj] = []
+            final_test_vector[adj] = []
+
+            # Cycle through all 5 motions
+            for motion_name in train_feature_vector:
             
-            # Train KNN and SVM classifiers using grid search with nested cv
-            knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
-
-            # Store classifiers for each motion
-            knn_classifiers[motion_name] = knn
-            svm_classifiers[motion_name] = svm
-
-
-            # Store the proba as final_train_vector
-            final_train_vector[adj] = np.append(final_train_vector[adj], svm_proba.tolist(), 1)
-           
-            # Predict with final_test_data to create final_test_vector
-            final_test_proba = svm_classifiers[motion_name].predict(final_test_feature_vector[motion_name])
-            final_test_vector[adj] = np.append(final_test_vector[adj], final_test_proba.tolist(), 1)
-
+                print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
             
-            # Store the reports into text files
-            report_file_knn.write('Adjective: '+adj+'    Motion name: '+motion_name)
-            report_file_knn.write('\nKNN report\n'+knn_report+'\n\n')
-            report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
-            report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
- 
-        
-        # When trainings for a certain adjective with all five motions are done, save these classifiers
-        #cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
-        #cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
-        
-        print "Stored KNN and SVM classifiers for adjective %s in the directory adjective_classifiers " %(adj)
+                # Train KNN and SVM classifiers using grid search with nested cv
+                knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
 
+                # Store classifiers for each motion
+                knn_classifiers[motion_name] = knn
+                svm_classifiers[motion_name] = svm
     
+                # Store the proba as final_train_vector
+                num_raw_train = svm_proba.shape[0]
+                final_train_vector[adj].append(svm_proba)
+           
+                # Predict with final_test_data to create final_test_vector
+                final_test_proba = svm_classifiers[motion_name].predict_proba(final_test_feature_vector[motion_name])
+                num_raw_test = final_test_proba.shape[0]
+                final_test_vector[adj].append(final_test_proba)
+                
+                '''
+                # Store the reports into text files
+                report_file_knn.write('Adjective: '+adj+'    Motion name: '+motion_name)
+                report_file_knn.write('\nKNN report\n'+knn_report+'\n\n')
+                report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
+                report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
+                '''
+            # Reshape the vector to make a proper feature_vetor for training and tesing
+            final_train_vector[adj] = np.array(final_train_vector[adj])
+            final_train_vector[adj] = final_train_vector[adj].reshape(num_raw_train,10)
+            final_test_vector[adj] = np.array(final_test_vector[adj])
+            final_test_vector[adj] = final_test_vector[adj].reshape(num_raw_test, 10)
+
+            # When trainings for a certain adjective with all five motions are done, save these classifiers
+            cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            print "Stored KNN and SVM classifiers for adjective %s in the directory adjective_classifiers " %(adj)
+
     report_file_knn.close()
     report_file_svm.close()
 
@@ -363,7 +372,7 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
 
     for adj in final_train_vector:
         # Train the final SVM classifier for each adjective
-        adj_classifier, gridsearch_score, final_report, final_proba = train_svm(final_train_vector[adj], train_labels[adj], final_test_vector[adj], final_labels[adj])
+        adj_classifier, gridsearch_score, final_report, final_proba = train_svm(final_train_vector[adj], train_labels[adj], final_test_vector[adj], test_labels[adj])
 
         final_classifiers[adj] = adj_classifier
 
@@ -375,7 +384,7 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
     import pdb; pdb.set_trace()
     pass
 
-    # cPickle.dump(final_classifiers, open("HadjectiveClassifiers.pkl","2"), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump(final_classifiers, open("HadjectiveClassifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
 
     return final_classifiers
 
@@ -450,25 +459,33 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
 
     print("Created feature vector containing %s" % feature_name_list)
 
+    '''
+    # Single trial for debugging
+    final_train_vector = dict()
+    final_test_vector = dict()
     
-    """
-    motion_name = 'squeeze'    
-    adjective = 'rough'
+    motion_name = 'slide'    
+    adjective = 'porous'
     report_file = open("Single_Train_Reports.txt","a")
     
-    knn, knn_report, svm, svm_report = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
+    knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
 
-    report_file.write('Adjective: '+adjective+'    Motion name: '+motion_name)
-    report_file.write('\nKNN report\n'+knn_report)
-    report_file.write('\nSVM report\n'+svm_report+'\n\n')
-    report_file.close()
+    final_train_vector[adjective] = svm_proba
+    
+    final_test_proba = svm.predict_proba(final_test_feature_vector[motion_name])
+    final_test_vector[adjective] = final_test_proba
+    
+    #report_file.write('Adjective: '+adjective+'    Motion name: '+motion_name)
+    #report_file.write('\nKNN report\n'+knn_report)
+    #report_file.write('\nSVM report\n'+svm_report+'\n\n')
+    #report_file.close()
 
-    pkl_file_name = adjective.replace("'",'"')
-    pkl_file_suffix = ".pkl"
-    pkl_file_name += pkl_file_suffix
+    #pkl_file_name = adjective.replace("'",'"')
+    #pkl_file_suffix = ".pkl"
+    #pkl_file_name += pkl_file_suffix
 
-    cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
-    """
+    #cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
+    '''
 
 
     # Run full train

@@ -23,7 +23,7 @@ def train_adjective(f, untrained_directory, trained_directory, test_database):
     
     dest_filename = os.path.join(trained_directory, f)
     print "Saving file ", dest_filename
-    cPickle.dump(clf, open(dest_filename, "w"))                       
+    cPickle.dump(clf, open(dest_filename, "w"), cPickle.HIGHEST_PROTOCOL)                       
 
 def test_file(f, trained_directory):
     if not f.endswith(".pkl"):
