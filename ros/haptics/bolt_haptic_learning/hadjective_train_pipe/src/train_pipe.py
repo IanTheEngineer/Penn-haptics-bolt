@@ -237,8 +237,9 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     parameters = [{'n_neighbors': [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15]}]
     knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=8)
     knn.fit(train_vector_scaled, train_labels)
-    score = knn.grid_scores_
+    #score = knn.grid_scores_
     knn_best = knn.best_estimator_
+    score = f1_score(test_labels, knn.predict(test_vector_scaled))
     report = classification_report(test_labels, knn.predict(test_vector_scaled))
 
     return (knn_best, score, report)
@@ -262,7 +263,8 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
     svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=8)
     svm.fit(train_vector_scaled, train_labels)
-    score = svm.grid_scores_
+    #score = svm.grid_scores_
+    score = f1_score(test_labels, svm.predict(test_vector_scaled))
     svm_best = svm.best_estimator_
     probabilities = svm.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
@@ -289,10 +291,10 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     print "Ran SVM"
 
     #return(knn, knn_report, svm, svm_report, svm_probabilities)
-    return(knn, knn_report, svm, svm_report, svm_probabilities)
+    return(knn, knn_report, knn_score, svm, svm_report, svm_score, svm_probabilities)
 
 
-def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector):
+def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector, final_test_adjective_dictionary:
     
 
     # Open text files for storing classification reports
@@ -302,6 +304,10 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     adjectives = train_adjective_dictionary.keys()
     final_train_vector = dict()
     final_test_vector = dict()
+    final_train_score_vector_knn = dict()
+    final_train_score_vector_svm - dict()
+    final_test_score_vector_knn = dict()
+    final_test_score_vector_svm = dict()
     
     # Cycle through all 36 adjectives
     for adj in adjectives:
@@ -320,20 +326,26 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
                 print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
             
                 # Train KNN and SVM classifiers using grid search with nested cv
-                knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+                knn, knn_report, knn_score, svm, svm_report, svm_score, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
 
                 # Store classifiers for each motion
                 knn_classifiers[motion_name] = knn
                 svm_classifiers[motion_name] = svm
-    
-                # Store the proba as final_train_vector
+                    
+                # Store the score or proba as final_train_vector
                 num_raw_train = svm_proba.shape[0]
                 final_train_vector[adj].append(svm_proba)
+                final_train_score_vector_knn[adj].append(knn_score)
+                final_train_score_vector_svm[adj].append(svm_score)
            
                 # Predict with final_test_data to create final_test_vector
                 final_test_proba = svm_classifiers[motion_name].predict_proba(final_test_feature_vector[motion_name])
+                final_test_score_knn = f1_score(final_test_adjective_dictionary[adj], knn.predict(final_test_feature_vector[motion_name]))
+                final_test_score_svm = f1_score(final_test_adjective_dictionary[adj], svm.predict(final_test_feature_vector[motion_name]))
                 num_raw_test = final_test_proba.shape[0]
                 final_test_vector[adj].append(final_test_proba)
+                final_test_score_vector_knn[adj].append(final_test_score_knn)
+                final_test_score_vector_svm[adj].append(final_test_score_svm)
                 
                 '''
                 # Store the reports into text files
@@ -343,10 +355,20 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
                 report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
                 '''
             # Reshape the vector to make a proper feature_vetor for training and tesing
+            # We cannot directly np.array(blah).reshape since it's not allowed for new array
             final_train_vector[adj] = np.array(final_train_vector[adj])
-            final_train_vector[adj] = final_train_vector[adj].reshape(num_raw_train,10)
+            final_train_proba_vector[adj] = final_train_vector[adj].reshape(num_raw_train,10)
+            final_train_score_vector_knn[adj] = np.array(final_train_score_vector_knn[adj])
+            final_train_score_vector_svm[adj] = np.array(final_train_score_vector_svm[adj])
+            final_train_score_vector_knn[adj] = final_train_score_vector_knn[adj].reshape(num_raw_train, 5)
+            final_train_Score_vector_svm[adj] = final_train_score_vector_svm[adj].reshape(num_raw_train, 5)
+
             final_test_vector[adj] = np.array(final_test_vector[adj])
-            final_test_vector[adj] = final_test_vector[adj].reshape(num_raw_test, 10)
+            final_test_proba_vector[adj] = final_test_vector[adj].reshape(num_raw_test, 10)
+            final_test_score_vector_knn[adj] = np.array(final_test_score_vector_knn[adj])
+            final_test_score_vector_knn[adj] = final_test_score_vector_knn[adj].reshape(num_raw_test, 5)
+            final_test_score_vector_svm[adj] = np.array(final_test_score_vector_svm[adj])
+            final_test_score_vector_svm[adj] = final_test_score_vector_svm[adj].reshape(num_raw_test, 5)
 
             # When trainings for a certain adjective with all five motions are done, save these classifiers
             cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
@@ -356,7 +378,7 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     report_file_knn.close()
     report_file_svm.close()
 
-    return(final_train_vector, final_test_vector)
+    return(final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm)
 
 
 
@@ -493,9 +515,10 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, final_
 
 
     # Run full train
-    final_train_vector, final_test_vector = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector)
+    final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector, final_test_adjective_dictionary)
 
     # Create the final classifiers for each adjective
+    # Here the train/test vector can be proba, knn score or svm score, all of which are output of full_train
     AdjectiveClassifiers(final_train_vector, test_adjective_dictionary, final_test_vector, final_test_adjective_dictionary)
 
 
