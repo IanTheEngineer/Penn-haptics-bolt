@@ -369,10 +369,9 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
             final_test_score_vector_svm[adj] = np.array(final_test_score_vector_svm[adj])
             final_test_score_vector_svm[adj] = final_test_score_vector_svm[adj].reshape(1, 5)
 
-            print "Got here"
             # When trainings for a certain adjective with all five motions are done, save these classifiers
-            #cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
-            #cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
             
             all_knn_classifiers[adj] = knn_classifiers
             all_svm_classifiers[adj] = svm_classifiers
@@ -381,7 +380,10 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     report_file_knn.close()
     report_file_svm.close()
 
-    import pdb; pdb.set_trace()
+    print "Store off all of the classifiers together into one file" 
+    cPickle.dump(all_knn_classifiers, open("all_knn_classifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump(all_svm_classifiers, open("all_svm_classifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
+
     return(final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm, all_knn_classifiers, all_svm_classifiers)
 
 
@@ -417,8 +419,6 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
     cPickle.dump(final_classifiers, open("HadjectiveClassifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
 
     return final_classifiers
-
-
 
 # MAIN FUNCTION
 def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl):
@@ -516,7 +516,6 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     #cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
     
 
-    import pdb; pdb.set_trace()
     # Run full train
     final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm, all_knn_classifiers, all_svm_classifiers = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, ensemble_test_feature_vector, ensemble_test_adjective_dictionary)
 
