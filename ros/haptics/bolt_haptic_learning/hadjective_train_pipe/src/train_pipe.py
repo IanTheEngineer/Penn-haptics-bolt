@@ -272,7 +272,6 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     Returns trained KNN and SVM classifiers that have been optimized
     using grid search
     """
-
     # Run KNN
     knn, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
     print "Ran KNN"
@@ -293,10 +292,14 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     report_file_svm = open("Full_SVM_reports.txt", "a")
     
     adjectives = train_adjective_dictionary.keys()
+    all_knn_classifiers = dict()
+    all_svm_classifiers = dict()
     final_train_vector = dict()
     final_test_vector = dict()
+    final_train_proba_vector = dict()
+    final_test_proba_vector = dict()
     final_train_score_vector_knn = dict()
-    final_train_score_vector_svm - dict()
+    final_train_score_vector_svm = dict()
     final_test_score_vector_knn = dict()
     final_test_score_vector_svm = dict()
     
@@ -310,6 +313,10 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
             svm_classifiers = dict()
             final_train_vector[adj] = []
             final_test_vector[adj] = []
+            final_train_score_vector_knn[adj] = []
+            final_train_score_vector_svm[adj] = []
+            final_test_score_vector_knn[adj] = []
+            final_test_score_vector_svm[adj] = []
 
             # Cycle through all 5 motions
             for motion_name in train_feature_vector:
@@ -345,31 +352,37 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
                 report_file_svm.write('Adjective: '+adj+'    Motion name: '+motion_name)
                 report_file_svm.write('\nSVM report\n'+svm_report+'\n\n')
                 '''
+            
             # Reshape the vector to make a proper feature_vetor for training and tesing
             # We cannot directly np.array(blah).reshape since it's not allowed for new array
             final_train_vector[adj] = np.array(final_train_vector[adj])
             final_train_proba_vector[adj] = final_train_vector[adj].reshape(num_raw_train,10)
             final_train_score_vector_knn[adj] = np.array(final_train_score_vector_knn[adj])
             final_train_score_vector_svm[adj] = np.array(final_train_score_vector_svm[adj])
-            final_train_score_vector_knn[adj] = final_train_score_vector_knn[adj].reshape(num_raw_train, 5)
-            final_train_Score_vector_svm[adj] = final_train_score_vector_svm[adj].reshape(num_raw_train, 5)
+            final_train_score_vector_knn[adj] = final_train_score_vector_knn[adj].reshape(1, 5)
+            final_train_score_vector_svm[adj] = final_train_score_vector_svm[adj].reshape(1, 5)
 
             final_test_vector[adj] = np.array(final_test_vector[adj])
             final_test_proba_vector[adj] = final_test_vector[adj].reshape(num_raw_test, 10)
             final_test_score_vector_knn[adj] = np.array(final_test_score_vector_knn[adj])
-            final_test_score_vector_knn[adj] = final_test_score_vector_knn[adj].reshape(num_raw_test, 5)
+            final_test_score_vector_knn[adj] = final_test_score_vector_knn[adj].reshape(1, 5)
             final_test_score_vector_svm[adj] = np.array(final_test_score_vector_svm[adj])
-            final_test_score_vector_svm[adj] = final_test_score_vector_svm[adj].reshape(num_raw_test, 5)
+            final_test_score_vector_svm[adj] = final_test_score_vector_svm[adj].reshape(1, 5)
 
+            print "Got here"
             # When trainings for a certain adjective with all five motions are done, save these classifiers
-            cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
-            cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            #cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            #cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            
+            all_knn_classifiers[adj] = knn_classifiers
+            all_svm_classifiers[adj] = svm_classifiers
             print "Stored KNN and SVM classifiers for adjective %s in the directory adjective_classifiers " %(adj)
-
+            
     report_file_knn.close()
     report_file_svm.close()
 
-    return(final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm)
+    import pdb; pdb.set_trace()
+    return(final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm, all_knn_classifiers, all_svm_classifiers)
 
 
 
@@ -468,7 +481,6 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     # Take loaded data and extract out features
     feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
 
-
     # Pull desired features from feature objects
     train_feature_vector, train_adjective_dictionary = bolt_obj_2_feature_vector(train_all_features_obj_dict, feature_name_list)
     test_feature_vector, test_adjective_dictionary = bolt_obj_2_feature_vector(test_all_features_obj_dict, feature_name_list)
@@ -485,7 +497,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     adjective = 'rough'
     report_file = open("Single_Train_Reports.txt","a")
     
-    knn, knn_report, svm, svm_report, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
+    knn, knn_report, knn_score, svm, svm_report, svm_score, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
 
     ensemble_train_vector[adjective] = svm_proba
     
@@ -504,9 +516,9 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     #cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
     
 
-
+    import pdb; pdb.set_trace()
     # Run full train
-    final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector, final_test_adjective_dictionary)
+    final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm, all_knn_classifiers, all_svm_classifiers = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, ensemble_test_feature_vector, ensemble_test_adjective_dictionary)
 
     # Create the final classifiers for each adjective
     # Here the train/test vector can be in form of proba, knn score or svm score, all of which are output of full_train
