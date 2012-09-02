@@ -1,0 +1,16 @@
+<package>
+  <description brief="hadjective_hmm_classifier">
+
+     hadjective_hmm_classifier
+
+  </description>
+  <author>Lorenzo Riano</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hadjective_hmm_classifier</url>
+  <depend package="rospy"/>
+  <depend package="bolt_learning_utilities"/>
+
+</package>
+
+
