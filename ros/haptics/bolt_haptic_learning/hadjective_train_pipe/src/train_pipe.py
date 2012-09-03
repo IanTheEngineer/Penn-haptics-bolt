@@ -232,7 +232,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     score = f1_score(test_labels, knn.predict(test_vector_scaled))
     report = classification_report(test_labels, knn.predict(test_vector_scaled))
 
-    return (knn_best, score, report)
+    return (knn_best, score, report, scaler)
 
 
 
@@ -259,7 +259,7 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     probabilities = svm.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
 
-    return (svm_best, score, report, probabilities)
+    return (svm_best, score, report, probabilities, scaler)
 
 
 def single_train(train_vector, train_labels, test_vector, test_labels):
@@ -272,15 +272,15 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     using grid search
     """
     # Run KNN
-    knn, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
+    knn, knn_score, knn_report, knn_scaler = train_knn(train_vector, train_labels, test_vector, test_labels)
     print "Ran KNN"
 
     # Run SVM
-    svm, svm_score, svm_report, svm_probabilities = train_svm(train_vector, train_labels, test_vector, test_labels)
+    svm, svm_score, svm_report, svm_probabilities, svm_scaler = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM"
 
     #return(knn, knn_report, svm, svm_report, svm_probabilities)
-    return(knn, knn_report, knn_score, svm, svm_report, svm_score, svm_probabilities)
+    return(knn, knn_report, knn_score,knn_scaler, svm, svm_report, svm_score, svm_probabilities, svm_scaler)
 
 
 def full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, final_test_feature_vector, final_test_adjective_dictionary):
@@ -323,11 +323,11 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
                 print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
             
                 # Train KNN and SVM classifiers using grid search with nested cv
-                knn, knn_report, knn_score, svm, svm_report, svm_score, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
+                knn, knn_report, knn_score, knn_scaler, svm, svm_report, svm_score, svm_proba , svm_scaler= single_train(train_feature_vector[motion_name], train_adjective_dictionary[adj], test_feature_vector[motion_name], test_adjective_dictionary[adj])
 
                 # Store classifiers for each motion
-                knn_classifiers[motion_name] = knn
-                svm_classifiers[motion_name] = svm
+                knn_classifiers[motion_name] = (knn, knn_scaler)
+                svm_classifiers[motion_name] = (svm, svm_scaler)
                     
                 # Store the score or proba as final_train_vector
                 num_raw_train = svm_proba.shape[0]
@@ -336,7 +336,7 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
                 final_train_score_vector_svm[adj].append(svm_score)
            
                 # Predict with final_test_data to create final_test_vector
-                final_test_proba = svm_classifiers[motion_name].predict_proba(final_test_feature_vector[motion_name])
+                final_test_proba = svm_classifiers[motion_name][0].predict_proba(final_test_feature_vector[motion_name])
                 final_test_score_knn = f1_score(final_test_adjective_dictionary[adj], knn.predict(final_test_feature_vector[motion_name]))
                 final_test_score_svm = f1_score(final_test_adjective_dictionary[adj], svm.predict(final_test_feature_vector[motion_name]))
                 num_raw_test = final_test_proba.shape[0]
@@ -403,7 +403,7 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
 
     for adj in final_train_vector:
         # Train the final SVM classifier for each adjective
-        adj_classifier, gridsearch_score, final_report, final_proba = train_svm(final_train_vector[adj], train_labels[adj], final_test_vector[adj], test_labels[adj])
+        adj_classifier, gridsearch_score, final_report, final_proba, svm_scaler = train_svm(final_train_vector[adj], train_labels[adj], final_test_vector[adj], test_labels[adj])
 
         final_classifiers[adj] = adj_classifier
 
@@ -504,7 +504,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     adjective = 'rough'
     report_file = open("Single_Train_Reports.txt","a")
     
-    knn, knn_report, knn_score, svm, svm_report, svm_score, svm_proba = single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
+    knn, knn_report, knn_score, knn_scaler, svm, svm_report, svm_score, svm_proba, svm_scaler= single_train(train_feature_vector[motion_name], train_adjective_dictionary[adjective], test_feature_vector[motion_name], test_adjective_dictionary[adjective])
 
     ensemble_train_vector[adjective] = svm_proba
     
