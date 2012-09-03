@@ -275,11 +275,74 @@ def compute_statistics(predicted_label, truth_label):
     return precision, recall, f1
 
  
+# Create a function that given a classifier and a test
+# vector, will predict the labels
+def compute_adjective_probability_score(adj_classifiers, test_feature_obj, feature_list, adj_name):
+    '''
+    The function expects the input to be a loaded classifier for a SINGLE adjective
+   
+    Inputs: Classifier dictionary for one single adjective for one motion
+            Test feature object to be called
+            output_type - the options are: 'Classify', 'Probability', 'f1'
+                        - this tells the function which score it should return
 
+    The output is a 1 x n vector (where n is the number of motions) of scores specified
+    by output_type
+    '''
+    # Store dictionary of strings
+    state_string = {test_feature_obj.DISABLED:'disabled',
+                    test_feature_obj.THERMAL_HOLD:'thermal_hold',
+                    test_feature_obj.SLIDE:'slide',
+                    test_feature_obj.SQUEEZE:'squeeze',
+                    test_feature_obj.TAP:'tap',
+                    test_feature_obj.DONE:'done',
+                    test_feature_obj.SLIDE_FAST:'slide_fast',
+                    test_feature_obj.CENTER_GRIPPER:'center_gripper'
+                    }   
 
+    # Pull out the classifier for this motion
+    motion_name = state_string[test_feature_obj.state]
+    classifier_tuple = adj_classifiers[state_string[test_feature_obj.state]]
+    classifier = classifier_tuple[0]
+    scaler = classifier_tuple[1]
 
+    # Take the test feature objects and convert into a feature vector based on
+    # the passed in list
+    test_vector = createFeatureVector(test_feature_obj, feature_list)
 
+    # Scale the test_vector
+    test_vector_scaled = scaler.transform(test_vector)
 
+    # Grab the probability of the adjective being TRUE (1)  This is the second value returned
+    # from the svm
+    prob_score = classifier.predict_proba(test_vector_scaled)[0][1]
 
+    '''
+    print "Object is: %s" % test_feature_obj.name
+    print "Classified as %d" % classifier.predict(test_vector_scaled)[0]
+    print "How certain is %f" % prob_score
+    '''
 
+    if  test_feature_obj.labels == None:
+        return (classifier.predict(test_vector_scaled)[0], prob_score)
+    else: 
+        return (classifier.predict(test_vector_scaled)[0], prob_score, test_feature_obj.labels[adj_name])
+         
+       
+# Function that pulls the motion that is best based on the dictionary of what scores each motion had
+def get_best_motion(motion_score_dictionary):
+    '''
+    Given a dictionary of scores where the keys are the motions, return the motion and score that is best
+    '''
 
+    best_motion = ""
+    best_score = 0.0
+
+    for motion in motion_score_dictionary:
+        score = motion_score_dictionary[motion]
+        
+        if score > best_score:
+            best_score = score
+            best_motion = motion
+
+    return (best_motion, best_score)

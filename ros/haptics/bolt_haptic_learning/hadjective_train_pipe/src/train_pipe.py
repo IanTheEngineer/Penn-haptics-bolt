@@ -311,11 +311,11 @@ def full_train(train_feature_vector_dict, train_adjective_dict, test_feature_vec
                 print "Training KNN and SVM classifiers for adjective %s, phase %s \n" %(adj, motion_name)
             
                 # Train KNN and SVM classifiers using grid search with nested cv
-                knn, knn_proba, knn_score, knn_report, svm, svm_proba, svm_score, svm_report = single_train(train_feature_vector_dict[motion_name], train_adjective_dict[adj], test_feature_vector_dict[motion_name], test_adjective_dict[adj])
+                knn, knn_proba, knn_score, knn_report, knn_scaler, svm, svm_proba, svm_score, svm_report, svm_scaler = single_train(train_feature_vector_dict[motion_name], train_adjective_dict[adj], test_feature_vector_dict[motion_name], test_adjective_dict[adj])
 
                 # Store classifiers for each motion
-                knn_classifiers[motion_name] = knn
-                svm_classifiers[motion_name] = svm
+                knn_classifiers[motion_name] = (knn, knn_scaler, knn_score)
+                svm_classifiers[motion_name] = (svm, svm_scaler, svm_score)
 
                 # Store probabilities for each motion
                 knn_probabilities[motion_name] = knn_proba
@@ -336,6 +336,10 @@ def full_train(train_feature_vector_dict, train_adjective_dict, test_feature_vec
                 cPickle.dump(svm, open('adjective_classifiers/'+adj+'_'+motion_name+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
 
             
+            # When trainings for a certain adjective with all five motions are done, save these classifiers
+            cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+    
             # Store classifiers by adjective
             all_knn_classifiers[adj] = knn_classifiers
             all_svm_classifiers[adj] = svm_classifiers
@@ -385,7 +389,7 @@ def extract_ensemble_features(all_classifiers_dict, all_probabilities_dict, test
         for motion_name in all_probabilities_dict[adj]:
             
             ensemble_train_feature_vector.append(all_probabilities_dict[adj][motion_name][:,1].tolist())
-            ensemble_test_feature_vector.append(all_classifiers_dict[adj][motion_name].predict_proba(test_feature_vector_dict[motion_name])[:,1].tolist())
+            ensemble_test_feature_vector.append(all_classifiers_dict[adj][motion_name][0].predict_proba(test_feature_vector_dict[motion_name])[:,1].tolist())
            
         
         ensemble_train_feature_vector_dict[adj] = np.transpose(np.array(ensemble_train_feature_vector))
