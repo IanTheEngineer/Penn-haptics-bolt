@@ -28,7 +28,7 @@ def processMotion(task_queue, result_queue):
     #Start Publisher for Learning Algorithms
     name = multiprocessing.current_process().name
     pub = rospy.Publisher('hadjective_motion_pickle', String)
-    print name, 'Starting at time %f' % time.time()
+    #print name, 'Starting at time %f' % time.time()
     #Grab the current motion from the queue
     current_motion = task_queue.get()
     # Convert the buffer received into BoltPR2MotionObj
@@ -41,7 +41,7 @@ def processMotion(task_queue, result_queue):
     pub.publish(pickle_string)    
    
     result_queue.put("Process %s Complete!" % name)
-    print name, 'Finished at time %f' % time.time()
+    #print name, 'Finished at time %f' % time.time()
 
 class BoltPR2MotionBuf(object):
     DISABLED = BoltPR2MotionObj.DISABLED 
@@ -126,6 +126,16 @@ class LanguageTestMainThread:
                                   BoltPR2MotionBuf.SQUEEZE, BoltPR2MotionBuf.TAP,
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)
 
+    def reset_run(self):
+        self.current_motion = BoltPR2MotionBuf()
+        self.last_state = BoltPR2MotionBuf.DISABLED
+        self.mean_init_flag = False
+        self.electrodes_mean_list = defaultdict(list)
+        self.tdc_mean_list = defaultdict(list)
+        self.tac_mean_list = defaultdict(list)
+        self.pdc_mean_list = defaultdict(list)
+        self.pac_mean_list = defaultdict(list)
+
     def clear_motion(self):
         #Reset current_motion, but populate mean list
         self.current_motion = BoltPR2MotionBuf()
@@ -174,21 +184,20 @@ class LanguageTestMainThread:
                 self.tac_mean_list[finger_index].append( msg.bt_data[finger_index].tac_data)
                 self.pdc_mean_list[finger_index].append( msg.bt_data[finger_index].pdc_data)
                 self.pac_mean_list[finger_index].append( msg.bt_data[finger_index].pac_data)
-                if len(self.tdc_mean_list[0]) is MEAN_INIT_PERIOD:
+                #print len(self.tdc_mean_list[0])
+                if (len(self.tdc_mean_list[0]) == MEAN_INIT_PERIOD) and (finger_index == num_fingers):
                     self.state_lock.acquire()
-                    import pdb; pdb.set_trace()
-                    self.electrodes_mean_list = self.electrodes_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
-                    self.pdc_mean_list = self.pdc_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
-                    self.pac_mean_list = self.pac_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
-                    self.tdc_mean_list = self.tdc_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
-                    self.tac_mean_list = self.tac_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
-
+                    #import pdb; pdb.set_trace()
+                    self.electrodes_mean_list = self.electrodes_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
+                    self.pdc_mean_list = self.pdc_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
+                    self.pac_mean_list = self.pac_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
+                    self.tdc_mean_list = self.tdc_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
+                    self.tac_mean_list = self.tac_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
                     self.current_motion.electrodes_mean = self.electrodes_mean_list
                     self.current_motion.pdc_mean = self.pdc_mean_list
                     self.current_motion.pac_mean = self.pac_mean_list
                     self.current_motion.tdc_mean = self.tdc_mean_list
                     self.current_motion.tac_mean = self.tac_mean_list
-
                     self.init_flag = True
                     self.state_lock.release()
         #Lock to prevent the state controller from updating                 
@@ -257,8 +266,8 @@ def main(argv):
 
             #Check to see if the motions have finished
             if next_state is BoltPR2MotionBuf.DONE:
-                main_thread.current_motion.state = BoltPR2MotionBuf.DISABLED
-                #break
+                main_thread.reset_run()
+                rospy.loginfo("Done logging Hadjective Data for now!")
 
         elif main_thread.last_state is not main_thread.current_motion.state:
             #Simply update the last state
@@ -269,7 +278,7 @@ def main(argv):
     #Clean up all those threads!
     tasks.close()
     tasks.join_thread()
-    main_thread.join()
+
 
     #for i in range(num_tasks):
     #    result = results.get()
