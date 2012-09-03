@@ -230,7 +230,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels):
     proba = knn.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, knn.predict(test_vector_scaled))
 
-    return (knn_best, proba, score, report)
+    return (knn_best, proba, score, report, scaler)
 
 
 
@@ -256,7 +256,7 @@ def train_svm(train_vector, train_labels, test_vector, test_labels):
     proba = svm.predict_proba(test_vector_scaled)
     report = classification_report(test_labels, svm.predict(test_vector_scaled))
 
-    return (svm_best, proba, score, report)
+    return (svm_best, proba, score, report, scaler)
 
 
 def single_train(train_vector, train_labels, test_vector, test_labels):
@@ -269,14 +269,14 @@ def single_train(train_vector, train_labels, test_vector, test_labels):
     using grid search
     """
     # Run KNN
-    knn, knn_proba, knn_score, knn_report = train_knn(train_vector, train_labels, test_vector, test_labels)
+    knn, knn_proba, knn_score, knn_report, knn_scaler = train_knn(train_vector, train_labels, test_vector, test_labels)
     print "Ran KNN\n"
 
     # Run SVM
-    svm, svm_proba, svm_score, svm_report = train_svm(train_vector, train_labels, test_vector, test_labels)
+    svm, svm_proba, svm_score, svm_report, svm_scaler = train_svm(train_vector, train_labels, test_vector, test_labels)
     print "Ran SVM\n"
 
-    return(knn, knn_proba, knn_score, knn_report, svm, svm_proba, svm_score, svm_report)
+    return(knn, knn_proba, knn_score, knn_report, knn_scaler, svm, svm_proba, svm_score, svm_report, svm_scaler)
 
 
 def full_train(train_feature_vector_dict, train_adjective_dict, test_feature_vector_dict, test_adjective_dict):
@@ -403,7 +403,7 @@ def full_ensemble_train(train_feature_vector_dict, train_adjective_dict, test_fe
 
     for adj in train_feature_vector_dict:
                 
-        ensemble_svm, ensemble_proba, ensemble_score, ensemble_report = train_svm(train_feature_vector_dict[adj], train_adjective_dict[adj], test_feature_vector_dict[adj], test_adjective_dict[adj])
+        ensemble_svm, ensemble_proba, ensemble_score, ensemble_report, ensemble_scaler = train_svm(train_feature_vector_dict[adj], train_adjective_dict[adj], test_feature_vector_dict[adj], test_adjective_dict[adj])
     
         # Write classification reports into text file
         ensemble_report_file.write('Adjective:  '+adj+'\n')

@@ -32,6 +32,7 @@ class AdjectiveClassifierNode(object):
         rospy.Subscriber(hadjective_msg_name, String, self.callback)
         
         self.received_data = {}
+        self.adjectives_pub = rospy.Publisher("/hmm_adjectives", String)
         rospy.loginfo("Ready")
 
     def __get_phase_from_obj(self, obj):
@@ -58,15 +59,15 @@ class AdjectiveClassifierNode(object):
         #rospy.loginfo("Electrodes shape: %s", electrodes.shape)
         pac = np.hstack(obj.pac)
         #rospy.loginfo("Pac shape: %s", pac.shape)
-        pdc = np.hstack(obj.pdc)
+        pdc = np.vstack(obj.pdc).T
         #rospy.loginfo("Pdc shape: %s", pdc.shape)
-        tac = np.hstack(obj.tac)
+        tac = np.vstack(obj.tac).T
         #rospy.loginfo("Tac shape: %s", tac.shape)
         
         data['electrodes'] = electrodes[indexes,:]        
         data['pac'] = pac[indexes, :]
-        data['pdc'] = np.atleast_2d(pdc[indexes, :]).T
-        data['tac'] = np.atleast_2d(tac[indexes, :]).T
+        data['pdc'] = pdc[indexes, :]
+        data['tac'] = tac[indexes, :]
         
         rospy.loginfo("Electrodes shape: %s", data['electrodes'].shape)
         rospy.loginfo("Pac shape: %s", data['pac'].shape)
@@ -98,7 +99,9 @@ class AdjectiveClassifierNode(object):
                     positives.append(clf.adjective)                
             
             rospy.loginfo("Classification done")
-            rospy.loginfo("Adjectives: %s", " ".join(positives))
+            adj_msg = " ".join(positives)
+            rospy.loginfo("Sending the message: %s", adj_msg)
+            self.adjectives_pub.publish(adj_msg)            
             self.received_data = {}
         
 
