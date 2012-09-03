@@ -59,15 +59,15 @@ class AdjectiveClassifierNode(object):
         #rospy.loginfo("Electrodes shape: %s", electrodes.shape)
         pac = np.hstack(obj.pac)
         #rospy.loginfo("Pac shape: %s", pac.shape)
-        pdc = np.hstack(obj.pdc)
+        pdc = np.vstack(obj.pdc).T
         #rospy.loginfo("Pdc shape: %s", pdc.shape)
-        tac = np.hstack(obj.tac)
+        tac = np.vstack(obj.tac).T
         #rospy.loginfo("Tac shape: %s", tac.shape)
         
         data['electrodes'] = electrodes[indexes,:]        
         data['pac'] = pac[indexes, :]
-        data['pdc'] = np.atleast_2d(pdc[indexes, :]).T
-        data['tac'] = np.atleast_2d(tac[indexes, :]).T
+        data['pdc'] = pdc[indexes, :]
+        data['tac'] = tac[indexes, :]
         
         rospy.loginfo("Electrodes shape: %s", data['electrodes'].shape)
         rospy.loginfo("Pac shape: %s", data['pac'].shape)
