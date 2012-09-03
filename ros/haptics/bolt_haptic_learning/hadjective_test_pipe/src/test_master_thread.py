@@ -1,56 +1,46 @@
 #!/usr/bin/env python
 
+#Import ROS essentials
 import roslib; roslib.load_manifest('hadjective_test_pipe')
 import rospy
 
+#Import Python Libraries
 import sys
 import threading
 import multiprocessing
 from collections import defaultdict
 import numpy as np
+import cPickle
+import time
 
-from bolt_pr2_motion_obj import BoltPR2MotionObj
-from extract_features import *
-
+#Import messages
 from biotac_sensors.msg import BioTacHand
 from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from std_msgs.msg import Int8, String
 
-import matplotlib.pyplot as plt
+#Import Bolt Learning Utilities
+from bolt_pr2_motion_obj import BoltPR2MotionObj
+from extract_features import *
 
-import cPickle
-
-from pylab import *
 
 
 def processMotion(task_queue, result_queue):
+    #Start Publisher for Learning Algorithms
     name = multiprocessing.current_process().name
-    print name, 'Starting'
+    pub = rospy.Publisher('hadjective_motion_pickle', String)
+    print name, 'Starting at time %f' % time.time()
     #Grab the current motion from the queue
     current_motion = task_queue.get()
     # Convert the buffer received into BoltPR2MotionObj
     current_obj = current_motion.convertToBoltPR2MotionObj()
+    #Normalize and clean current object
     normalize_data(current_obj, False)
-    #MACHINE LEARNING STUFF!!
+    #Pickle & Publish
+    pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
+    pub.publish(pickle_string)    
    
-    #plt.plot(current_obj.pac_normalized[0])
-    #plt.show()
-
-    #output_filename = '/home/imcmahon/data/'+name
-    #file_ptr = open(output_filename, "w")
-    #cPickle.dump(current_obj, file_ptr, cPickle.HIGHEST_PROTOCOL)
-    #file_ptr.close()
-
-    #fig = plt.figure()
-    #ax1 = fig.add_subplot(2, 2, 1)
-    #ax2 = fig.add_subplot(2, 2, 2)
-    #ax2 = fig.add_subplot(2, 2, 3)
-    #ax3 = fig.add_subplot(2, 2, 4)
-    #operate to determine stuff
-    answer = current_motion.state
- 
-    print name, ' received motion ', answer
-    result_queue.put(current_obj)
+    result_queue.put("Process %s Complete!" % name)
+    print name, 'Finished at time %f' % time.time()
 
 class BoltPR2MotionBuf(object):
     DISABLED = BoltPR2MotionObj.DISABLED 
@@ -236,8 +226,6 @@ def main(argv):
         if  main_thread.current_motion.state in main_thread.valid_state_tuple and \
             main_thread.last_state in main_thread.valid_state_tuple and \
             main_thread.last_state is not main_thread.current_motion.state:
-            #if main_thread.current_motion.state == 1:
-            #import pdb; pdb.set_trace()
             #Store off next state to see if we're done
             next_state = main_thread.current_motion.state
             #Close up the current current_motion and send it to a thread
@@ -245,61 +233,28 @@ def main(argv):
             #Store the next state as the last state to be used to see when a change occurs
             main_thread.last_state = next_state
             #Place current_motion in the que
-            #main_thread.current_motion.convertToBoltPR2MotionObj()
-            #if num_tasks is 1:
-            #    current_bolt_pr2_motion_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
-            current_obj = main_thread.current_motion.convertToBoltPR2MotionObj()
-            normalize_data(current_obj, discard_raw_flag=False)
-            extract_features(current_obj)
-            #Pickle & Publish
-            pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
-            #print "Length of string %d, first char: %c, last char: %c" \
-            #        % (len(pickle_string), pickle_string[0], pickle_string[len(pickle_string)-1])
-            #import sys
-            #sys.stdout.flush()
-            #rospy.loginfo("string size %d" % len(pickle_string))
-            #pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
-            main_thread.pub.publish(pickle_string)    
-            
-            #tasks.put(main_thread.current_motion)
+            tasks.put(main_thread.current_motion)
+            #Spin up a new thread
+            new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
+            new_process.start()
             #Reset current_motion
             main_thread.clear_motion()
-            #import pdb; pdb.set_trace()
-            #Spin up a new thread
-            #new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
-            #new_process.start()
-            #num_tasks = num_tasks + 1
+            num_tasks = num_tasks + 1
 
             #Check to see if the motions have finished
             if next_state is BoltPR2MotionBuf.DONE:
                 break
-            #print 't ' , time.time() - start_time
 
         elif main_thread.last_state is not main_thread.current_motion.state:
             #Simply update the last state
             main_thread.last_state = main_thread.current_motion.state
         #Release Lock
         main_thread.state_lock.release()
+    '''main_thread.join()
+    for i in range(1, num_tasks):
+        result = results.get()
+        print result'''
     print "Done!"
-    show()
-    '''tasks.close()
-    tasks.join_thread()
-    result_list = []
-    for i in range(num_tasks):
-        #import pdb; pdb.set_trace()
-        result_list.append(results.get())
-        if result_list[-1].state == BoltPR2MotionBuf.SQUEEZE:
-            plt.subplot(211)
-            plt.plot(result_list[-1].electrodes[0])
-            plt.grid(True)
-            plt.title('Electrodes - Raw and Normalized')
-            plt.subplot(212)
-            plt.plot(result_list[-1].electrodes_normalized[0])
-            plt.xlabel('time')
-            plt.grid(True)
-            plt.show()
-            #print 'Result:', result
-    done = True'''
 
 
 
