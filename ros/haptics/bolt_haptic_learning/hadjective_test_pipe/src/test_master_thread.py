@@ -17,6 +17,7 @@ from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from std_msgs.msg import Int8, String
 
 import matplotlib.pyplot as plt
+from bolt_learning_utilities import normalize_data
 
 import cPickle
 
