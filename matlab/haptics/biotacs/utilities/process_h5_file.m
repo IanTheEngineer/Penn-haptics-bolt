@@ -72,14 +72,14 @@ for file_num = 1:size(file_groups,1)
         biotac_data(finger).raw_pac_flat = double(reshape(pac,[],1));
         
         % Processed data
-        biotac_data(finger).electrodes = -bsxfun(@minus, biotac_data(finger).raw_electrodes,mean(biotac_data(finger).raw_electrodes(1:10,:)));
-        biotac_data(finger).pdc = biotac_data(finger).raw_pdc - mean(biotac_data(finger).raw_pdc(1:10));
+        biotac_data(finger).electrodes = -bsxfun(@minus, biotac_data(finger).raw_electrodes,mean(biotac_data(finger).raw_electrodes(100:110,:)));
+        biotac_data(finger).pdc = biotac_data(finger).raw_pdc - mean(biotac_data(finger).raw_pdc(100:110));
         % Add a negative because Syntouch's filter inverts the TAC signal
-        biotac_data(finger).tac = -(biotac_data(finger).raw_tac - mean(biotac_data(finger).raw_tac(1:10)));
-        biotac_data(finger).tdc =  biotac_data(finger).raw_tdc - mean(biotac_data(finger).raw_tdc(1:10));
+        biotac_data(finger).tac = -(biotac_data(finger).raw_tac - mean(biotac_data(finger).raw_tac(100:110)));
+        biotac_data(finger).tdc =  biotac_data(finger).raw_tdc - mean(biotac_data(finger).raw_tdc(100:110));
         % Add a negative because Syntouch's filter inverts the PAC signal
-        biotac_data(finger).pac = -bsxfun(@minus, biotac_data(finger).raw_pac,mean(biotac_data(finger).raw_pac(1:10,:)));
-        biotac_data(finger).pac_flat = -(biotac_data(finger).raw_pac_flat - mean(biotac_data(finger).raw_pac_flat(1:10)));
+        biotac_data(finger).pac = -bsxfun(@minus, biotac_data(finger).raw_pac,mean(biotac_data(finger).raw_pac(100:110,:)));
+        biotac_data(finger).pac_flat = -(biotac_data(finger).raw_pac_flat - mean(biotac_data(finger).raw_pac_flat(100:110)));
 
         % Convert values into RGB values
         cur_channel_values = -double(biotac_data(finger).electrodes);

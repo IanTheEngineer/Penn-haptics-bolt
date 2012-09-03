@@ -20,10 +20,10 @@ from std_msgs.msg import Int8, String
 
 #Import Bolt Learning Utilities
 from bolt_pr2_motion_obj import BoltPR2MotionObj
-from extract_features import *
+#import bolt_learning_utilities
 
-
-
+#FIXME: Maybe a global lock on the publisher? We don't want pickle files colliding...
+#NOTE: So long as the motions finish > 0.2 seconds apart, theres really no collision issue.
 def processMotion(task_queue, result_queue):
     #Start Publisher for Learning Algorithms
     name = multiprocessing.current_process().name
@@ -33,8 +33,9 @@ def processMotion(task_queue, result_queue):
     current_motion = task_queue.get()
     # Convert the buffer received into BoltPR2MotionObj
     current_obj = current_motion.convertToBoltPR2MotionObj()
+    
     #Normalize and clean current object
-    normalize_data(current_obj, False)
+    #bolt_learning_utilities.normalize_data(current_obj, False)
     #Pickle & Publish
     pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
     pub.publish(pickle_string)    
@@ -115,6 +116,7 @@ class LanguageTestMainThread:
         #self.detailed_lock = threading.Lock()
         #self.thread_lock = threading.Lock()
         self.accel_downsample_counter = 0
+        self.mean_init_flag = False
         self.electrodes_mean_list = defaultdict(list)
         self.tdc_mean_list = defaultdict(list)
         self.tac_mean_list = defaultdict(list)
@@ -160,8 +162,11 @@ class LanguageTestMainThread:
             self.accel_lock.release()
 
     def biotacCallback(self, msg):
+        ZERO_TIME = 100
+        NUM_MEAN_VALS = 10
+        MEAN_INIT_PERIOD = ZERO_TIME + NUM_MEAN_VALS
 
-        if len(self.tdc_mean_list[0]) < 10:
+        if len(self.tdc_mean_list[0]) < MEAN_INIT_PERIOD and self.mean_init_flag == False:
             num_fingers = len(msg.bt_data)
             for finger_index in xrange(num_fingers):    
                 self.electrodes_mean_list[finger_index].append( msg.bt_data[finger_index].electrode_data)
@@ -169,13 +174,22 @@ class LanguageTestMainThread:
                 self.tac_mean_list[finger_index].append( msg.bt_data[finger_index].tac_data)
                 self.pdc_mean_list[finger_index].append( msg.bt_data[finger_index].pdc_data)
                 self.pac_mean_list[finger_index].append( msg.bt_data[finger_index].pac_data)
-                if len(self.tdc_mean_list[0]) is 10:
+                if len(self.tdc_mean_list[0]) is MEAN_INIT_PERIOD:
                     self.state_lock.acquire()
+                    import pdb; pdb.set_trace()
+                    self.electrodes_mean_list = self.electrodes_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
+                    self.pdc_mean_list = self.pdc_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
+                    self.pac_mean_list = self.pac_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
+                    self.tdc_mean_list = self.tdc_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
+                    self.tac_mean_list = self.tac_mean_list[ZERO_TIME:MEAN_INIT_PERIOD-1]
+
                     self.current_motion.electrodes_mean = self.electrodes_mean_list
                     self.current_motion.pdc_mean = self.pdc_mean_list
                     self.current_motion.pac_mean = self.pac_mean_list
                     self.current_motion.tdc_mean = self.tdc_mean_list
                     self.current_motion.tac_mean = self.tac_mean_list
+
+                    self.init_flag = True
                     self.state_lock.release()
         #Lock to prevent the state controller from updating                 
         self.state_lock.acquire()
@@ -243,20 +257,24 @@ def main(argv):
 
             #Check to see if the motions have finished
             if next_state is BoltPR2MotionBuf.DONE:
-                break
+                main_thread.current_motion.state = BoltPR2MotionBuf.DISABLED
+                #break
 
         elif main_thread.last_state is not main_thread.current_motion.state:
             #Simply update the last state
             main_thread.last_state = main_thread.current_motion.state
         #Release Lock
         main_thread.state_lock.release()
-    '''main_thread.join()
-    for i in range(1, num_tasks):
-        result = results.get()
-        print result'''
-    print "Done!"
+    
+    #Clean up all those threads!
+    tasks.close()
+    tasks.join_thread()
+    main_thread.join()
 
-
+    #for i in range(num_tasks):
+    #    result = results.get()
+    #    print result
+    #print "Done!"
 
 if __name__ == '__main__':
   main(sys.argv[1:])

@@ -43,6 +43,10 @@
 #include <boost/thread.hpp>
 #include <string>
 #include <sstream>
+#include <std_srvs/Empty.h>
+
+std::string filepath;
+std::string filename;
 
 class gripperController{
   private:
@@ -659,46 +663,15 @@ class gripperController{
 //================================================================
 // Main flow
 //================================================================
-int main(int argc, char* argv[])
+int start_motion(std_srvs::Empty::Request bogus1, std_srvs::Empty::Response)
 {
-  //================================================================ 
-  // Checks for place for data has been specified correctly 
-  //================================================================
-
-  // Checks if the filename is given 
-  if (argc < 2)
-  {
-    ROS_INFO("Please provide a name and path to store the data file in JSON form");
-    exit(0);
-  }
-
-  char* filepathChar = argv[1];
-  std::string filepath = std::string(filepathChar);
-  ROS_INFO("Writing to file path: %s", argv[1]);
-  char* filenameChar = argv[2];
-  std::string filename = std::string(filenameChar);
-  ROS_INFO("Writing to filename: %s", argv[2]);
-
-  // Check if the file extention is .json
-  if (std::string::npos == filename.find(".json"))
-  {
-    ROS_INFO("Please name the file with extention .json");
-    exit(0);
-  }
-
-  //================================================================
-  // Start initializing controller
-  //================================================================
-  
-  ROS_INFO("Initializing simple controller"); 
-  ros::init(argc, argv, "gripper_controller");
   
   //Create gripper controller
   gripperController controller;
 
   // Store filename in controller;
-  controller.filePath = filepathChar;
-  controller.fileName = filenameChar;
+  controller.filePath = filepath.c_str();
+  controller.fileName = filename.c_str();
 
   // Start thread to publish controller state
   ROS_INFO("Starting controller state publisher");
@@ -727,10 +700,15 @@ int main(int argc, char* argv[])
   controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
  
   // Move gripper to a set point in front of it
-  ROS_INFO("Moving arm to start position");
-  controller.detail_state = "MOVE_ARM_START_POSITION";
-  controller.arm_controller->moveArmToStart();
+  //ROS_INFO("Moving arm to start position");
+  //controller.detail_state = "MOVE_ARM_START_POSITION";
+  //controller.arm_controller->moveArmToStart();
 
+  controller.arm_controller->getArmTransform();
+  double x = controller.arm_controller->getTransform('x');
+  double y = controller.arm_controller->getTransform('y');
+  double z = controller.arm_controller->getTransform('z');
+  
   // Start recording data
   ROS_INFO("Starting data logging");
   boost::thread loggingThread( boost::bind( &gripperController::startLogger, &controller));
@@ -828,9 +806,8 @@ int main(int argc, char* argv[])
   controller.detail_state = "MOVE_UP_START_HEIGHT";
 
   controller.arm_controller->getArmTransform();
-  double x = controller.arm_controller->getTransform('x');
-  double y = controller.arm_controller->getTransform('y');
-  double z = controller.arm_controller->GripperStartHeight;
+  x = controller.arm_controller->getTransform('x');
+  y = controller.arm_controller->getTransform('y');
 
   ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
   controller.arm_controller->move_arm_to(x,y,z, 2);
@@ -930,7 +907,7 @@ int main(int argc, char* argv[])
   // Controller open all
   controller.detail_state = "OPEN_GRIPPER_FAST_MAX";
   controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
-  controller.arm_controller->moveArmToStart();
+  //controller.arm_controller->moveArmToStart();
 
   //================================================================
   // Destroy logger
@@ -949,4 +926,46 @@ int main(int argc, char* argv[])
   return 0;
 }
 
+int main(int argc, char** argv) {
+  
+	//================================================================ 
+  // Checks for place for data has been specified correctly 
+  //================================================================
+
+  // Checks if the filename is given 
+  if (argc < 2)
+  {
+    ROS_INFO("Please provide a name and path to store the data file in JSON form");
+    exit(0);
+  }
+
+  char* filepathChar = argv[1];
+  filepath = std::string(filepathChar);
+  ROS_INFO("Writing to file path: %s", argv[1]);
+  char* filenameChar = argv[2];
+  filename = std::string(filenameChar);
+  ROS_INFO("Writing to filename: %s", argv[2]);
+
+  // Check if the file extention is .json
+  if (std::string::npos == filename.find(".json"))
+  {
+    ROS_INFO("Please name the file with extention .json");
+    exit(0);
+  }
+
+  //================================================================
+  // Start initializing controller
+  //================================================================
+  
+  ROS_INFO("Initializing simple controller"); 
+  ros::init(argc, argv, "gripper_controller");
+  ros::NodeHandle nh;
+
+  ros::ServiceServer srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>("start_haptic_exploration", start_motion );
+
+  ROS_INFO("Waiting for a service call to start_haptic_exploration");
+  ros::spin();
+
+
+}
 

@@ -1,0 +1,17 @@
+<package>
+  <description brief="move_arm_in_position">
+
+     move_arm_in_position
+
+  </description>
+  <author>Lorenzo Riano</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/move_arm_in_position</url>
+  <depend package="tabletop_actions"/>
+  <depend package="pr2_control_utilities"/>
+  <depend package="octomap_filters"/>
+
+</package>
+
+
