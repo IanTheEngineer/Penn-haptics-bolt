@@ -23,8 +23,6 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
     Given a BoltPR2MotionObj the function will process the streams
     and pull out specific features that are defined below:
 
-    Histogram of peaks?
-    Poly fit the lines?
 
     PDC
         - area under curve
@@ -92,36 +90,41 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
     # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
 
+        # Compute thermal features
         tac_area_buf, tdc_exp_fit_buf = thermal_features(bolt_pr2_motion_obj.tdc_normalized[finger],bolt_pr2_motion_obj.tac_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
+        # Compute texture features
         pac_energy_buf, pac_moments_buf = texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
       
+        # Compute gripper features
         end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
+        # Compute transform features
         distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
 
+        # Compute electrode features
         polyfit = electrode_features(bolt_pr2_motion_obj.electrodes_normalized[finger], electrode_pca, bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
-        # Compute pdc features 
+        # Compute and append pdc features 
         pdc_area.append(np.trapz(bolt_pr2_motion_obj.pdc_normalized[finger])) 
         pdc_max.append(max(bolt_pr2_motion_obj.pdc_normalized[finger]))
 
-        # Compute texture features
+        # Append texture features
         pac_energy.append(pac_energy_buf)
         pac_sc.append(pac_moments_buf[0])
         pac_sv.append(pac_moments_buf[1])
         pac_ss.append(pac_moments_buf[2])
         pac_sk.append(pac_moments_buf[3])
         
-        # Compute thermal features
+        # Append thermal features
         tac_area.append(tac_area_buf)
         tdc_exp_fit.append(tdc_exp_fit_buf[2])
 
-        # Compute gripper aperture features
+        # Append gripper aperture features
         gripper_min.append(end_gripper)
         gripper_mean.append(mean_gripper)
 
-        # Extract transform features
+        # Append transform features
         transform_distance.append(distance)
 
         # Pull the number of steps of the rising curve
@@ -129,11 +132,11 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
              
         pdc_rise_count.append(max(np.diff(filtered_pdc)))
         
-        # Compute electrode features
+        # Append electrode features
         electrode_polyfit.append(polyfit)
 
 
-    # Insert more features here to add to the final feature class
+    # Populate the final feature class
     bolt_feature_obj.pdc_area = pdc_area
     bolt_feature_obj.pdc_max = pdc_max
     bolt_feature_obj.pdc_rise_count = pdc_rise_count
@@ -311,9 +314,6 @@ def gripper_features( gripper_position, pdc_norm, controller_state, controller_s
 
     
 def transform_features(frame_transform):
-
-    #import pdb;pdb.set_trace()
-    #pass
 
     num_raw = frame_transform.shape[0]
     pick = np.array([2]*num_raw)

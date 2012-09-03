@@ -45,7 +45,7 @@ def loadDataFromH5File(input_file, adjective_file):
 # Fits PCA for electrode training data
 def fit_electrodes_pca(train_data):
 
-    pca = dict()
+    pca_dict = dict()
      
     # Fit PCA on all trials, for each motion separately
     for motion_name in train_data:
@@ -58,15 +58,14 @@ def fit_electrodes_pca(train_data):
         
 
         # Store PCA by motion
-        pca[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
+        pca_dict[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
 
-    return(pca)
+    return(pca_dict)
 
 
 # Takes the bolt data and extracts features to run
-def BoltMotionObjToFeatureObj(all_bolt_data, electrode_pca):
+def BoltMotionObjToFeatureObj(all_bolt_data, electrode_pca_dict):
     """
-    Pull out PCA components from all data
 
     For each object - pull out features and store in feature_obj
     with the same structure as all_bolt_data
@@ -87,7 +86,7 @@ def BoltMotionObjToFeatureObj(all_bolt_data, electrode_pca):
         # For all objects
         for trial in trial_list:
             
-            bolt_feature_obj = extract_features.extract_features(trial, electrode_pca[motion_name])
+            bolt_feature_obj = extract_features.extract_features(trial, electrode_pca_dict[motion_name])
             
             feature_list.append(bolt_feature_obj)
 
@@ -369,10 +368,9 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
             final_test_score_vector_svm[adj] = np.array(final_test_score_vector_svm[adj])
             final_test_score_vector_svm[adj] = final_test_score_vector_svm[adj].reshape(1, 5)
 
-            print "Got here"
             # When trainings for a certain adjective with all five motions are done, save these classifiers
-            #cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
-            #cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(knn_classifiers, open('adjective_classifiers/'+adj+'_knn.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(svm_classifiers, open('adjective_classifiers/'+adj+'_svm.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
             
             all_knn_classifiers[adj] = knn_classifiers
             all_svm_classifiers[adj] = svm_classifiers
@@ -381,7 +379,10 @@ def full_train(train_feature_vector, train_adjective_dictionary, test_feature_ve
     report_file_knn.close()
     report_file_svm.close()
 
-    import pdb; pdb.set_trace()
+    print "Store off all of the classifiers together into one file" 
+    cPickle.dump(all_knn_classifiers, open("all_knn_classifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
+    cPickle.dump(all_svm_classifiers, open("all_svm_classifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
+
     return(final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm, all_knn_classifiers, all_svm_classifiers)
 
 
@@ -418,8 +419,6 @@ def AdjectiveClassifiers(final_train_vector, final_train_adj_dictionary, final_t
 
     return final_classifiers
 
-
-
 # MAIN FUNCTION
 def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl):
 
@@ -436,7 +435,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
         else:
             all_data = utilities.loadBoltObjFile(input_file)
 
-        print "loaded data"
+        print "Loaded data"
         
     
         # Split the data into train and final test
@@ -444,25 +443,34 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
         
         # Split the train data again into train and test
         train_data, test_data = utilities.split_data(train_data, 0.8)
-
-        # Fit PCA for electrodes on training data
-        electrode_pca = fit_electrodes_pca(train_data)
-
+        
+        # Fit PCA for electrodes on training data, then store as pkl file
+        print "Fitting PCA for electrode data"
+        electrode_pca_dict = fit_electrodes_pca(train_data)
+        file_ptr = open("pca.pkl","w")
+        cPickle.dump(electrode_pca_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
+        file_ptr.close()
+        print "PCA transforms stored as 'pca.pkl'"
+                
         # Convert motion objects into feature objects
-        train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data, electrode_pca)
-        test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data, electrode_pca)
-        ensemble_test_all_features_obj_dict = BoltMotionObjToFeatureObj(ensemble_test_data, electrode_pca)
-
+        print "Generating feature object dictionaries"
+        train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data, electrode_pca_dict)
+        test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data, electrode_pca_dict)
+        ensemble_test_all_features_obj_dict = BoltMotionObjToFeatureObj(ensemble_test_data, electrode_pca_dict)
+        import pdb; pdb.set_trace()
         file_ptr = open("train_feature_objs.pkl","w")
         cPickle.dump(train_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
         file_ptr.close()
+        print "Feature object dictionary stored as 'train_feature_objs.pkl'"
         file_ptr = open("test_feature_objs.pkl","w")
         cPickle.dump(test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
         file_ptr.close()
+        print "Feature object dictionary stored as 'test_feature_objs.pkl'"
         file_ptr = open("ensemble_test_feature_objs.pkl","w")
         cPickle.dump(ensemble_test_all_features_obj_dict, file_ptr, cPickle.HIGHEST_PROTOCOL)
         file_ptr.close()
-
+        print "Feature object dictionary stored as 'ensemble_test_feature_objs.pkl'"
+        import pdb; pdb.set_trace()
     else:
         # Load the saved feature object pkl files
         file_ptr = open(train_feature_pkl,"r")
@@ -474,9 +482,8 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
         file_ptr = open(ensemble_test_feature_pkl,"r")
         ensemble_test_all_features_obj_dict = cPickle.load(file_ptr)
         file_ptr.close()
-        # Later will add another saved pkl file
 
-        print "loaded data"
+        print "Loaded data"
 
     # Take loaded data and extract out features
     feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
@@ -516,7 +523,6 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     #cPickle.dump(knn, open(pkl_file_name, "w"), cPickle.HIGHEST_PROTOCOL)
     
 
-    import pdb; pdb.set_trace()
     # Run full train
     final_train_proba_vector, final_train_score_vector_knn, final_train_score_vector_svm, final_test_proba_vector, final_test_score_vector_knn, final_test_score_vector_svm, all_knn_classifiers, all_svm_classifiers = full_train(train_feature_vector, train_adjective_dictionary, test_feature_vector, test_adjective_dictionary, ensemble_test_feature_vector, ensemble_test_adjective_dictionary)
 
