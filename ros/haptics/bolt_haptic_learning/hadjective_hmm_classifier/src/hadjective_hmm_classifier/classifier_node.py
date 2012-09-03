@@ -32,6 +32,7 @@ class AdjectiveClassifierNode(object):
         rospy.Subscriber(hadjective_msg_name, String, self.callback)
         
         self.received_data = {}
+        self.adjectives_pub = rospy.Publisher("/hmm_adjectives", String)
         rospy.loginfo("Ready")
 
     def __get_phase_from_obj(self, obj):
@@ -98,7 +99,9 @@ class AdjectiveClassifierNode(object):
                     positives.append(clf.adjective)                
             
             rospy.loginfo("Classification done")
-            rospy.loginfo("Adjectives: %s", " ".join(positives))
+            adj_msg = " ".join(positives)
+            rospy.loginfo("Sending the message: %s", adj_msg)
+            self.adjectives_pub.publish(adj_msg)            
             self.received_data = {}
         
 

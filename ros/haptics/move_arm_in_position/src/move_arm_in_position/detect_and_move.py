@@ -15,6 +15,7 @@ class MoveToHaptics(object):
     """
     def __init__(self, whicharm = "left_arm",
                  octomap_filters_service="/create_filter",
+                 planner = None,
                  padding = 0.1):
         """
         whicharm: a string, right_arm or left_arm.
@@ -28,7 +29,10 @@ class MoveToHaptics(object):
         self.detector = GenericDetector(detector_service = None,
                                         collision_processing = None
                                         )
-        self.planner = PR2MoveArm()
+        if planner is None:
+            self.planner = PR2MoveArm()
+        else:
+            self.planner = planner
         
         rospy.loginfo("Waiting for %s", octomap_filters_service)
         rospy.wait_for_service(octomap_filters_service)
@@ -98,7 +102,7 @@ class MoveToHaptics(object):
         
     
     def move_arm_to_pre_haptics(self,
-                                pre_touch_difference = (-0.1,0,0)):
+                                pre_touch_difference = (-0.05,0,0)):
         """Moves the arm so that an object will roughly be between the fingers.
         It first moves to an approach pose, then it will actually move to the pose
         """
