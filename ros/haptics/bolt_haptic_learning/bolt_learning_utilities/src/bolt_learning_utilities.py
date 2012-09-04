@@ -336,7 +336,7 @@ def get_best_motion(motion_score_dictionary):
     '''
 
     best_motion = ""
-    best_score = 0.0
+    best_score = -1.0
 
     for motion in motion_score_dictionary:
         score = motion_score_dictionary[motion]
