@@ -58,7 +58,7 @@ def electrode_features(electrodes, pca, controller_state, controller_state_detai
     electrodes = electrodes[k[0]:k[1]]
 
     # Apply dimensionality reduction on electrode data
-    eigen_electrodes = pca.fit_transform(electrodes)
+    eigen_electrodes = pca.transform(electrodes)
     
     # Fitting a polynomial to the transormed data
     polyfit = []
