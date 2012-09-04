@@ -49,31 +49,31 @@ def PullDataFromRun(one_run_pytable_ptr, pull_state):
         one_set_electrode = eval(finger_name + '.electrodes[:]')
         one_motion_electrode = np.array(one_set_electrode[idx_segment])
         motion_object.electrodes.append(one_motion_electrode)
-        motion_object.electrodes_mean.append(np.array(one_set_electrode[1:10, :]))
+        motion_object.electrodes_mean.append(np.array(one_set_electrode[100:110, :]))
 
         # TDC
         one_set_tdc = eval(finger_name + '.tdc[:]')
         one_motion_tdc = np.array(one_set_tdc[idx_segment])
         motion_object.tdc.append(one_motion_tdc)
-        motion_object.tdc_mean.append(np.array(one_set_tdc[1:10]))
+        motion_object.tdc_mean.append(np.array(one_set_tdc[100:110]))
 
         # TAC
         one_set_tac = eval(finger_name + '.tac[:]')
         one_motion_tac = np.array(one_set_tac[idx_segment])
         motion_object.tac.append(one_motion_tac)
-        motion_object.tac_mean.append(np.array(one_set_tac[1:10]))
+        motion_object.tac_mean.append(np.array(one_set_tac[100:110]))
 
         # PDC
         one_set_pdc = eval(finger_name + '.pdc[:]')
         one_motion_pdc = np.array(one_set_pdc[idx_segment])
         motion_object.pdc.append(one_motion_pdc)
-        motion_object.pdc_mean.append(np.array(one_set_pdc[1:10]))
+        motion_object.pdc_mean.append(np.array(one_set_pdc[100:110]))
 
         # PAC
         one_set_pac = eval(finger_name + '.pac[:]')
         one_motion_pac = np.array(one_set_pac[idx_segment])
         motion_object.pac.append(one_motion_pac)
-        motion_object.pac_mean.append(np.array(one_set_pac[1:10, :]))
+        motion_object.pac_mean.append(np.array(one_set_pac[100:110, :]))
 
         #pac_flat.append(one_motion_pac_flat.reshape(1, len(one_motion_pac_flat)*22)[0])
    

@@ -2,10 +2,9 @@
 
 # Creates output directories if they don't exist, then launches the start_run.launch
 
-if [ -z "$1" ]
+if [ -z "$1" ];
   then
-    echo "Error: No output filename provided"
-    exit 1
+    echo "Warning: No output filename provided"
 fi
 
 if [ -z "$ROS_WORKSPACE" ]; then
@@ -32,7 +31,14 @@ if [ ! -d "$BAG_DIR" ]; then
   mkdir $BAG_DIR
 fi
 
+if [ -z "$1" ];
+  then
+    LAUNCH="roslaunch biotac_simple_gripper start_run_no_record.launch filename:=$1 data_path:=$BOLT_DATA_DIR"
+    echo "Warning: No output filename provided"
 
-LAUNCH="roslaunch biotac_simple_gripper start_run.launch filename:=$1 data_path:=$BOLT_DATA_DIR"
+else
+    LAUNCH="roslaunch biotac_simple_gripper start_run.launch filename:=$1 data_path:=$BOLT_DATA_DIR"
+fi
+
 
 eval $LAUNCH
