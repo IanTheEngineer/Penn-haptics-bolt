@@ -10,14 +10,14 @@ from collections import defaultdict
 import numpy as np
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
-from extract_features import *
+#from extract_features import *
 
 from biotac_sensors.msg import BioTacHand
 from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
 from std_msgs.msg import Int8, String
 
-import matplotlib.pyplot as plt
-from bolt_learning_utilities import normalize_data
+#import matplotlib.pyplot as plt
+#from bolt_learning_utilities import normalize_data
 
 import cPickle
 
