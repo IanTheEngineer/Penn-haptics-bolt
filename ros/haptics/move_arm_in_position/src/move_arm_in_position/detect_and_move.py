@@ -57,25 +57,11 @@ class MoveToHaptics(object):
                                       use_safety_dist=True)
         
         rospy.loginfo("%s is ready", self.__class__.__name__)
-    
-    def detect_and_filter(self):
-        """Detect and object, selects the biggest cluster and removes the points
-        from the map.
-        
-        Returns the object's pointcloud and bounding box on success, None otherwise
-        """
-        
-        det = self.detector.segment_only()
-        if det is None:
-            rospy.logwarn("Problems while segmenting")
-            return None
-        
-        
-        cluster = self.detector.find_biggest_cluster(det.detection.clusters)
-        box = self.detector.detect_bounding_box(cluster)
+
+    def filter_bounding_box(self, box):
         assert isinstance(box, FindClusterBoundingBox2Response)
         xmin, xmax = self.detector.get_min_max_box(box, self.padding)
-        
+                
         #now filtering the octomap
         req = FilterDefineRequest()
         req.name = "object"
@@ -97,12 +83,32 @@ class MoveToHaptics(object):
             rospy.logerr("Error while calling the filtering service: %s", e)
             return None
         
-        self.planner.update_planning_scene()
+        self.planner.update_planning_scene()        
+        
+    
+    def detect_and_filter(self):
+        """Detect and object, selects the biggest cluster and removes the points
+        from the map.
+        
+        Returns the object's pointcloud and bounding box on success, None otherwise
+        """
+        
+        det = self.detector.segment_only()
+        if det is None:
+            rospy.logwarn("Problems while segmenting")
+            return None
+        
+        
+        cluster = self.detector.find_biggest_cluster(det.detection.clusters)
+        box = self.detector.detect_bounding_box(cluster)
+        assert isinstance(box, FindClusterBoundingBox2Response)
+        self.filter_bounding_box(box)
+        
         return cluster, box
         
     
     def move_arm_to_pre_haptics(self,
-                                pre_touch_difference = (-0.05,0,0)):
+                                pre_touch_difference = (-0.08,0,0)):
         """Moves the arm so that an object will roughly be between the fingers.
         It first moves to an approach pose, then it will actually move to the pose
         """
@@ -127,7 +133,7 @@ class MoveToHaptics(object):
                    ]
         gripper_accounted_pose = [box_pose[0] - 0.18 - box.box_dims.x/2.,
                                   box_pose[1] + 0,
-                                  box_pose[2] - 0.01
+                                  box_pose[2] + 0.01
                                   ]
         
         orientation = [0,0,0,1]
@@ -149,7 +155,7 @@ class MoveToHaptics(object):
         touch_pose[0] += 0.0
         rospy.loginfo("Moving to a touch position")
         if not move_arm_non_planning(touch_pose, orientation, frame_id, 3):
-            rospy.logerr("Could not move to pre-touch position!")
+            rospy.logerr("Could not move to touch position!")
             return False
         
         return True
