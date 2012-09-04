@@ -32,6 +32,7 @@ class AdjectiveClassifierNode(object):
         rospy.Subscriber(hadjective_msg_name, String, self.callback)
         
         self.received_data = {}
+        self.max_adjectives = 5
         self.adjectives_pub = rospy.Publisher("/hmm_adjectives", String)
         rospy.loginfo("Ready")
 
@@ -98,10 +99,16 @@ class AdjectiveClassifierNode(object):
                 if output[0] == 1:
                     positives.append(clf.adjective)                
             
-            rospy.loginfo("Classification done")
+            max_n = adjective_classifier.return_n_more_likely_adjectives(self.adjectives,
+                                                                         self.received_data,
+                                                                         self.max_adjectives)
+            max_n = " ".join(max_n)            
             adj_msg = " ".join(positives)
-            rospy.loginfo("Sending the message: %s", adj_msg)
-            self.adjectives_pub.publish(adj_msg)            
+            total_msg = adj_msg + "||" + max_n
+            rospy.loginfo("Classification done")
+            
+            rospy.loginfo("Sending the message: %s", total_msg)
+            self.adjectives_pub.publish(total_msg)            
             self.received_data = {}
         
 

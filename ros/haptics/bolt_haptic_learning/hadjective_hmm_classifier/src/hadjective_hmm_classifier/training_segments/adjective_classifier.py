@@ -200,3 +200,20 @@ class AdjectiveClassifier(ClassifierMixin):
         
         return self
         
+def return_n_more_likely_adjectives(adjectives, X, n):
+    """Returns the n adjectives with highest probability. The probability
+    is calculated as the sum of all the features.
+    
+    Parameters:
+    adjectives: a list of AdjectiveCalssifier.
+    X: a dictionary to be passed AdjectiveClassifier via extract_features
+    n: the number of adjectives to return.
+    """
+    
+    features_vec = [np.sum(a.extract_features(X)) for a in adjectives]
+    max_n = np.argsort(features_vec, None)[::-1][:n]
+    names = [adjectives[i].adjective for i in max_n]
+    
+    return names
+    
+    
