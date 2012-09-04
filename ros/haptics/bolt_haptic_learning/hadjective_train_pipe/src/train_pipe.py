@@ -235,7 +235,7 @@ def train_knn(train_vector, train_labels, test_vector, test_labels, scaler):
 
     # Grid search with nested cross-validation
     parameters = {'n_neighbors': [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15]}
-    knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=5)
+    knn = GridSearchCV(KNeighborsClassifier(), parameters, score_func=f1_score, cv=4)
     knn.fit(train_vector_scaled, train_labels)
     knn_best = knn.best_estimator_
     score = f1_score(test_labels, knn.predict(test_vector_scaled))
@@ -260,7 +260,7 @@ def train_svm(train_vector, train_labels, test_vector, test_labels, scaler):
     
     # Grid search with nested cross-validation
     parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]}
-    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=5)
+    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=4)
     svm.fit(train_vector_scaled, train_labels)
     svm_best = svm.best_estimator_
     score = f1_score(test_labels, svm.predict(test_vector_scaled))
@@ -387,6 +387,9 @@ def full_ensemble_train(train_feature_vector_dict, train_adjective_dict, test_fe
     # Open text file for storing classification reports
     ensemble_report_file = open("Full_Ensemble_Report.txt","w")
 
+    all_ensemble_classifiers = dict()
+
+    # For all adjectives
     for adj in train_adjective_dict:
                 
         # Create ensemble scaler
@@ -395,11 +398,14 @@ def full_ensemble_train(train_feature_vector_dict, train_adjective_dict, test_fe
         # Run SVM
         ensemble_svm, ensemble_proba, ensemble_score, ensemble_report = train_svm(train_feature_vector_dict[adj], train_adjective_dict[adj], test_feature_vector_dict[adj], test_adjective_dict[adj], scaler)
     
+        all_ensemble_classifiers[adj] = ensemble_svm
+
         # Write classification reports into text file
         ensemble_report_file.write('Adjective:  '+adj+'\n')
         ensemble_report_file.write(ensemble_report)
         ensemble_report_file.write('\n\n')
 
+        return all_ensemble_classifiers
 
 # MAIN FUNCTION
 def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemble_test_feature_pkl, all_classifiers_pkl, scaler_pkl):
@@ -500,37 +506,43 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     
     # Ensemble train labels are previous test labels
     ensemble_train_adjective_dict = test_adjective_dict
-   
+    
+    import pdb; pdb.set_trace()
+    for adj in ensemble_train_adjective_dict:
+        count = np.sum(ensemble_train_adjective_dict[adj])
+        import pdb; pdb.set_trace()
+        print adj+":  %d " %count
+
     # Remove the adjectives 'warm' and 'sparse' from the labels dictionaries
-    del ensemble_train_adjective_dict['hollow']
-    del ensemble_test_adjective_dict['hollow']
-    del ensemble_train_adjective_dict['meshy']
-    del ensemble_test_adjective_dict['meshy']
-    del ensemble_train_adjective_dict['warm']
-    del ensemble_test_adjective_dict['warm']
-    del ensemble_train_adjective_dict['sparse']
-    del ensemble_test_adjective_dict['sparse']
-    del ensemble_train_adjective_dict['gritty']
-    del ensemble_test_adjective_dict['gritty']
-    del ensemble_train_adjective_dict['porous']
-    del ensemble_test_adjective_dict['porous']
     del ensemble_train_adjective_dict['springy']
     del ensemble_test_adjective_dict['springy']
     del ensemble_train_adjective_dict['elastic']
     del ensemble_test_adjective_dict['elastic']
+    del ensemble_train_adjective_dict['meshy']
+    del ensemble_test_adjective_dict['meshy']
+    del ensemble_train_adjective_dict['gritty']
+    del ensemble_test_adjective_dict['gritty']
+    del ensemble_train_adjective_dict['warm']
+    del ensemble_test_adjective_dict['warm']
+    del ensemble_train_adjective_dict['textured']
+    del ensemble_test_adjective_dict['textured']
     del ensemble_train_adjective_dict['absorbant']
     del ensemble_test_adjective_dict['absorbant']
-    del ensemble_train_adjective_dict['grainy']
-    del ensemble_test_adjective_dict['grainy']
     del ensemble_train_adjective_dict['crinkly']
     del ensemble_test_adjective_dict['crinkly']
-    del ensemble_train_adjective_dict['bumpy']
-    del ensemble_test_adjective_dict['bumpy']
+    del ensemble_train_adjective_dict['porous']
+    del ensemble_test_adjective_dict['porous']
+    del ensemble_train_adjective_dict['grainy']
+    del ensemble_test_adjective_dict['grainy']
+    del ensemble_train_adjective_dict['sparse']
+    del ensemble_test_adjective_dict['sparse']
     
 
-    import pdb; pdb.set_trace()  
-    full_ensemble_train(ensemble_train_feature_vector_dict, ensemble_train_adjective_dict, ensemble_test_feature_vector_dict, ensemble_test_adjective_dict)
-
+    # Combine motion-specific classifiers for each adjective  
+    all_ensemble_classifiers = full_ensemble_train(ensemble_train_feature_vector_dict, ensemble_train_adjective_dict, ensemble_test_feature_vector_dict, ensemble_test_adjective_dict)
+    
+    # Store off combined classifiers
+    cPickle.dump(all_ensemble_classifiers, open("all_ensemble_classifiers.pkl","w"), cPickle.HIGHEST_PROTOCOL)
 
 # Parse the command line arguments
 def parse_arguments():
