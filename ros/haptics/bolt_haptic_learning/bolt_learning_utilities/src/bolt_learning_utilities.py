@@ -277,7 +277,7 @@ def compute_statistics(predicted_label, truth_label):
  
 # Create a function that given a classifier and a test
 # vector, will predict the labels
-def compute_adjective_probability_score(adj_classifiers, test_feature_obj, feature_list, adj_name):
+def compute_adjective_probability_score(adj_classifiers, test_feature_obj, feature_list, adj_name, scaler_dict):
     '''
     The function expects the input to be a loaded classifier for a SINGLE adjective
    
@@ -304,7 +304,7 @@ def compute_adjective_probability_score(adj_classifiers, test_feature_obj, featu
     motion_name = state_string[test_feature_obj.state]
     classifier_tuple = adj_classifiers[state_string[test_feature_obj.state]]
     classifier = classifier_tuple[0]
-    scaler = classifier_tuple[1]
+    scaler = scaler_dict[motion_name] 
 
     # Take the test feature objects and convert into a feature vector based on
     # the passed in list
@@ -313,6 +313,7 @@ def compute_adjective_probability_score(adj_classifiers, test_feature_obj, featu
     # Scale the test_vector
     test_vector_scaled = scaler.transform(test_vector)
 
+    #import pdb; pdb.set_trace()
     # Grab the probability of the adjective being TRUE (1)  This is the second value returned
     # from the svm
     prob_score = classifier.predict_proba(test_vector_scaled)[0][1]

@@ -56,7 +56,7 @@ def populate_BoltPR2MotionObj(all_data, out_file, adjective_file, save_to_file):
             object_name_split = object_name.split('_')
             object_id = object_name_split[-1]
             motion.object_id = int(object_id)
-            3motion.object_id = object_id
+            #motion.object_id = object_id
 
             # Look up the object number in the h5 table
             motion.labels = all_object_label_mapping[object_id]

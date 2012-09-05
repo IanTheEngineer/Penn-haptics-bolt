@@ -135,6 +135,12 @@ class LanguageTestMainThread:
                                   BoltPR2MotionBuf.SQUEEZE, BoltPR2MotionBuf.TAP,
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)
 
+    def disabled_clear(self):
+        self.current_motion = BoltPR2MotionBuf()
+        self.last_state = BoltPR2MotionBuf.DISABLED
+        self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
+        self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
+ 
     def reset_run(self):
         self.current_motion = BoltPR2MotionBuf()
         self.last_state = BoltPR2MotionBuf.DISABLED
@@ -298,6 +304,10 @@ def main(argv):
         elif main_thread.last_state is not main_thread.current_motion.state:
             #Simply update the last state
             main_thread.last_state = main_thread.current_motion.state
+        elif main_thread.current_motion.state is BoltPR2MotionBuf.DISABLED:
+            #Simply update the last state
+            main_thread.disabled_clear()
+
         #Release Lock
         main_thread.state_lock.release()
     
