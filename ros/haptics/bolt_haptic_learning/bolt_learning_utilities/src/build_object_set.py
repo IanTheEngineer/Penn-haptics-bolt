@@ -21,15 +21,15 @@ def loadDataFromH5File(input_file, output_file, adjective_file):
     all_bolt_data = utilities.convertH5ToBoltObjFile(input_file, None, False);
 
     # Inserts adjectives into the bolt_data  
-    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "novel_test_objects_majority4.pkl", adjective_file, False)
+    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "yellow_foam_103.pkl", adjective_file, False)
 
     # Load pickle file
     pca_dict = cPickle.load(open('pca.pkl', 'r'))
 
     all_feature_obj = BoltMotionObjToFeatureObj(all_bolt_data_adj, pca_dict) 
 
-    cPickle.dump(all_feature_obj, open('novel_test_feature_obj.pkl', 'w')) 
-
+    cPickle.dump(all_feature_obj, open('aluminum_bar_701_01.pkl', 'w')) 
+    import pdb; pdb.set_trace()
     return all_feature_obj
 
 # Takes the bolt data and extracts features to run

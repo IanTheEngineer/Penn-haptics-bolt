@@ -36,7 +36,8 @@ class HadjectiveSVMClassifier(object):
 
         self.scaler_dict = cPickle.load(open(scaler_file))
 
-        rospy.Subscriber("hadjective_motion_pickle", String, self.callback)
+        rospy.Subscriber("new_hadjective_motion_pickle", String, self.callback)
+        self.adjectives_pub = rospy.Publisher("/feature_svm_adjectives", String)
 
         rospy.loginfo("All svm classifiers loaded")
 
@@ -45,7 +46,7 @@ class HadjectiveSVMClassifier(object):
 
     # Computes the probability vector and results
     def compute_probability_vector(self, bolt_obj):
-        #import pdb; pdb.set_trace() 
+        
         if bolt_obj.state  == bolt_obj.TAP:
             # Store results as they come in
             self.adjective_vectors = dict() 
@@ -62,13 +63,14 @@ class HadjectiveSVMClassifier(object):
                     bolt_obj.CENTER_GRIPPER:'center_gripper'
                     }   
        
-        
+        # Get the current motion 
         current_motion = self.state_string[bolt_obj.state] 
-        
+       
+        # Build the feature vector
         self.bolt_object = bolt_obj 
         utilities.normalize_data(self.bolt_object)
         self.bolt_feature_object = extract_features.extract_features(self.bolt_object, self.pca_model[current_motion]) 
-       
+
         # Create a dictionary to store the results in
         for adj in self.all_classifiers:
             results, prob = utilities.compute_adjective_probability_score(self.all_classifiers[adj], self.bolt_feature_object, self.feature_list, adj, self.scaler_dict)
@@ -84,25 +86,30 @@ class HadjectiveSVMClassifier(object):
             # Store classifier score based on best motion
             best_motion = self.best_motion_dict[adj][1]
             if current_motion  == best_motion:
-                print current_motion
-                print best_motion
+                rospy.loginfo("Best Motion is: %s"% best_motion)
                 self.all_motion_results[adj] = results
         
         print len(self.adjective_vectors[adj])
         if len(self.adjective_vectors[adj]) == 5:
             ensembled_results = dict() 
-            print self.adjective_vectors 
+            #print self.adjective_vectors 
             #for adj in self.adjective_vectors: 
             #    ensembled_results[adj] = self.ensemble_classifiers[adj].predict(self.adjective_vectors[adj])
 
+            # Store off the adjectives that returned true
+            adjectives_found = []
+            for adj in self.all_motion_results:
+                if self.all_motion_results[adj] == 1:
+                    adjectives_found.append(adj)
+
             print "Results from max classification"
             print self.all_motion_results
-            print "Results from ensembled classification"
+            print str(adjectives_found) 
+            self.adjectives_pub.publish(str(adjectives_found))
             #print ensembled_results 
 
 
     def callback(self, msg):
-        #import pdb; pdb.set_trace() 
         current_motion = cPickle.loads(msg.data)
         rospy.loginfo("Current Motion: %s" % current_motion.state_string[current_motion.state])
         self.compute_probability_vector(current_motion)
