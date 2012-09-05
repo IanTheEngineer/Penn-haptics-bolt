@@ -27,10 +27,10 @@ class HadjectiveSVMClassifier(object):
         pca_file = os.path.join(DIR, "pca.pkl")
         best_motion_file = os.path.join(DIR, "best_classifiers_svm.pkl")
         scaler_file = os.path.join(DIR, "scaler.pkl")
-        #ensemble_classifier_file = os.path.join(DIR, "ensemble_classifier.pkl")
+        ensemble_classifier_file = os.path.join(DIR, "all_ensemble_classifiers_90_70_svm_01.pkl")
 
         self.all_classifiers = cPickle.load(open(all_classifiers_file))
-        #self.ensemble_classifiers = cPickle.load(open(ensemble_classifier_file))
+        self.ensemble_classifiers = cPickle.load(open(ensemble_classifier_file))
         self.pca_model = cPickle.load(open(pca_file))
         self.best_motion_dict = cPickle.load(open(best_motion_file))
 
@@ -92,9 +92,10 @@ class HadjectiveSVMClassifier(object):
         print len(self.adjective_vectors[adj])
         if len(self.adjective_vectors[adj]) == 5:
             ensembled_results = dict() 
+            
             #print self.adjective_vectors 
-            #for adj in self.adjective_vectors: 
-            #    ensembled_results[adj] = self.ensemble_classifiers[adj].predict(self.adjective_vectors[adj])
+            for adj in self.ensemble_classifiers: 
+                ensembled_results[adj] = self.ensemble_classifiers[adj].predict(self.adjective_vectors[adj])[0]
 
             # Store off the adjectives that returned true
             adjectives_found = []
@@ -102,12 +103,21 @@ class HadjectiveSVMClassifier(object):
                 if self.all_motion_results[adj] == 1:
                     adjectives_found.append(adj)
 
+            # Store off the adjectives that returns true for ensemble
+            adjectives_ensemble = []
+            for adj in ensembled_results:
+                if ensembled_results[adj] == 1:
+                    adjectives_ensemble.append(adj)
+
+
             print "Results from max classification"
             print self.all_motion_results
             print str(adjectives_found) 
             self.adjectives_pub.publish(str(adjectives_found))
-            #print ensembled_results 
 
+            print "Results from ensemble"
+            print ensembled_results 
+            print adjectives_ensemble
 
     def callback(self, msg):
         current_motion = cPickle.loads(msg.data)
