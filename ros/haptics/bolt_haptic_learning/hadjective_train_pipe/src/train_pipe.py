@@ -39,7 +39,7 @@ def loadDataFromH5File(input_file, adjective_file):
    
     # Inserts adjectives into the bolt_data  
     all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "all_objects_majority4.pkl", adjective_file, True)
-
+    
     return all_bolt_data_adj
 
 # Fits PCA for electrode training data
@@ -429,37 +429,90 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
             all_data = loadDataFromH5File(input_file, adjective_file)
         else:
             all_data = utilities.loadBoltObjFile(input_file)
-
-        print "Loaded data\n"
         
+        print "Loaded data\n"
+       
+        """ 
+        # Remove the duplicated MDF_320, and save a new all_data.pkl
+        all_data_new = dict()
+        toremove = [290, 291, 292, 293, 294, 295, 296, 297, 298, 299]
+        for motion_name in all_data:
+            all_data_new[motion_name] = np.delete(all_data[motion_name], toremove)
+
+        cPickle.dump(all_data_new, open("all_data.pkl", "w"), cPickle.HIGHEST_PROTOCOL)
+
+        import pdb; pdb.set_trace()
+        pass
+        """
+
+        # Split the data by leaving one object out as ensemble_test_data for each time and cycle through all objects
+        
+        # Generate the stratifications(labels) for picking out a object
+        obj_id_vector = []
+        for num in np.arange(len(all_data['tap'])):
+            obj_id_vector.append(all_data['tap'][num].object_id)
+
+        lol = cross_validation.LeaveOneLabelOut(np.array(obj_id_vector))
+        obj_id_list = np.unique(obj_id_vector).tolist()
+        # We may pickle this cross validation generator "lol" later
+        
+        
+        train_set = dict()
+        ensemble_test_set = dict()
+        for train_index, test_index in lol:
+            print "TRAIN_INDEX: %s  TEST_INDEX: %s" % (train_index, test_index)
+            train_data = dict()
+            ensemble_test_data = dict()
+            for motion_name in all_data:
+                train_data_array = np.array( all_data[motion_name])[train_index]
+                ensemble_test_data_array = np.array(all_data[motion_name])[test_index]
+                obj_id = ensemble_test_data_array[0].object_id
+
+                train_data[motion_name] = train_data_array.tolist()
+                ensemble_test_data[motion_name] = ensemble_test_data_array.tolist()
+
+            train_set[obj_id] = train_data
+            ensemble_test_set[obj_id] = ensemble_test_data
+
+            #cPickle.dump(train_data, open("train_data_"+str(obj_id)+".pkl", "w"), cPickle.HIGHEST_PROTOCOL)
+            #cPickle.dump(ensemble_test_data,open("ensemble_test_data_"+%(obj_id)+".pkl","w"), cPickle.HIGHEST_PROTOCOL)
+         
+
+        #cPickle.dump(train_set, open("train_set.pkl", "w"), cPickle.HIGHEST_PROTOCOL))
+        #cPickle.dump(ensemble_test_set, open("ensemble_test_set.pkl"), "w", cPickle.HIGHEST_PROTOCOL))
     
         # Split the data into train and final test
-        train_data, ensemble_test_data = utilities.split_data(all_data, 0.9)
+        # train_data, ensemble_test_data = utilities.split_data(all_data, 0.9)
+       
+        for obj_id in train_set:
+            # Split the train data again into train and test
+            train_data, test_data = utilities.split_data(train_set[obj_id], 0.7)
         
-        # Split the train data again into train and test
-        train_data, test_data = utilities.split_data(train_data, 0.7)
+            # Fit PCA for electrodes on training data
+            print "Fitting PCA for electrode data\n"
+            electrode_pca_dict = fit_electrodes_pca(train_data)
         
-        # Fit PCA for electrodes on training data
-        print "Fitting PCA for electrode data\n"
-        electrode_pca_dict = fit_electrodes_pca(train_data)
-        
-        # Store off PCA pkl
-        cPickle.dump(electrode_pca_dict, open("pca.pkl","w"), cPickle.HIGHEST_PROTOCOL)
-        print "PCA transforms stored as 'pca.pkl'\n"
+            # Store off PCA pkl
+            cPickle.dump(electrode_pca_dict, open("pca_pkls/pca_"+str(obj_id)+".pkl","w"), cPickle.HIGHEST_PROTOCOL)
+            print "PCA transforms stored as 'pca.pkl'\n"
+
                 
-        # Convert motion objects into feature objects
-        print "Generating feature object dictionaries\n"
-        train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data, electrode_pca_dict)
-        test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data, electrode_pca_dict)
-        ensemble_test_all_features_obj_dict = BoltMotionObjToFeatureObj(ensemble_test_data, electrode_pca_dict)
+            # Convert motion objects into feature objects
+            print "Generating feature object dictionaries\n"
+            train_all_features_obj_dict = BoltMotionObjToFeatureObj(train_data, electrode_pca_dict)
+            test_all_features_obj_dict = BoltMotionObjToFeatureObj(test_data, electrode_pca_dict)
+            ensemble_test_all_features_obj_dict = BoltMotionObjToFeatureObj(ensemble_test_data, electrode_pca_dict)
         
-        # Store off feature object pkls
-        cPickle.dump(train_all_features_obj_dict, open("train_feature_objs.pkl","w"), cPickle.HIGHEST_PROTOCOL)
-        print "Feature object dictionary stored as 'train_feature_objs.pkl'\n"
-        cPickle.dump(test_all_features_obj_dict, open("test_feature_objs.pkl","w"), cPickle.HIGHEST_PROTOCOL)
-        print "Feature object dictionary stored as 'test_feature_objs.pkl'\n"
-        cPickle.dump(ensemble_test_all_features_obj_dict, open("ensemble_test_feature_objs.pkl","w"), cPickle.HIGHEST_PROTOCOL)
-        print "Feature object dictionary stored as 'ensemble_test_feature_objs.pkl'\n"
+            # Store off feature object pkls
+            cPickle.dump(train_all_features_obj_dict, open("train_pkls/train_feature_objs_"+str(obj_id)+".pkl","w"), cPickle.HIGHEST_PROTOCOL)
+            print "Feature object dictionary stored as 'train_feature_objs.pkl'\n"
+            cPickle.dump(test_all_features_obj_dict, open("test_pkls/test_feature_objs_"+str(obj_id)+".pkl","w"), cPickle.HIGHEST_PROTOCOL)
+            print "Feature object dictionary stored as 'test_feature_objs.pkl'\n"
+            cPickle.dump(ensemble_test_all_features_obj_dict, open("ensemble_pkls/ensemble_test_feature_objs_"+str(obj_id)+".pkl","w"), cPickle.HIGHEST_PROTOCOL)
+            print "Feature object dictionary stored as 'ensemble_test_feature_objs.pkl'\n"
+
+        import pdb; pdb.set_trace()
+        pass
     
     else: 
         # Load pkl'd feature object dictionaries
@@ -529,8 +582,6 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     del ensemble_test_adjective_dict['meshy']
     del ensemble_train_adjective_dict['gritty']
     del ensemble_test_adjective_dict['gritty']
-    del ensemble_train_adjective_dict['warm']
-    del ensemble_test_adjective_dict['warm']
     del ensemble_train_adjective_dict['textured']
     del ensemble_test_adjective_dict['textured']
     del ensemble_train_adjective_dict['absorbant']
@@ -541,6 +592,9 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     del ensemble_test_adjective_dict['porous']
     del ensemble_train_adjective_dict['grainy']
     del ensemble_test_adjective_dict['grainy']
+    
+    del ensemble_train_adjective_dict['warm']
+    del ensemble_test_adjective_dict['warm']
     del ensemble_train_adjective_dict['sparse']
     del ensemble_test_adjective_dict['sparse']
     
