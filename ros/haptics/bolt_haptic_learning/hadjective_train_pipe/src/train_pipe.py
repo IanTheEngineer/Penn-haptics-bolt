@@ -352,27 +352,34 @@ def full_train(train_feature_vector_dict, train_adjective_dict, test_feature_vec
     return (all_knn_classifiers, all_svm_classifiers)
 
 
-def extract_ensemble_features(all_classifiers_dict, test_feature_vector_dict, scaler_dict):
+def extract_ensemble_features(all_classifiers_dict, test_feature_vector_dict, test_adjective_dict, scaler_dict):
     
     """
     """
 
     ensemble_train_feature_vector_dict = dict()
     ensemble_test_feature_vector_dict = dict()
+    
 
+    report = open("testing_score_ensemble.txt", "w")
     # For all adjectives
     for adj in all_classifiers_dict:
         ensemble_train_feature_vector = []
         ensemble_test_feature_vector = []
-
+        
         # For all motions
         for motion_name in all_classifiers_dict[adj]:
             classifier = all_classifiers_dict[adj][motion_name][0]
             train_probabilities = all_classifiers_dict[adj][motion_name][1]
             test_probabilities = classifier.predict_proba(scaler_dict[motion_name].transform(test_feature_vector_dict[motion_name]))
+            ensemble_results = (classifier.predict(scaler_dict[motion_name].transform(test_feature_vector_dict[motion_name])))
             ensemble_train_feature_vector.append(train_probabilities[:,1].tolist())
             ensemble_test_feature_vector.append(test_probabilities[:,1].tolist())
-           
+            #import pdb; pdb.set_trace()
+            report.write('\n\nAdjective: '+adj)
+            report.write('\nMotion: '+motion_name+'\n')
+            report.write(classification_report(test_adjective_dict[adj], ensemble_results))
+            print "f1 score is %s" % classification_report(test_adjective_dict[adj], ensemble_results) 
         
         ensemble_train_feature_vector_dict[adj] = np.transpose(np.array(ensemble_train_feature_vector))
         ensemble_test_feature_vector_dict[adj] = np.transpose(np.array(ensemble_test_feature_vector))
@@ -502,7 +509,7 @@ def main(input_file, adjective_file, train_feature_pkl, test_feature_pkl, ensemb
     ensemble_test_feature_vector_dict, ensemble_test_adjective_dict = bolt_obj_2_feature_vector(ensemble_test_all_features_obj_dict, feature_name_list)
 
     # Create ensemble feature vectors out of probabilities
-    ensemble_train_feature_vector_dict, ensemble_test_feature_vector_dict = extract_ensemble_features(all_classifiers_dict, ensemble_test_feature_vector_dict, scaler_dict)
+    ensemble_train_feature_vector_dict, ensemble_test_feature_vector_dict = extract_ensemble_features(all_classifiers_dict, ensemble_test_feature_vector_dict, ensemble_test_adjective_dict, scaler_dict)
     
     # Ensemble train labels are previous test labels
     ensemble_train_adjective_dict = test_adjective_dict
