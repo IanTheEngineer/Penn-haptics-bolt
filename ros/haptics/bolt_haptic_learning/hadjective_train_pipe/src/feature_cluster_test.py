@@ -5,8 +5,35 @@ import numpy as np
 import bolt_learning_utilities as utilities
 import train_pipe as train
 import cPickle
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 from optparse import OptionParser
+from sklearn import preprocessing
+from hcluster import pdist, linkage, dendrogram
+from scipy.cluster import hierarchy
+
+
+def DrawDendrogram(feature_vector, obj_names, motion_name):
+    distances = pdist(feature_vector)
+    linkage_list = ['single', 'average', 'complete']
+    Z = linkage(distances, linkage_list[1])
+    render = hierarchy.dendrogram(Z,
+                                  #p=51,
+                                  #truncate_mode='level',
+                                  #show_contracted=True,
+                                  color_threshold=1.5,
+                                  labels=obj_names,
+                                  orientation='left',
+                                  show_leaf_counts=True,
+                                  leaf_font_size=10,
+                                  )
+
+    plt.title(motion_name+'_'+linkage_list[1])
+    plt.show()
+    #plt.savefig(motion_name+'_dendro_complete.png')
+
+    return render
 
 
 # MAIN FUNCTION
@@ -35,7 +62,10 @@ def main(bolt_motion_obj_file, bolt_feature_obj_file):
 
     # Specify features to be extracted
     feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
-    import pdb; pdb.set_trace()
+
+    #import pdb; pdb.set_trace()
+    #pass
+
     # Pull desired features from feature objects
     feature_vector_dict, adjective_label_dict = train.bolt_obj_2_feature_vector(all_features_obj_dict, feature_name_list)
     print "Created feature vector containing %s\n" % feature_name_list
@@ -43,14 +73,52 @@ def main(bolt_motion_obj_file, bolt_feature_obj_file):
     # Here is where the feature vectors for each motion need to be transformed from 510x50 to 1020x25. Be
     # careful to split based on finger! I believe every other column goes together. (So columns 1:2:49 are
     # finger 1 and columns 2:2:50 are finger 2) 
+    
 
     # For each motion, run K-means on features
+    #report = open("Trial_kmeans_15.txt", "w")
     num_objects = 51
+    num_adjectives = 34
+
+    # Create a list of object names as the labels for dendrogram
+    obj_names = []
+    for i in np.arange(len(all_features_obj_dict['tap'])):
+        obj_names.append(all_features_obj_dict['tap'][i].name)
+
+
+    num_clusters = 15
     for motion_name in feature_vector_dict:
         # We need to modify the run_kmeans() function so that it can take in a feature_vector argument that is
         # twice as long as the all_data argument!
-        k_means_labels, k_means_cluster_centers, clusters = train.run_kmeans(feature_vector_dict[motion_name], num_objects, all_data)
-        # All that's left now is to look at which trials were placed in which cluster =)
+
+        # Preprocess the feature_vector
+        feature_vector = preprocessing.scale(feature_vector_dict[motion_name])
+
+        #clusteirs, cluster_names, cluster_all_adjectives = train.run_kmeans(feature_vector, num_clusters, all_features_obj_dict[motion_name])
+
+        Render = DrawDendrogram(feature_vector, np.array(obj_names), motion_name)
+        
+        import pdb; pdb.set_trace()
+        pass
+
+        '''
+        # Save the kmeans results into txt files
+        report.write('Motion: '+motion_name+'\n')
+        for i in np.arange(num_clusters):
+            size_cluster = len(clusters[i])
+            report.write('Number of trials in cluster '+str(i)+': '+str(size_cluster)+'\n')
+            report.write(str(cluster_names[i])+'\n\n')
+        report.write('\n\n')
+        '''
+    
+    #report.close()
+
+
+
+    #import pdb; pdb.set_trace()
+    #pass
+
+    # All that's left now is to look at which trials were placed in which cluster =)
 
 # Parse the command line arguments
 def parse_arguments():
