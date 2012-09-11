@@ -18,7 +18,17 @@ class BoltPR2MotionObj(object):
     RIGHT = 0 
     LEFT = 1
 
+
     def __init__(self):
+        self.state_string = {self.DISABLED:'Disabled',
+                    self.THERMAL_HOLD:'Thermal Hold',
+                    self.SLIDE:'Slide',
+                    self.SQUEEZE:'Squeeze',
+                    self.TAP:'Tap',
+                    self.DONE:'Done',
+                    self.SLIDE_FAST:'Slide Fast',
+                    self.CENTER_GRIPPER:'Center Gripper'
+                    }
 
         # For each finger
         # n x 19 
@@ -60,9 +70,19 @@ class BoltPR2MotionObj(object):
 
         # Store state
         self.state = self.DISABLED
+        self.detailed_state = []
    
         # Store information about the run the motion came from
         self.name = ""
         self.run_number = 0 
-     
-         # Maybe store raw electrodes
+        self.object_id = 0
+  
+        # rot - n x 4
+        # trans - n x 3
+        # Store gripper information
+        self.l_tool_frame_transform_rot = []
+        self.l_tool_frame_transform_trans = []
+
+        # Store the labels in a dictionary
+        self.labels = None 
+        

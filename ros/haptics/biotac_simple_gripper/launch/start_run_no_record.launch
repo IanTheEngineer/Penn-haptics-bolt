@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Check for filename for JSON and rosbag -->
+  <arg name="filename" default="default_trial" />
+  <arg name="data_path" default="$(env ROS_WORKSPACE)/bolt_data" />
+  
+  <!--Start publishing sensors-->
+  <include file="$(find biotac_simple_gripper)/launch/robot_motion.launch"/>
+
+  <!--Start up master thread-->
+  <node pkg="hadjective_test_pipe" type="test_master_thread.py" name="test_master_thread" output="screen"/>
+
+  <!-- Start controller -->
+  <node pkg="biotac_simple_gripper" type="biotac_gripper_controller" name="biotac_gripper_controller" output="screen" args="$(arg data_path) $(arg filename).json" />
+
+</launch>
+

@@ -1,0 +1,16 @@
+<package>
+  <description brief="hadjective_test_alg_template">
+
+     hadjective_test_alg_template
+
+  </description>
+  <author>Ian McMahon</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hadjective_test_alg_template</url>
+  <depend package="rospy"/>
+  <depend package="bolt_learning_utilities"/>
+
+</package>
+
+

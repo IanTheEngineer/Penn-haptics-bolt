@@ -1,0 +1,15 @@
+<package>
+  <description brief="hadjective_train_pipe">
+
+     hadjective_train_pipe
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/language_train_pipe</url>
+  <depend package="rospy" />
+  <depend package="bolt_learning_utilities" />
+</package>
+
+

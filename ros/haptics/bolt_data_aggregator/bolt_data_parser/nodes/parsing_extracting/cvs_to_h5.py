@@ -14,7 +14,10 @@ def populate_h5(input_file, out_file, values_slice):
     reader = csv.reader(csv_file)
     
     #getting the headers of, the file, assume they're there    
-    titles = reader.next()[1:-2] #first column is the object number, let's skip it for now
+    #skipping empty entries
+    entries = reader.next()
+    titles = [s for s in entries if s != '' and not s.startswith('#')]
+    print "Titles are: ", titles
     
     csv_file.seek(0)
     
@@ -28,7 +31,7 @@ def populate_h5(input_file, out_file, values_slice):
     for row in itertools.islice(reader, values_slice.start, values_slice.stop, values_slice.step):
         class_number = row[0]
         new_row = [class_number]
-        new_row.extend(filter(x) for x in row[1:-2]) #skip class_number and the last two empty elements
+        new_row.extend(filter(x) for x in row[1:1+len(titles)]) #skip class_number and the last two empty elements
         all_rows.append(new_row)
         
     #now let's go to the h5
@@ -57,9 +60,9 @@ def parse_arguments():
     input_file = options.in_file #this is required
     
     if options.out_file is None:
-        (_, name) = os.path.split(input_file)
+        (path, name) = os.path.split(input_file)
         name = name.split(".")[0]
-        out_file = name + ".h5"
+        out_file = os.path.join(path, name) + ".h5"
     else:        
         out_file = options.out_file
         if len(out_file.split(".")) == 1:

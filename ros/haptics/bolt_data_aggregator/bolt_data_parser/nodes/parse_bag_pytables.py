@@ -13,6 +13,7 @@ import itertools
 import tables
 from biotac_sensors.msg import BioTacHand
 from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData 
+from pr2_arm_state_aggregator.msg import PR2ArmState
 
 from collections import defaultdict
 
@@ -61,13 +62,20 @@ def main():
         current_detail_state = "DISABLED" 
         detail_state = []
 
+        # Store tool_frame transform
+        pr2_arm_state_msg = PR2ArmState()
+        tool_frame_name = []
+        tool_frame_parent = []
+        transform_translation = []
+        transform_rotation = []
+
         # Number of entries
         num_entries = 0
         num_biotac_entries = 0
         num_controller_state_entries = 0
         num_gripper_accelerometer_entries = 0
 
-        for topic, msg, stamp in bag.read_messages(topics=["/biotac_pub", "/pr2_gripper_accelerometer/data", "/simple_gripper_controller_state", "/simple_gripper_controller_state_detailed"]):
+        for topic, msg, stamp in bag.read_messages(topics=["/biotac_pub", "/pr2_gripper_accelerometer/data", "/simple_gripper_controller_state", "/simple_gripper_controller_state_detailed", "/pr2_arm_state"]):
             num_entries += 1
             # Currently downsampling the accelerometers by storing them off when they arrive
             # and then writing to the array at the same frequency at the biotacs
@@ -83,6 +91,13 @@ def main():
             if topic == '/simple_gripper_controller_state_detailed':
                 current_detail_state = msg.data
 
+            if topic == '/pr2_arm_state':
+                transforms = msg.transforms
+                bool_idx = [(value.child_frame_id == '/l_gripper_tool_frame') for value in transforms]
+                tool_frame_idx = bool_idx.index(True)
+                if transforms[tool_frame_idx].transform_valid:
+                    pr2_arm_state_msg = msg
+
             if msg._type == 'biotac_sensors/BioTacHand': 
                 num_biotac_entries += 1          
                 num_fingers = len(msg.bt_data)
@@ -93,6 +108,7 @@ def main():
                     pdc_data[finger_index].append( msg.bt_data[finger_index].pdc_data)
                     pac_data[finger_index].append( msg.bt_data[finger_index].pac_data)
                     electrode_data[finger_index].append( msg.bt_data[finger_index].electrode_data)
+                
                 # Store accelerometer
                 accel_store = [] 
                 accel_store.append(gripper_accelerometer_msg.acc_x_raw)
@@ -110,6 +126,29 @@ def main():
 
                 # Store control detail state
                 detail_state.append(current_detail_state)
+                
+                # Store l_tool_frame information
+                if len(pr2_arm_state_msg.arm_name) is 0:
+                    tool_frame_name.append("NOT_VALID") 
+                    tool_frame_parent.append("NOT_VALID") 
+                    transform_translation.append((0.0, 0.0, 0.0))
+                    transform_rotation.append((0.0, 0.0, 0.0, 0.0))
+
+                else:
+                    transforms = pr2_arm_state_msg.transforms
+                    bool_idx = [(value.child_frame_id == '/l_gripper_tool_frame') for value in transforms]
+                    tool_frame_idx = bool_idx.index(True)
+
+                    l_tool_frame = transforms[tool_frame_idx]
+                   
+                    # Store information
+                    tool_frame_name.append(l_tool_frame.child_frame_id) 
+                    tool_frame_parent.append(l_tool_frame.parent_frame_id) 
+                    tool_transform = l_tool_frame.transform
+                    translation = tool_transform.translation
+                    transform_translation.append((translation.x, translation.y, translation.z))
+                    rotations = tool_transform.rotation
+                    transform_rotation.append((rotations.x, rotations.y, rotations.z, rotations.w))
 
             # Store time stamps for entire run 
             time_stamp.append( stamp.to_sec())
@@ -176,7 +215,6 @@ def main():
 
         gripper_joint_effort_carray = h5file.createCArray(gripper_group, "joint_effort", tables.Float64Atom(), (num_biotac_entries,))
         gripper_joint_effort_carray[:] = gripper_joint_effort
-        #import pdb; pdb.set_trace()
       
         state_group = h5file.createGroup(bag_group, "state")
 
@@ -187,7 +225,24 @@ def main():
         # Store controller detailed state
         control_detail_carray = h5file.createCArray(state_group, "controller_detail_state", tables.StringAtom(itemsize=30), (num_biotac_entries,))
         control_detail_carray[:] = detail_state
-        
+
+        # Store l_tool_frame transform information
+        l_tool_frame_group = h5file.createGroup(bag_group, "transforms")
+
+        # Store tool frame information
+        l_tool_frame_name_carray = h5file.createCArray(l_tool_frame_group, "child_frame_id", tables.StringAtom(itemsize=15), (num_biotac_entries,))
+        l_tool_frame_name_carray[:] = tool_frame_name
+
+        l_tool_frame_parent_carray = h5file.createCArray(l_tool_frame_group, "parent_frame_id", tables.StringAtom(itemsize=15), (num_biotac_entries,))
+        l_tool_frame_parent_carray[:] = tool_frame_parent
+
+        # Store transform positions
+        l_tool_frame_translation_carray = h5file.createCArray(l_tool_frame_group, "translation", tables.Float64Atom(), (num_biotac_entries, 3))
+        l_tool_frame_translation_carray[:] = transform_translation
+
+        l_tool_frame_rotation_carray = h5file.createCArray(l_tool_frame_group, "rotation", tables.Float64Atom(), (num_biotac_entries, 4))
+        l_tool_frame_rotation_carray[:] = transform_rotation
+
     h5file.close()
 
 
