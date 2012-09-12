@@ -86,7 +86,20 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
     electrode_polyfit = []
     
     num_fingers = len(bolt_pr2_motion_obj.electrodes_normalized)
-    
+        
+    # Compute gripper features
+    end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        
+    # Compute transform features
+    distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
+
+    # Append gripper aperture features
+    gripper_min.append(end_gripper)
+    gripper_mean.append(mean_gripper)
+
+    # Append transform features
+    transform_distance.append(distance)
+
     # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
 
@@ -96,12 +109,6 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
         # Compute texture features
         pac_energy_buf, pac_moments_buf = texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
       
-        # Compute gripper features
-        end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
-
-        # Compute transform features
-        distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
-
         # Compute electrode features
         polyfit = electrode_features(bolt_pr2_motion_obj.electrodes_normalized[finger], electrode_pca, bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
@@ -119,13 +126,6 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
         # Append thermal features
         tac_area.append(tac_area_buf)
         tdc_exp_fit.append(tdc_exp_fit_buf[2])
-
-        # Append gripper aperture features
-        gripper_min.append(end_gripper)
-        gripper_mean.append(mean_gripper)
-
-        # Append transform features
-        transform_distance.append(distance)
 
         # Pull the number of steps of the rising curve
         filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
