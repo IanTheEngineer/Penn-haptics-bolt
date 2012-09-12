@@ -88,7 +88,7 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
     num_fingers = len(bolt_pr2_motion_obj.electrodes_normalized)
         
     # Compute gripper features
-    end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+    end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
         
     # Compute transform features
     distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
@@ -287,7 +287,7 @@ def texture_features( pac_flat, controller_state, controller_state_detail):
 
 
 
-def gripper_features( gripper_position, pdc_norm, controller_state, controller_state_detail ):
+def gripper_features( gripper_position, controller_state, controller_state_detail ):
     """
     if controller_state is BoltPR2MotionObj.TAP:
        threshold = 2
