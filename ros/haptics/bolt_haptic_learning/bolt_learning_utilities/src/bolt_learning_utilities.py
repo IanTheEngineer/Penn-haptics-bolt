@@ -174,7 +174,7 @@ def createFeatureVector(bolt_feature_obj, feature_list):
         else:
             all_feature_vector += feature_vector
 
-    return np.array(all_feature_vector)
+    return (np.array(all_feature_vector), bolt_feature_obj.object_id)
 
 # Function to split the data
 def split_data(all_bolt_data, train_size):
@@ -308,7 +308,7 @@ def compute_adjective_probability_score(adj_classifiers, test_feature_obj, featu
 
     # Take the test feature objects and convert into a feature vector based on
     # the passed in list
-    test_vector = createFeatureVector(test_feature_obj, feature_list)
+    test_vector,obj_id = createFeatureVector(test_feature_obj, feature_list)
 
     # Scale the test_vector
     test_vector_scaled = scaler.transform(test_vector)
