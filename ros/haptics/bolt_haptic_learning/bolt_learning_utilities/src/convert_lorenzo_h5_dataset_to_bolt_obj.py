@@ -9,107 +9,11 @@ import numpy as np
 import cPickle
 import bolt_learning_utilities as utilities
 import extract_features as extract_features
+from random import shuffle
 
 from sklearn.decomposition import PCA
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 from bolt_feature_obj import BoltFeatureObj
-
-# Pulls out the data for a segment from a run
-def PullDataFromRun(one_run_pytable_ptr, pull_state):
-    
-    # pull out controller state array
-    state_array = one_run_pytable_ptr.state.controller_state[:]
-    # Get index into the array that matches the state 
-    idx_segment = np.nonzero(state_array == pull_state)
-
-    # Create PR2MotionObj
-    motion_object = BoltPR2MotionObj()
-
-    # Store the state in the object
-    motion_object.state = pull_state
-
-    # Get the name of the current file and parse
-    object_full_name = one_run_pytable_ptr._v_name
-    object_name_split = object_full_name.split('_')
-    object_run_num = object_name_split[-1] 
-    object_name = "_".join(object_name_split[0:-1])
-
-    # Store parsed info
-    motion_object.name = object_name
-    motion_object.run_number = int(object_run_num)
-
-    # Biotac information
-    for _finger in xrange(2):#one_run_pytable_ptr.biotacs._v_depth):
-
-        # Create name to eval for finger
-        finger_name_list = [] 
-        finger_name_list.append('one_run_pytable_ptr.biotacs.finger_')
-        finger_name_list.append(str(_finger))
-
-        finger_name = ''.join(finger_name_list)
-
-        # Electrodes
-        one_set_electrode = eval(finger_name + '.electrodes[:]')
-        one_motion_electrode = np.array(one_set_electrode[idx_segment])
-        motion_object.electrodes.append(one_motion_electrode)
-        motion_object.electrodes_mean.append(np.array(one_set_electrode[100:110, :]))
-
-        # TDC
-        one_set_tdc = eval(finger_name + '.tdc[:]')
-        one_motion_tdc = np.array(one_set_tdc[idx_segment])
-        motion_object.tdc.append(one_motion_tdc)
-        motion_object.tdc_mean.append(np.array(one_set_tdc[100:110]))
-
-        # TAC
-        one_set_tac = eval(finger_name + '.tac[:]')
-        one_motion_tac = np.array(one_set_tac[idx_segment])
-        motion_object.tac.append(one_motion_tac)
-        motion_object.tac_mean.append(np.array(one_set_tac[100:110]))
-
-        # PDC
-        one_set_pdc = eval(finger_name + '.pdc[:]')
-        one_motion_pdc = np.array(one_set_pdc[idx_segment])
-        motion_object.pdc.append(one_motion_pdc)
-        motion_object.pdc_mean.append(np.array(one_set_pdc[100:110]))
-
-        # PAC
-        one_set_pac = eval(finger_name + '.pac[:]')
-        one_motion_pac = np.array(one_set_pac[idx_segment])
-        motion_object.pac.append(one_motion_pac)
-        motion_object.pac_mean.append(np.array(one_set_pac[100:110, :]))
-
-        #pac_flat.append(one_motion_pac_flat.reshape(1, len(one_motion_pac_flat)*22)[0])
-   
-    # Store gripper information
-    # Velocity 
-    gripper_velocity = one_run_pytable_ptr.gripper_aperture.joint_velocity[:] 
-    motion_object.gripper_velocity = gripper_velocity[idx_segment]
-   
-    # Position
-    gripper_position = one_run_pytable_ptr.gripper_aperture.joint_position[:] 
-    motion_object.gripper_position = gripper_position[idx_segment]
-
-    # Motor Effort
-    gripper_effort = one_run_pytable_ptr.gripper_aperture.joint_effort[:] 
-    motion_object.gripper_effort = gripper_effort[idx_segment]
-
-    # Store accelerometer
-    accelerometer = one_run_pytable_ptr.accelerometer[:] 
-    motion_object.accelerometer = accelerometer[idx_segment]
-   
-    # Transforms
-    l_tool_frame_transform_rot = one_run_pytable_ptr.transforms.rotation[:]
-    motion_object.l_tool_frame_transform_rot = l_tool_frame_transform_rot[idx_segment]
-   
-    l_tool_frame_transform_trans = one_run_pytable_ptr.transforms.translation[:]
-    motion_object.l_tool_frame_transform_trans = l_tool_frame_transform_trans[idx_segment]
-   
-    # Store detailed states
-    detailed_state = one_run_pytable_ptr.state.controller_detail_state[:]
-    motion_object.detailed_state = detailed_state[idx_segment].tolist()
-
-    return motion_object
-
 
 def load_data(input_filename, output_filename, adjective_filename, save_to_file, start_val, end_val):
 
@@ -138,6 +42,11 @@ def load_data(input_filename, output_filename, adjective_filename, save_to_file,
     # Pull out a specific segment
     all_runs_segment = all_runs_root[0]
 
+    # all objects number stored
+    all_object_numbers = cPickle.load(open("all_objects_id.pkl","r"))
+    #import pdb; pdb.set_trace() 
+    print str(all_object_numbers)
+
     # For each file extract the segments and data
     for _adjectiveRun in all_runs_segment:
         if num_runs < start_val:
@@ -151,7 +60,9 @@ def load_data(input_filename, output_filename, adjective_filename, save_to_file,
             print adj
 
             # Create dictionary to store train and test adjective
-            adjective_set = dict();
+            adjective_set = dict()
+            
+            all_objs_of_adj = list()
 
             set_lists = ['train', 'test']
 
@@ -160,63 +71,83 @@ def load_data(input_filename, output_filename, adjective_filename, save_to_file,
                 children_set = eval('_adjectiveRun.'+ set_type)
                
                 # Store the set types in the dictionary
-                adjective_set[set_type] = dict()
+                adjective_set[set_type] = list()
 
                 # Pull out all runs associated with the set
                 set_runs = [_r for _r in children_set.__iter__()]
 
                 for _objectRun in set_runs: 
-                #import pdb; pdb.set_trace()
-                
-                    # Pull out tap information
-                    tap_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.TAP)
-                    utilities.normalize_data(tap_object, discard_raw_flag)
 
-                    # Pull out squeeze information
-                    squeeze_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SQUEEZE)
-                    utilities.normalize_data(squeeze_object, discard_raw_flag)
+                    # Get the name of the current file and parse
+                    object_full_name = _objectRun._v_name
+                    object_name_split = object_full_name.split('_')
+                    object_run_num = object_name_split[-1] 
+                    object_name = "_".join(object_name_split[0:-1])
 
-                    # Pull out hold information
-                    hold_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.THERMAL_HOLD) 
-                    utilities.normalize_data(hold_object, discard_raw_flag)
+                    adjective_set[set_type].append(int(object_name.split('_')[-1]))
+                    all_objs_of_adj.append(int(object_name.split('_')[-1]))
 
-                    # Pull out slide fast information
-                    slide_fast_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE_FAST)
-                    utilities.normalize_data(slide_fast_object, discard_raw_flag)
+                    #all_object_numbers.append(int(object_name.split('_')[-1]))
 
-                    # Pull out slide slow information
-                    slide_slow_object = PullDataFromRun(_objectRun, BoltPR2MotionObj.SLIDE)
-                    utilities.normalize_data(slide_slow_object, discard_raw_flag)
-             
-                    if 'tap' not in adjective_set[set_type]:
-                        adjective_set[set_type]['tap'] = list()
-                        adjective_set[set_type]['squeeze'] = list()
-                        adjective_set[set_type]['thermal_hold'] = list()
-                        adjective_set[set_type]['slide'] = list()
-                        adjective_set[set_type]['slide_fast'] = list()
+                    #import pdb; pdb.set_trace()
+            
+            #print np.unique(all_objs_of_adj) 
+            negative_adj = np.setxor1d(np.unique(all_objs_of_adj), all_object_numbers)
+            num_train = int(round(len(negative_adj)*(2.0/3.0)))
 
-                    adjective_set[set_type]['tap'].append(tap_object)
-                    adjective_set[set_type]['squeeze'].append(squeeze_object)
-                    adjective_set[set_type]['thermal_hold'].append(hold_object)
-                    adjective_set[set_type]['slide'].append(slide_fast_object)
-                    adjective_set[set_type]['slide_fast'].append(slide_slow_object)
+            access_idx = range(len(negative_adj))
+            shuffle(access_idx)
+            access_np_idx = np.array(access_idx)
+
+            train_idx = np.nonzero(access_np_idx <= num_train)[0]
+            test_idx = np.nonzero(access_np_idx > num_train)[0]
+
+            train_obj_neg_set = [negative_adj[i] for i in train_idx]
+            test_obj_neg_set = [negative_adj[i] for i in test_idx]
+
+            print train_obj_neg_set
+            print test_obj_neg_set
+
+            print np.unique(adjective_set['train'])
+            print np.unique(adjective_set['test'])
+
+            # Merge train and test sets
+            adjective_set['train'] = np.concatenate((np.unique(adjective_set['train']), np.array(train_obj_neg_set)),axis=1)
+            adjective_set['test'] = np.concatenate((np.unique(adjective_set['test']), np.array(test_obj_neg_set)),axis=1)
 
             if (save_to_file):
-                
+
                 pca_dict = None
                 for set_type in set_lists:
-                    file_name ='lorenzo_data/'+output_filename+'_'+adj+'_'+set_type+'.pkl'
+                    file_name ='lorenzo_data/'+output_filename+'_'+adj+'_'+set_type+'.txt'
+                    '''
                     if set_type == 'train':
                         pca_dict = build_feature_objects(adjective_set[set_type], file_name, adjective_filename, pca_dict)
                 else:
                     build_feature_objects(adjective_set[set_type], file_name, adjective_filename, pca_dict)
- 
-                #file_ptr = open('lorenzo_data/'+output_filename+'_'+adj+'_'+set_type+'.pkl', "w")
+                '''
+
+                    file_ptr = open('lorenzo_data/'+output_filename+'_'+adj+'_'+set_type+'.pkl', "w")
+                    cPickle.dump(np.unique(adjective_set[set_type]), file_ptr, cPickle.HIGHEST_PROTOCOL)
+                    print np.unique(adjective_set[set_type])
+                    print np.shape(adjective_set[set_type])
+                    #file_ptr.write(str(np.unique(adjective_set[set_type])))
+                    file_ptr.close()
                 #cPickle.dump(adjective_set[set_type], file_ptr, cPickle.HIGHEST_PROTOCOL)
                 #file_ptr.close()
 
         # Store the adjective away
-        #adjective_data_store[adj] = adjective_set
+        adjective_data_store[adj] = adjective_set
+      
+    all_object_sets_ptr = open('lorenzo_data/all_'+output_filename+'.pkl', "w")
+    cPickle.dump(adjective_data_store, all_object_sets_ptr, cPickle.HIGHEST_PROTOCOL)
+    all_object_sets_ptr.close()
+
+    #np.array(all_object_numbers)
+    #print np.unique(all_object_numbers)
+    #objects_ptr = open('all_objects_id.pkl', 'w')
+    #cPickle.dump(np.unique(all_object_numbers), objects_ptr, cPickle.HIGHEST_PROTOCOL)
+    #objects_ptr.close()
     
     return adjective_data_store
     
