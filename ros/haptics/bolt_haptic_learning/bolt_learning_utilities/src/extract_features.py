@@ -6,6 +6,7 @@ import pylab
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 from bolt_feature_obj import BoltFeatureObj
+from sklearn.decomposition import PCA
 
 #For texture_features
 from scipy.signal import lfilter
@@ -382,5 +383,24 @@ def smooth(x,window_len=11,window='hanning'):
     y=np.convolve(w/w.sum(),s,mode='valid')
     return y
 
+# Fits PCA for electrode training data
+def fit_electrodes_pca(train_data):
+
+    pca_dict = dict()
+    
+    # Fit PCA on all trials, for each motion separately
+    for motion_name in train_data:
+        trial_list = train_data.get(motion_name)
+
+        # Pull out electrode data on both fingers, all trials for one motion
+        electrode_motion_data = np.concatenate((trial_list[0].electrodes_normalized[0],trial_list[0].electrodes_normalized[1]))
+        for trial in range(1,len(trial_list)):
+            electrode_motion_data = np.concatenate((electrode_motion_data,trial_list[trial].electrodes_normalized[0],trial_list[trial].electrodes_normalized[1]))
+       
+
+        # Store PCA by motion
+        pca_dict[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
+
+    return(pca_dict)
 
 
