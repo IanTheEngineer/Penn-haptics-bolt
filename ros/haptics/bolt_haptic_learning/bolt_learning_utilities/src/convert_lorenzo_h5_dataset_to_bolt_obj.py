@@ -230,6 +230,7 @@ def build_feature_objects(bolt_data, output_file, adjective_file, electrode_pca_
         print "Building Train Set"
         pca_dict = extract_features.fit_electrodes_pca(all_bolt_data_adj)
     else:
+        pca_dict = electrode_pca_dict
         print "Building Test Set"
     
     # Load pickle file
