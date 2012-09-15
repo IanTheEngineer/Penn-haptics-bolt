@@ -237,10 +237,13 @@ def main(feature_objects_set_file, pca_file, output_svm_filename, split):
 
     adjective_list = feature_objects_set.keys()
 
-    if split:
-        adjective_run = adjective_list[0:15] 
+    if split == 0:
+        adjective_run = adjective_list[0:10] 
+    elif split == 1:
+        adjective_run = adjective_list[11:20]
     else:
-        adjective_run = adjective_list[16:-1]
+        adjective_run = adjective_list[20:-1]
+
 
     # For each adjective - train a classifier
     for adj in adjective_run:
