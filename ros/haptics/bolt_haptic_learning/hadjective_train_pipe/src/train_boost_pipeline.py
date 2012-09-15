@@ -9,7 +9,6 @@ import cPickle
 import bolt_learning_utilities as utilities
 import extract_features as extract_features
 import matplotlib.pyplot as plt 
-import milk.supervised.adaboost as boost
 
 
 from bolt_feature_obj import BoltFeatureObj
