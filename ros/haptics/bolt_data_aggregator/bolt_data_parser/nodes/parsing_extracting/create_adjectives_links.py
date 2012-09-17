@@ -35,7 +35,11 @@ def main():
         obj_id = splits[-2]
 
         #entry in the table
-        row = table.where('object_id == "%s"' % obj_id).next()
+        try:
+            row = table.where('object_id == "%s"' % obj_id).next()
+        except StopIteration:
+            print "Object id %s does not exist!" % obj_id
+            continue
         adjectives = [n for n in adjective_names if row[n] > 0]
         main_database.createArray(obj,
                                   "adjectives",
