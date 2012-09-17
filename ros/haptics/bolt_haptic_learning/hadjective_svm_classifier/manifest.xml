@@ -1,0 +1,17 @@
+<package>
+  <description brief="hadjective_svm_classifier">
+
+     hadjective_svm_classifier
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hadjective_svm_classifier</url>
+  <depend package="rospy"/>
+  <depend package="bolt_learning_utilities"/>
+  <depend package="std_msgs"/>
+
+</package>
+
+

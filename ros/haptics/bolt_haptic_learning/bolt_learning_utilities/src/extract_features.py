@@ -6,6 +6,7 @@ import pylab
 
 from bolt_pr2_motion_obj import BoltPR2MotionObj
 from bolt_feature_obj import BoltFeatureObj
+from sklearn.decomposition import PCA
 
 #For texture_features
 from scipy.signal import lfilter
@@ -86,7 +87,20 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
     electrode_polyfit = []
     
     num_fingers = len(bolt_pr2_motion_obj.electrodes_normalized)
-    
+        
+    # Compute gripper features
+    end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
+        
+    # Compute transform features
+    distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
+
+    # Append gripper aperture features
+    gripper_min.append(end_gripper)
+    gripper_mean.append(mean_gripper)
+
+    # Append transform features
+    transform_distance.append(distance)
+
     # Loop through each finger and store as a list
     for finger in xrange(num_fingers):
 
@@ -96,12 +110,6 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
         # Compute texture features
         pac_energy_buf, pac_moments_buf = texture_features(bolt_pr2_motion_obj.pac_flat_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
       
-        # Compute gripper features
-        end_gripper, mean_gripper = gripper_features(bolt_pr2_motion_obj.gripper_position, bolt_pr2_motion_obj.pdc_normalized[finger], bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
-
-        # Compute transform features
-        distance = transform_features(bolt_pr2_motion_obj.l_tool_frame_transform_trans)
-
         # Compute electrode features
         polyfit = electrode_features(bolt_pr2_motion_obj.electrodes_normalized[finger], electrode_pca, bolt_pr2_motion_obj.state, bolt_pr2_motion_obj.detailed_state)
 
@@ -119,13 +127,6 @@ def extract_features(bolt_pr2_motion_obj, electrode_pca):
         # Append thermal features
         tac_area.append(tac_area_buf)
         tdc_exp_fit.append(tdc_exp_fit_buf[2])
-
-        # Append gripper aperture features
-        gripper_min.append(end_gripper)
-        gripper_mean.append(mean_gripper)
-
-        # Append transform features
-        transform_distance.append(distance)
 
         # Pull the number of steps of the rising curve
         filtered_pdc = smooth(bolt_pr2_motion_obj.pdc_normalized[finger], window_len=50) 
@@ -287,7 +288,7 @@ def texture_features( pac_flat, controller_state, controller_state_detail):
 
 
 
-def gripper_features( gripper_position, pdc_norm, controller_state, controller_state_detail ):
+def gripper_features( gripper_position, controller_state, controller_state_detail ):
     """
     if controller_state is BoltPR2MotionObj.TAP:
        threshold = 2
@@ -382,5 +383,24 @@ def smooth(x,window_len=11,window='hanning'):
     y=np.convolve(w/w.sum(),s,mode='valid')
     return y
 
+# Fits PCA for electrode training data
+def fit_electrodes_pca(train_data):
+
+    pca_dict = dict()
+    
+    # Fit PCA on all trials, for each motion separately
+    for motion_name in train_data:
+        trial_list = train_data.get(motion_name)
+
+        # Pull out electrode data on both fingers, all trials for one motion
+        electrode_motion_data = np.concatenate((trial_list[0].electrodes_normalized[0],trial_list[0].electrodes_normalized[1]))
+        for trial in range(1,len(trial_list)):
+            electrode_motion_data = np.concatenate((electrode_motion_data,trial_list[trial].electrodes_normalized[0],trial_list[trial].electrodes_normalized[1]))
+       
+
+        # Store PCA by motion
+        pca_dict[motion_name] = PCA(n_components=2).fit(electrode_motion_data)
+
+    return(pca_dict)
 
 

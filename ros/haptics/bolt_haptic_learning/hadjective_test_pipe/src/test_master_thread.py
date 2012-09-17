@@ -16,6 +16,7 @@ import time
 #Import messages
 from biotac_sensors.msg import BioTacHand
 from pr2_gripper_accelerometer.msg import PR2GripperAccelerometerData
+from pr2_arm_state_aggregator.msg import PR2ArmState
 from std_msgs.msg import Int8, String
 
 #Import Bolt Learning Utilities
@@ -66,6 +67,8 @@ class BoltPR2MotionBuf(object):
         self.gripper_effort = []
         self.accelerometer = []
         self.detailed_state = []
+        self.l_tool_frame_transform_rot = []
+        self.l_tool_frame_transform_trans = []
         self.state = BoltPR2MotionBuf.DISABLED
         self.electrodes_mean = defaultdict(list)
         self.pdc_mean = defaultdict(list)
@@ -85,6 +88,9 @@ class BoltPR2MotionBuf(object):
         new_obj.gripper_position = np.array(self.gripper_position)
         new_obj.gripper_effort = np.array(self.gripper_effort)
         new_obj.accelerometer = np.array(self.accelerometer)
+        new_obj.l_tool_frame_transform_trans = np.array(self.l_tool_frame_transform_trans)
+        new_obj.l_tool_frame_transform_rot = np.array(self.l_tool_frame_transform_rot)
+
         new_obj.detailed_state = self.detailed_state
         new_obj.electrodes_mean = [np.array(self.electrodes_mean[self.RIGHT]), np.array(self.electrodes_mean[self.LEFT])]
         new_obj.tdc_mean = [np.array(self.tdc_mean[self.RIGHT]), np.array(self.tdc_mean[self.LEFT])]
@@ -109,6 +115,9 @@ class LanguageTestMainThread:
         self.gripper_effort_buf = 0
         self.accelerometer_buf = 0
         self.detailed_state_buf = ''
+        self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
+        self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
+
         #Create locks for the callbacks - they are all in threads of their own
         self.accel_lock = threading.Lock()
         #self.tf_lock = threading.Lock()
@@ -126,6 +135,12 @@ class LanguageTestMainThread:
                                   BoltPR2MotionBuf.SQUEEZE, BoltPR2MotionBuf.TAP,
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)
 
+    def disabled_clear(self):
+        self.current_motion = BoltPR2MotionBuf()
+        self.last_state = BoltPR2MotionBuf.DISABLED
+        self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
+        self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
+ 
     def reset_run(self):
         self.current_motion = BoltPR2MotionBuf()
         self.last_state = BoltPR2MotionBuf.DISABLED
@@ -135,6 +150,8 @@ class LanguageTestMainThread:
         self.tac_mean_list = defaultdict(list)
         self.pdc_mean_list = defaultdict(list)
         self.pac_mean_list = defaultdict(list)
+        self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
+        self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
 
     def clear_motion(self):
         #Reset current_motion, but populate mean list
@@ -155,8 +172,21 @@ class LanguageTestMainThread:
         rospy.Subscriber('/simple_gripper_controller_state', Int8, self.gripperStateCallback, queue_size=50)
         #Start Detailed Gripper Controller State Subscriber
         rospy.Subscriber('/simple_gripper_controller_state_detailed', String, self.gripperDetailedCallback, queue_size=50)
+        #Start TF Subscriber
+        rospy.Subscriber('/pr2_arm_state', PR2ArmState, self.lArmCallback, queue_size=50)
         #Start Publisher for Learning Algorithms
         self.pub = rospy.Publisher('hadjective_motion_pickle', String)
+
+    def lArmCallback(self, msg):
+        # Store tool_frame transform
+        bool_idx = [(value.child_frame_id == '/l_gripper_tool_frame') for value in msg.transforms]
+        tool_frame_idx = bool_idx.index(True)
+        # Store l_tool_frame information
+        if msg.transforms[tool_frame_idx].transform_valid:
+            l_tool_tf = msg.transforms[tool_frame_idx].transform
+            # Store information
+            self.l_tool_tf_trans_buf = (l_tool_tf.translation.x, l_tool_tf.translation.y, l_tool_tf.translation.z)
+            self.l_tool_tf_rot_buf = (l_tool_tf.rotation.x, l_tool_tf.rotation.y, l_tool_tf.rotation.z, l_tool_tf.rotation.w)
 
     def accelerometerCallback(self, msg):
         self.accel_downsample_counter = self.accel_downsample_counter + 1    
@@ -213,6 +243,8 @@ class LanguageTestMainThread:
                 self.current_motion.electrodes[finger_index].append( msg.bt_data[finger_index].electrode_data)
             
             self.current_motion.detailed_state.append(self.detailed_state_buf)
+            self.current_motion.l_tool_frame_transform_trans.append(self.l_tool_tf_trans_buf)
+            self.current_motion.l_tool_frame_transform_rot.append(self.l_tool_tf_rot_buf)
             #A lock is necessary here to ensure all accelerometer reading and gripper readings are simultaneous 
             self.accel_lock.acquire()
             self.current_motion.accelerometer.append(self.accelerometer_buf)
@@ -272,6 +304,10 @@ def main(argv):
         elif main_thread.last_state is not main_thread.current_motion.state:
             #Simply update the last state
             main_thread.last_state = main_thread.current_motion.state
+        elif main_thread.current_motion.state is BoltPR2MotionBuf.DISABLED:
+            #Simply update the last state
+            main_thread.disabled_clear()
+
         #Release Lock
         main_thread.state_lock.release()
     
