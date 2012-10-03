@@ -141,7 +141,132 @@ def normalize_data(bolt_obj, discard_raw_flag = True):
         del bolt_obj.tac[:]
         del bolt_obj.pac_flat[:]
 
+# Create Bolt Feature Object Dataset
+def bolt_motion_obj_set_2_feature_obj_set(all_bolt_data, electrode_pca_dict):
+
+    """ 
+
+    For each object - pull out features and store in feature_obj
+    with the same structure as all_bolt_data
+   
+        Dictionary - "tap", "slide", "slow_slide", 
+                     "thermal_hold", "squeeze"
+
+    """
+
+    # Store in feature class object
+    all_features_obj_dict = dict();
+
+    for motion_name in all_bolt_data:
+        trial_list = all_bolt_data.get(motion_name)
+        print motion_name
+
+        feature_list = list()
+        # For all objects
+        for trial in trial_list:
+
+            bolt_feature_obj = extract_features.extract_features(trial, electrode_pca_dict[motion_name])
+
+            feature_list.append(bolt_feature_obj)
+
+        # Store all of the objects away
+        all_features_obj_dict[motion_name] = feature_list
+
+    return all_features_obj_dict
+
+# Works across an entire set of bolt feature objects
+def bolt_feature_obj_2_feature_vector(all_features_obj_dict, feature_name_list):
+    """
+    For each object - pull out features and store in feature_obj
+    with the same structure as all_bolt_data
+   
+        Dictionary - "tap", "slide", "slow_slide", 
+                     "thermal_hold", "squeeze"
+
+    Directly store the features into a vector
+    See createFeatureVector for more details on structure
+
+    """
+
+    # Store in feature class object
+    all_features_vector_dict = dict()
+
+    # For all motions
+    for motion_name in all_features_obj_dict:
+
+        feature_obj_list = all_features_obj_dict.get(motion_name)
+
+        all_adjective_labels_dict = dict()
+        feature_vector_list = list()
+        feature_label_list = list()
+
+        # For all objects
+        for bolt_feature_obj in feature_obj_list:
+
+            # Create feature vector
+            feature_vector, object_id = createFeatureVector(bolt_feature_obj, feature_name_list)
+            feature_vector_list.append(feature_vector)
+            feature_label_list.append(object_id)
+
+            # Create label dictionary
+            labels = bolt_feature_obj.labels
+            for adjective in labels:
+                # Check if it is the first time adjective added
+                if (all_adjective_labels_dict.has_key(adjective)):
+                    adjective_array = all_adjective_labels_dict[adjective]
+                else:
+                    adjective_array = list()
+
+                # Store array
+                adjective_array.append(labels[adjective])
+                all_adjective_labels_dict[adjective] = adjective_array
+
+        # Store all of the objects away
+        all_features_vector_dict[motion_name] = (np.array(feature_vector_list), feature_label_list)
+
+    return (all_features_vector_dict, all_adjective_labels_dict)
+
+# Works across an entire set of bolt feature objects
+def feature_obj_2_feature_vector(feature_obj_list, feature_name_list):
+    """
+    For each object - pull out features and store in feature_obj
+    with the same structure as all_bolt_data
+  
+    Just takes in a list of bolt objects and returns an array of
+    features and dictionary of adjectives
     
+    Directly store the features into a vector
+    See createFeatureVector for more details on structure
+
+    """
+    
+    all_adjective_labels_dict = dict()
+    feature_vector_list = list()
+    feature_label_list = list()
+
+    # For all objects
+    for bolt_feature_obj in feature_obj_list:
+
+        # Create feature vector
+        feature_vector, object_id = createFeatureVector(bolt_feature_obj, feature_name_list)
+        feature_vector_list.append(feature_vector)
+        feature_label_list.append(object_id)
+
+        # Create label dictionary
+        labels = bolt_feature_obj.labels
+        for adjective in labels:
+            # Check if it is the first time adjective added
+            if (all_adjective_labels_dict.has_key(adjective)):
+                adjective_array = all_adjective_labels_dict[adjective]
+            else:
+                adjective_array = list()
+
+            # Store array
+            adjective_array.append(labels[adjective])
+            all_adjective_labels_dict[adjective] = adjective_array
+
+    return (np.array(feature_vector_list), (feature_label_list, all_adjective_labels_dict)) 
+
 # Pull from the BoltFeatureObj and return a vector of features and labels
 def createFeatureVector(bolt_feature_obj, feature_list):
     """ 
@@ -174,7 +299,7 @@ def createFeatureVector(bolt_feature_obj, feature_list):
         else:
             all_feature_vector += feature_vector
 
-    return np.array(all_feature_vector)
+    return (np.array(all_feature_vector), bolt_feature_obj.object_id)
 
 # Function to split the data
 def split_data(all_bolt_data, train_size):
@@ -262,7 +387,7 @@ def compute_statistics(predicted_label, truth_label):
     # a false positive
     num_objects_wrong = float(np.shape(np.nonzero(label_sub == 1)[0])[0])
 
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     # Calculate precision
     precision = (num_objects_found-num_objects_wrong)/num_objects_found
 
@@ -274,7 +399,22 @@ def compute_statistics(predicted_label, truth_label):
 
     return precision, recall, f1
 
+# Statistics for a single SVM
+def compute_one_svm_statitics(svm, test_vector, test_labels):
+    ''' 
+    Computes the scores for the given SVM and test set
+    '''
  
+    # Store scores from the 
+    score = f1_score(test_labels, svm.predict(test_vector_scaled))
+    proba = svm.predict_proba(test_vector_scaled)
+    report = classification_report(test_labels, svm.predict(test_vector_scaled))
+        
+    return (score, proba, report)
+
+
+
+
 # Create a function that given a classifier and a test
 # vector, will predict the labels
 def compute_adjective_probability_score(adj_classifiers, test_feature_obj, feature_list, adj_name, scaler_dict):
@@ -308,12 +448,12 @@ def compute_adjective_probability_score(adj_classifiers, test_feature_obj, featu
 
     # Take the test feature objects and convert into a feature vector based on
     # the passed in list
-    test_vector = createFeatureVector(test_feature_obj, feature_list)
+    test_vector,obj_id = createFeatureVector(test_feature_obj, feature_list)
 
     # Scale the test_vector
     test_vector_scaled = scaler.transform(test_vector)
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     # Grab the probability of the adjective being TRUE (1)  This is the second value returned
     # from the svm
     prob_score = classifier.predict_proba(test_vector_scaled)[0][1]
