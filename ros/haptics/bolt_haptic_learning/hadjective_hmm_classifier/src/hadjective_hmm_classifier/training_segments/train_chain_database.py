@@ -12,12 +12,16 @@ import multiprocessing
 import tables
 
 def train_and_save(parameters, dataset, filename):
+    """Creates a HMMChain and, loads its parameters, trains it on dataset and
+    saves the results in filename.    
+    """
+    
     chain = hmm_chain.HMMChain()
     chain.set_params(**parameters)
     chain.my_class = None
     chain.other_classes = None
     
-    dataset, _, _ = create_dataset_crossvalidation(dataset)
+    dataset, _, _ = create_dataset_crossvalidation(dataset)    
     chain.fit(dataset)
 
     score = chain.score(dataset)
@@ -37,6 +41,13 @@ def train_and_save(parameters, dataset, filename):
 
 
 def train_dataset(dataset):
+    """Uses cross validation to train a HMM chain. Returns the parameters for 
+    that yield the best result.
+    
+    CHANGE THE PARAMETERS HERE TO USE A SUITABLE RANGE, THESE ARE ONLY HERE FOR
+    TESTING!
+    """
+    
     dataset, train_indexes, test_indexes = create_dataset_crossvalidation(dataset)
     cv = [(train_indexes, test_indexes)]
     
@@ -72,6 +83,9 @@ def train_dataset(dataset):
     return grid.best_params_
 
 def create_dataset_crossvalidation(dataset):
+    """Uses a nicely organized h5 file to return train and test sets in a way
+    that can be used with GridSearch."""
+    
     train, test = dataset
     train_indexes = range(len(train))
     test_indexes = range(len(train), len(train) + len(test))
@@ -80,6 +94,9 @@ def create_dataset_crossvalidation(dataset):
             test_indexes)
 
 def load_dataset(database, adjective, phase, sensor):
+    """Loads the data from a dataset corresponding to an adjective, phase and
+    sensor."""
+    
     if adjective not in adjectives:
         raise ValueError("%s is not a known adjective" % adjective)
     if phase not in phases:
@@ -97,6 +114,8 @@ def load_dataset(database, adjective, phase, sensor):
     return train_set, test_set
 
 def train_single_dataset(database, path, adjective, phase, sensor):
+    """Trains a HMM on single segment, i.e. one adjective, one phase and one
+    sensor."""
     
     chain_file_name = "_".join(("chain", adjective, phase, sensor)) + ".pkl"
     newpath = os.path.join(path, "chains")

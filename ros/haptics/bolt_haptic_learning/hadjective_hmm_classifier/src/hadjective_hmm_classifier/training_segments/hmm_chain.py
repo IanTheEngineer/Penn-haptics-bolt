@@ -17,6 +17,11 @@ import os
 import cPickle
 
 class HMMChain(BaseEstimator, TransformerMixin):
+    """This chain contains the steps for preprocessing and probability estimation
+    of the adjectives. It behaves like an Estimator and Transformer. The parameters
+    are passed to the constructor.
+    """
+    
     def __init__(self,
                  n_pca_components = 1,
                  n_hidden_components = 1,
