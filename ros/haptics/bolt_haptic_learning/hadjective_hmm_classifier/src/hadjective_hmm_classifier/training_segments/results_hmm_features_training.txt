@@ -1,0 +1,78 @@
+Training classifier thin
+Training classifier hairy
+Training classifier hard
+Training classifier hollow
+Training classifier thick
+Training classifier elastic
+Training classifier fuzzy
+Training classifier scratchy
+Training score: 1.000000, testing score: 1.000000
+Training classifier deformable
+Training score: 1.000000, testing score: 0.812500
+Training classifier cool
+Training score: 1.000000, testing score: 0.875000
+[Parallel(n_jobs=8)]: Done   4 out of  34 | elapsed:  3.3min remaining: 24.4min
+Training classifier unpleasant
+Training score: 1.000000, testing score: 0.937500
+[Parallel(n_jobs=8)]: Done   1 out of  34 | elapsed:  4.9min remaining: 162.5min
+Training classifier metallic
+Training score: 1.000000, testing score: 0.937500
+Training classifier compressible
+Training score: 1.000000, testing score: 0.937500
+[Parallel(n_jobs=8)]: Done  12 out of  34 | elapsed:  7.2min remaining: 13.1min
+Training classifier squishy
+Training score: 1.000000, testing score: 0.937500
+Training classifier compact
+Training score: 1.000000, testing score: 0.812500
+Training classifier plasticky
+Training score: 1.000000, testing score: 1.000000
+Training classifier sticky
+Training score: 1.000000, testing score: 1.000000
+Training classifier rough
+Training score: 1.000000, testing score: 0.687500
+Training classifier smooth
+Training score: 1.000000, testing score: 1.000000
+Training classifier slippery
+Training score: 1.000000, testing score: 0.625000
+Training classifier absorbant
+Training score: 1.000000, testing score: 0.812500
+[Parallel(n_jobs=8)]: Done  16 out of  34 | elapsed: 17.8min remaining: 20.0min
+Training classifier solid
+Training score: 0.982692, testing score: 0.625000
+Training classifier fibrous
+Training score: 1.000000, testing score: 0.937500
+Training classifier nice
+Training score: 1.000000, testing score: 0.625000
+Training classifier soft
+Training score: 0.950000, testing score: 0.625000
+[Parallel(n_jobs=8)]: Done   8 out of  34 | elapsed: 24.0min remaining: 77.9min
+Training classifier grainy
+Training score: 0.934615, testing score: 0.687500
+Training classifier meshy
+Training score: 1.000000, testing score: 1.000000
+Training classifier gritty
+Training score: 1.000000, testing score: 1.000000
+Training classifier bumpy
+Training score: 1.000000, testing score: 1.000000
+Training classifier porous
+Training score: 0.900000, testing score: 0.500000
+Training classifier stiff
+Training score: 1.000000, testing score: 0.875000
+Training classifier textured
+Training score: 0.996154, testing score: 0.937500
+Training classifier crinkly
+Training score: 0.959615, testing score: 0.625000
+[Parallel(n_jobs=8)]: Done  20 out of  34 | elapsed: 29.7min remaining: 20.8min
+Training classifier springy
+Training score: 1.000000, testing score: 1.000000
+[Parallel(n_jobs=8)]: Done  28 out of  34 | elapsed: 30.1min remaining:  6.4min
+Training score: 1.000000, testing score: 0.875000
+Training score: 1.000000, testing score: 0.875000
+Training score: 1.000000, testing score: 0.875000
+Training score: 1.000000, testing score: 1.000000
+[Parallel(n_jobs=8)]: Done  24 out of  34 | elapsed: 33.0min remaining: 13.8min
+Training score: 0.990385, testing score: 0.937500
+[Parallel(n_jobs=8)]: Done  32 out of  34 | elapsed: 34.6min remaining:  2.2min
+Training score: 1.000000, testing score: 0.750000
+Training score: 0.951923, testing score: 0.562500
+[Parallel(n_jobs=8)]: Done  34 out of  34 | elapsed: 41.4min finished 
