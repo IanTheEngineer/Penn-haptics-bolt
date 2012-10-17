@@ -63,4 +63,3 @@ if __name__ == "__main__":
     db, base_dir, n_jobs = sys.argv[1:]
     n_jobs = int(n_jobs)
     main(db, base_dir, n_jobs)
-
