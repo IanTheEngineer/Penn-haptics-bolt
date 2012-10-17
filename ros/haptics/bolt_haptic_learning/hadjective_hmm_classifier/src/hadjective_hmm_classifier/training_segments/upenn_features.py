@@ -15,7 +15,7 @@ def pdc_features(pdc_data):
     area = np.trapz(pdc_data, axis = 0)
     pdc_max = np.max(pdc_data, axis = 0)
 
-    return (area, pdc_max)
+    return np.hstack((area, pdc_max))
 
 def pac_features( pac):
     """
@@ -129,7 +129,7 @@ def tac_features(tac_norm):
 
 
 # Function to extract features from electrode data of a BoltPR2MotionObj
-def electrode_features(electrodes, pca = None):
+def electrodes_features(electrodes, pca = None):
     """
     INPUTS: electrodes - normalized electrodes vector from BoltPR2MotionObj
     
@@ -164,3 +164,19 @@ def electrode_features(electrodes, pca = None):
         polyfit = np.concatenate((polyfit,p_opt),1)
 
     return (polyfit)
+
+def get_all_features(sensors_dict):
+    """Gets all the features from a dictionary with the data organized per sensor.
+    Sensors are strings.
+    
+    Parameters:
+    sensors_dict: a dictionary with keys; (pac, pdc, tac, electrodes) and values
+    the corresponing arrays. Note that 2 fingers are assumed (organized per column).
+    """
+    
+    pdc = pdc_features(sensors_dict['pdc'])
+    pac = pac_features(sensors_dict['pac'])
+    tac = tac_features(sensors_dict['tac'])
+    electrodes = electrodes_features(sensors_dict['electrodes'])
+    
+    return np.hstack( (pdc, pac, tac, electrodes) )
