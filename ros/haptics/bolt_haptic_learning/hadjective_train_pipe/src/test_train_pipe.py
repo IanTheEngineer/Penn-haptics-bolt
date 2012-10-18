@@ -32,7 +32,7 @@ from sklearn.decomposition import PCA
 
 
 # Function to start testing each classifier against a test set
-def test_adj_motion_classifier(classifier_dict, adjective_name, test_feature_objs, feature_list, scaler_dict):
+def test_adj_motion_classifier(classifier_dict, adjective_name, test_feature_objs, feature_list, scaler_dict, classifier_text_report):
     '''
     Pass in the trained adjective classifiers that are motion specific and return the results
     of the motion adjectives compared to the test set
@@ -42,7 +42,9 @@ def test_adj_motion_classifier(classifier_dict, adjective_name, test_feature_obj
     object_run_probability = dict()
     object_run_scores = dict()
     object_run_prediction = dict()
+
     
+
     # for each motion
     for motion in test_feature_objs:
         results = []
@@ -51,6 +53,7 @@ def test_adj_motion_classifier(classifier_dict, adjective_name, test_feature_obj
         object_run_probability[motion] = []
 
         for test_obj in motion_test_obj_list:
+            # import pdb; pdb.set_trace()
             if test_obj.labels == None:
                 prediction, probability = utilities.compute_adjective_probability_score(classifier_dict, test_obj, feature_list, adjective_name, scaler_dict)
             else:
@@ -63,11 +66,14 @@ def test_adj_motion_classifier(classifier_dict, adjective_name, test_feature_obj
 
         print "Motion is: %s" % motion
         if len(results) > 0: 
-            print "f1 score is %s" %classification_report(truth_vector, results)
-            
+            #print "f1 score is %s" %classification_report(truth_vector, results)
+            classifier_text_report.write("Adjective: " + adjective_name+ "\nMotion: " + motion+"\n") 
+            classifier_text_report.write(classification_report(truth_vector, results)+ "\n")
+
             # Store the scores
             object_run_scores[motion] = (recall_score(truth_vector, results))
-
+    
+    # import pdb; pdb.set_trace()
     # Return the % of motions in a n x 5 vector (5 motions)
     probability_feature_vector = [] 
     for val in xrange(len(object_run_probability[motion])):
@@ -78,10 +84,10 @@ def test_adj_motion_classifier(classifier_dict, adjective_name, test_feature_obj
 
         probability_feature_vector.append(one_run_vector)
 
-    return (np.array(probability_feature_vector), object_run_scores, object_run_prediction)
+    return (np.array(probability_feature_vector), object_run_scores, object_run_prediction, truth_vector)
 
 # MAIN FUNCTION
-def main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl):
+def main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl, final_classifier_pkl):
     
     # Load data into pipeline
     print "Loading data from file"
@@ -93,20 +99,29 @@ def main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_f
     file_ptr = open(ensemble_test_feature_pkl)
     ensemble_feature_dict = cPickle.load(file_ptr)
 
+    classifier_text_report = open("all_classifier_report_svm.txt", "w")
+    final_classification_text_report = open("final_classifier_report_svm.txt", "w")
+
     feature_name_list = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
+    
+    if final_classifier_pkl != None:
+        file_ptr = open(final_classifier_pkl)
+        final_classifiers_dict = cPickle.load(file_ptr)
+
+
     if all_classifiers_pkl == None:
         file_ptr = open(classifiers_pkl)
         classifiers_dict = cPickle.load(file_ptr)
 
         # Parse the adjective classifier name being tested
         adjective_name = classifiers_pkl.split('/')[-1].split('_')[0]
-        test_adj_motion_classifier(classifiers_dict, adjective_name, ensemble_feature_dict, feature_name_list, scaler_dict) 
+        test_adj_motion_classifier(classifiers_dict, adjective_name, test_feature_dict, feature_name_list, scaler_dict) 
     else:
         file_ptr = open(all_classifiers_pkl)
         classifiers_dict = cPickle.load(file_ptr)
-
         # Get the name of the classifier
-        classifier_name = all_classifiers_pkl.split('_')[1]
+        #classifier_name = all_classifiers_pkl.split('_')[1]
+        classifier_name = "svm"
 
         # Open up text file to store best 
         report_best_classifier = open("best_classifier_report_" + classifier_name+ ".txt", "w")
@@ -115,10 +130,12 @@ def main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_f
         best_classifiers = dict()
         report_best_classifier.write('Adjective'+','+'tap'+','+'squeeze'+','+'thermal_hold'+','+'slide'','+'slide_fast,'+'best_motion'+'\n')
         results_prediction = dict()
-        # Go through all of the adjective classifiers 
+       
+       # Go through all of the adjective classifiers 
         for adj in classifiers_dict:
            # Test the adjective scores 
-           probility_vector, motion_scores, prediction = test_adj_motion_classifier(classifiers_dict[adj], adj, ensemble_feature_dict, feature_name_list, scaler_dict)
+           probability_vector, motion_scores, prediction, truth_vector = test_adj_motion_classifier(classifiers_dict[adj], adj, test_feature_dict, feature_name_list, scaler_dict, classifier_text_report)
+      
            # Compute the best scores
            best_motion, best_score = utilities.get_best_motion(motion_scores)
            #report_best_classifier.write('Adjective: '+adj)
@@ -128,11 +145,19 @@ def main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_f
            results_prediction[adj] = prediction[best_motion]
 
            best_classifiers[adj] = (classifiers_dict[adj][best_motion], best_motion)
+            
+           # Test the final paper
+           #import pdb; pdb.set_trace()
+           #final_results = final_classifiers_dict[adj].predict(probability_vector)
+           #final_score = f1_score(truth_vector,final_results)
+           #print final_score
 
+        classifier_text_report.close()
+  
         # Store the pickle file
         cPickle.dump(best_classifiers, open("best_classifiers_"+classifier_name+".pkl", "w"))
         report_best_classifier.close()
-        print results_prediction
+        #print results_prediction
 
 # Parse the command line arguments
 def parse_arguments():
@@ -143,11 +168,13 @@ def parse_arguments():
     (input_file, adjective_file, range)
     """
     parser = OptionParser()
+    parser.add_option("-f", "--final_classifier", action="store", type="string", dest = "final_classifiers")
     parser.add_option("-c", "--classifier_file", action="store", type="string", dest = "classifiers")
     parser.add_option("-a", "--all_classifier_file", action="store", type="string", dest = "all_classifiers")
     parser.add_option("-t", "--input_test_feature_pkl", action="store", type="string", dest = "in_test_feature_pkl", default = None) 
     parser.add_option("-e", "--input_ensemble_test_feature_pkl", action="store", type="string", dest = "in_ensemble_test_feature_pkl", default = None) 
     parser.add_option("-s", "--input_scale_pkl", action="store", type="string", dest = "in_scale_pkl", default = None) 
+    
 
     (options, args) = parser.parse_args()
   
@@ -156,10 +183,11 @@ def parse_arguments():
     test_feature_pkl = options.in_test_feature_pkl
     ensemble_test_feature_pkl = options.in_ensemble_test_feature_pkl
     scaler_pkl = options.in_scale_pkl
+    final_classifier_pkl = options.final_classifiers
 
-    return classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl
+    return classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl, final_classifier_pkl
 
 if __name__ == "__main__":
-    classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl = parse_arguments()
-    main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl)
+    classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl, final_classifier_pkl = parse_arguments()
+    main(classifiers_pkl, all_classifiers_pkl, test_feature_pkl, ensemble_test_feature_pkl, scaler_pkl, final_classifier_pkl)
 
