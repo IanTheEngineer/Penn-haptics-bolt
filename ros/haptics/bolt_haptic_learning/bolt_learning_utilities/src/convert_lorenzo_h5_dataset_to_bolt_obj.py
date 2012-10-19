@@ -111,9 +111,11 @@ def load_data(input_filename, output_filename, adjective_filename, save_to_file,
             print np.unique(adjective_set['train'])
             print np.unique(adjective_set['test'])
 
+            adjective_set['train'] =np.unique(adjective_set['train'])
+            adjective_set['test'] = np.unique(adjective_set['test'])
             # Merge train and test sets
-            adjective_set['train'] = np.concatenate((np.unique(adjective_set['train']), np.array(train_obj_neg_set)),axis=1)
-            adjective_set['test'] = np.concatenate((np.unique(adjective_set['test']), np.array(test_obj_neg_set)),axis=1)
+            #adjective_set['train'] = np.concatenate((np.unique(adjective_set['train']), np.array(train_obj_neg_set)),axis=1)
+            #adjective_set['test'] = np.concatenate((np.unique(adjective_set['test']), np.array(test_obj_neg_set)),axis=1)
 
             if (save_to_file):
 
