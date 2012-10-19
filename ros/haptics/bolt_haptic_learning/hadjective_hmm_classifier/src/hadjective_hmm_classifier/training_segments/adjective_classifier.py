@@ -11,7 +11,6 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import f1_score
 from sklearn import cross_validation
 
-
 class AdjectiveClassifier(ClassifierMixin):
     def __init__(self, adjective, base_directory = None):
         super(AdjectiveClassifier, self).__init__()
@@ -24,6 +23,9 @@ class AdjectiveClassifier(ClassifierMixin):
         self.svc = None
         self.labels = None
         self.features = None
+        
+        self.test_labels = None
+        self.test_features = None
         
     def load_directory(self, base_directory):
         for f in os.listdir(base_directory):
@@ -199,7 +201,55 @@ class AdjectiveClassifier(ClassifierMixin):
                                                             score_testing)
         
         return self
+
+    def train_gridsearch(self, n_jobs = 1,
+                         verbose = 0,
+                         score_fun = None,
+                         ):
         
+        train_X, train_Y = self.features, self.labels
+        test_X, test_Y = self.test_features, self.test_labels 
+        if score_fun is None:
+            score_fun = f1_score
+       
+        train_indexes = range(len(train_X))
+        test_indexes = range(len(train_X), len(train_X) + len(test_X))
+        dataset = np.vstack((train_X, test_X))
+        ys = np.hstack((train_Y, test_Y))
+        
+        cv = [(train_indexes, test_indexes)]
+        params = {'C': np.linspace(1,1e6,1000), 
+                  'penalty':('l1', 'l2'), 
+                  }
+        clf = LinearSVC(dual=False)
+        
+        grid = GridSearchCV(clf, params, cv=cv, 
+                            verbose=verbose,
+                            n_jobs=n_jobs,
+                            refit = False)
+        grid.fit(dataset, ys)
+
+        print "Found the best parameters, training with them"
+        self.svc = LinearSVC(dual=False)
+        self.svc.set_params(**grid.best_params_)
+        score = self.svc.fit(train_X, train_Y).score(test_X, test_Y)
+        
+        print "Adjective %s, Params: %s, Best score over SEPARATE TEST SET: %f" % (self.adjective,
+                                                            grid.best_params_,
+                                                            score,
+                                                            )
+        return self
+    
+    def load_test_test(self, database):
+        if hasattr(self, 'test_features') and self.test_features is not None:
+            print "Adjective %s already has test features!" % self.adjective
+        else:
+            self.test_features, self.test_labels = self.create_features_set(database, 
+                                                                        store=False
+                                                                        )
+        return self
+    
+    
 def return_n_more_likely_adjectives(adjectives, X, n):
     """Returns the n adjectives with highest probability. The probability
     is calculated as the sum of all the features.
