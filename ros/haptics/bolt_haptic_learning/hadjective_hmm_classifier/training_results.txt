@@ -1,0 +1,112 @@
+Doing whole training
+Training classifier hairy
+Found the best parameters, training with them
+Adjective hairy, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+[Parallel(n_jobs=1)]: Done   1 jobs       | elapsed:   38.9s
+Training classifier thin
+Found the best parameters, training with them
+Adjective thin, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.687500
+[Parallel(n_jobs=1)]: Done   2 jobs       | elapsed:  2.4min
+Training classifier scratchy
+Found the best parameters, training with them
+Adjective scratchy, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier hard
+Found the best parameters, training with them
+Adjective hard, Params: {'penalty': 'l2', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.937500
+Training classifier thick
+Found the best parameters, training with them
+Adjective thick, Params: {'penalty': 'l1', 'C': 1002.0}, Best score over SEPARATE TEST SET: 0.937500
+[Parallel(n_jobs=1)]: Done   5 jobs       | elapsed:  4.1min
+Training classifier hollow
+Found the best parameters, training with them
+Adjective hollow, Params: {'penalty': 'l2', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.875000
+Training classifier elastic
+Found the best parameters, training with them
+Adjective elastic, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier fuzzy
+Found the best parameters, training with them
+Adjective fuzzy, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.875000
+[Parallel(n_jobs=1)]: Done   8 jobs       | elapsed:  6.5min
+Training classifier deformable
+Found the best parameters, training with them
+Adjective deformable, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier cool
+Found the best parameters, training with them
+Adjective cool, Params: {'penalty': 'l1', 'C': 1002.0}, Best score over SEPARATE TEST SET: 0.750000
+Training classifier unpleasant
+Found the best parameters, training with them
+Adjective unpleasant, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier metallic
+Found the best parameters, training with them
+Adjective metallic, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier compressible
+Found the best parameters, training with them
+Adjective compressible, Params: {'penalty': 'l2', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.812500
+[Parallel(n_jobs=1)]: Done  13 jobs       | elapsed: 10.4min
+Training classifier squishy
+Found the best parameters, training with them
+Adjective squishy, Params: {'penalty': 'l2', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier compact
+Found the best parameters, training with them
+Adjective compact, Params: {'penalty': 'l1', 'C': 6007.0}, Best score over SEPARATE TEST SET: 0.687500
+Training classifier plasticky
+Found the best parameters, training with them
+Adjective plasticky, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier sticky
+Found the best parameters, training with them
+Adjective sticky, Params: {'penalty': 'l1', 'C': 5006.0}, Best score over SEPARATE TEST SET: 0.625000
+Training classifier rough
+Found the best parameters, training with them
+Adjective rough, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+[Parallel(n_jobs=1)]: Done  18 jobs       | elapsed: 20.3min
+Training classifier smooth
+Found the best parameters, training with them
+Adjective smooth, Params: {'penalty': 'l2', 'C': 796797.0}, Best score over SEPARATE TEST SET: 0.625000
+Training classifier slippery
+Found the best parameters, training with them
+Adjective slippery, Params: {'penalty': 'l2', 'C': 1002.0}, Best score over SEPARATE TEST SET: 0.812500
+Training classifier absorbant
+Found the best parameters, training with them
+Adjective absorbant, Params: {'penalty': 'l1', 'C': 5006.0}, Best score over SEPARATE TEST SET: 0.937500
+Training classifier solid
+Found the best parameters, training with them
+Adjective solid, Params: {'penalty': 'l1', 'C': 12013.0}, Best score over SEPARATE TEST SET: 0.687500
+Training classifier fibrous
+Found the best parameters, training with them
+Adjective fibrous, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier nice
+Found the best parameters, training with them
+Adjective nice, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier soft
+Found the best parameters, training with them
+Adjective soft, Params: {'penalty': 'l1', 'C': 2003.0}, Best score over SEPARATE TEST SET: 1.000000
+[Parallel(n_jobs=1)]: Done  25 jobs       | elapsed: 32.8min
+Training classifier grainy
+Found the best parameters, training with them
+Adjective grainy, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier meshy
+Found the best parameters, training with them
+Adjective meshy, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier gritty
+Found the best parameters, training with them
+Adjective gritty, Params: {'penalty': 'l1', 'C': 18019.0}, Best score over SEPARATE TEST SET: 0.937500
+Training classifier bumpy
+Found the best parameters, training with them
+Adjective bumpy, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.875000
+Training classifier porous
+Found the best parameters, training with them
+Adjective porous, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier stiff
+Found the best parameters, training with them
+Adjective stiff, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+Training classifier textured
+Found the best parameters, training with them
+Adjective textured, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 1.000000
+[Parallel(n_jobs=1)]: Done  32 jobs       | elapsed: 35.1min
+Training classifier crinkly
+Found the best parameters, training with them
+Adjective crinkly, Params: {'penalty': 'l1', 'C': 1.0}, Best score over SEPARATE TEST SET: 0.875000
+Training classifier springy
+Found the best parameters, training with them
+Adjective springy, Params: {'penalty': 'l1', 'C': 32033.0}, Best score over SEPARATE TEST SET: 0.875000
+[Parallel(n_jobs=1)]: Done  34 out of  34 | elapsed: 36.3min finished
