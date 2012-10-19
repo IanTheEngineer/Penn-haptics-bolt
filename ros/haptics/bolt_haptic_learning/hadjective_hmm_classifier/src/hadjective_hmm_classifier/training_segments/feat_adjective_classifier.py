@@ -66,9 +66,12 @@ def test_adjective(adjective, chains_path, adjectives_path):
 
 def create_clf(a, chains_directory, adjectives_directory, h5_db):
     print "Creating classifier for adjective ", a
-    clf = FeaturesAdjectiveClassifier(a, chains_directory)
-    clf.create_features_set(h5_db, store=True, verbose=False)
+    clf = FeaturesAdjectiveClassifier(a, 
+                                      base_directory=chains_directory)
+
+    assert all(l == 4 for l in (len(v) for v in clf.chains.itervalues()))
     
+    clf.create_features_set(h5_db, store=True, verbose=False)    
     classifier_file = os.path.join(adjectives_directory, 
                                    clf.adjective + ".pkl")
     print "Saving file: ", classifier_file

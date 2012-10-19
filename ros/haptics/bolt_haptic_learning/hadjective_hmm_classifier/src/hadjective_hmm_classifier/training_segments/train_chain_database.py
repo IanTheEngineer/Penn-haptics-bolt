@@ -41,7 +41,7 @@ def train_and_save(parameters, dataset, filename):
 
 
 def train_dataset(dataset):
-    """Uses cross validation to train a HMM chain. Returns the parameters for 
+    """Uses cross validation to train a HMM chain. Returns the parameters 
     that yield the best result.
     
     CHANGE THE PARAMETERS HERE TO USE A SUITABLE RANGE, THESE ARE ONLY HERE FOR
