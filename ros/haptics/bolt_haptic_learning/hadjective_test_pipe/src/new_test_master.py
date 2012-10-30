@@ -1,4 +1,39 @@
 #!/usr/bin/env python
+# Copyright (c) 2012, University of Pennsylvania
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the University of Pennsylvania nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+#Author: Ian McMahon
+
+'''Summary: This node gathers data from the BioTac Sensors, PR2 arm joints, 
+gripper accelerometers, transforms, and BOLT controller states,
+packages them nicely as a pickled class and at the end of every motion, 
+sends that data out over the topic new_hadjective_motion_pickle for
+classifiers to receive'''
+
 
 #Import ROS essentials
 import roslib; roslib.load_manifest('hadjective_test_pipe')
@@ -21,10 +56,9 @@ from std_msgs.msg import Int8, String
 
 #Import Bolt Learning Utilities
 from bolt_pr2_motion_obj import BoltPR2MotionObj
-#import bolt_learning_utilities
 
-#FIXME: Maybe a global lock on the publisher? We don't want pickle files colliding...
-#NOTE: So long as the motions finish > 0.2 seconds apart, theres really no collision issue.
+#Maybe a global lock on the publisher? We don't want pickle files colliding...
+#NOTE: In practice every motion finishes > 0.2 seconds apart, so there's no collision issue.
 def processMotion(task_queue, result_queue):
     #Start Publisher for Learning Algorithms
     name = multiprocessing.current_process().name
@@ -34,18 +68,18 @@ def processMotion(task_queue, result_queue):
     current_motion = task_queue.get()
     # Convert the buffer received into BoltPR2MotionObj
     current_obj = current_motion.convertToBoltPR2MotionObj()
-    #Normalize and clean current object
-    #bolt_learning_utilities.normalize_data(current_obj, False)
     #Pickle & Publish
-    #print current_obj.pac_mean[0]
     pickle_string = cPickle.dumps(current_obj, protocol=cPickle.HIGHEST_PROTOCOL)
     pub.publish(pickle_string)   
     #print pickle_string
-   
     result_queue.put("Process %s Complete!" % name)
     print name, 'Finished at time %f' % time.time()
 
 class BoltPR2MotionBuf(object):
+    #A buffer meant solely for this file, to convert to and play nice with Vivian's BoltPR2MotionObj()
+    #This is because: np.array() creation takes non-trivial time, and should only be 
+    #computed once in each process that is about to publish a BoltPR2MotionObj() pkl file
+    #Set up all the Constants
     DISABLED = BoltPR2MotionObj.DISABLED 
     THERMAL_HOLD = BoltPR2MotionObj.THERMAL_HOLD
     SLIDE = BoltPR2MotionObj.SLIDE 
@@ -58,6 +92,7 @@ class BoltPR2MotionBuf(object):
     LEFT = BoltPR2MotionObj.LEFT
 
     def __init__(self):
+        #Initialize all lists / Dictionaries storing data to be empty
         self.electrodes = defaultdict(list)
         self.tdc = defaultdict(list)
         self.tac = defaultdict(list)
@@ -78,6 +113,8 @@ class BoltPR2MotionBuf(object):
         self.tac_mean = defaultdict(list)
 
     def convertToBoltPR2MotionObj(self):
+        #This is where the magic happens:
+        #Construct the BoltPR2MontionObj() just the way that it is expected downstream
         new_obj = BoltPR2MotionObj()
         #Populate new object
         new_obj.electrodes = [np.array(self.electrodes[self.RIGHT]), np.array(self.electrodes[self.LEFT])]
@@ -93,18 +130,11 @@ class BoltPR2MotionBuf(object):
         new_obj.l_tool_frame_transform_rot = np.array(self.l_tool_frame_transform_rot)
 
         new_obj.detailed_state = self.detailed_state
-        #new_obj.electrodes_mean = [np.array(self.electrodes_mean[self.RIGHT]), np.array(self.electrodes_mean[self.LEFT])]
-        #new_obj.tdc_mean = [np.array(self.tdc_mean[self.RIGHT]), np.array(self.tdc_mean[self.LEFT])]
-        #new_obj.tac_mean = [np.array(self.tac_mean[self.RIGHT]), np.array(self.tac_mean[self.LEFT])]
-        #new_obj.pdc_mean = [np.array(self.pdc_mean[self.RIGHT]), np.array(self.pdc_mean[self.LEFT])]
-        #new_obj.pac_mean = [np.array(self.pac_mean[self.RIGHT]), np.array(self.pac_mean[self.LEFT])]
         new_obj.electrodes_mean = [np.array(self.electrodes_mean[self.RIGHT]), np.array(self.electrodes_mean[self.LEFT])]
         new_obj.tdc_mean = [np.array(self.tdc_mean[self.RIGHT]), np.array(self.tdc_mean[self.LEFT])]
         new_obj.tac_mean = [np.array(self.tac_mean[self.RIGHT]), np.array(self.tac_mean[self.LEFT])]
         new_obj.pdc_mean = [np.array(self.pdc_mean[self.RIGHT]), np.array(self.pdc_mean[self.LEFT])]
         new_obj.pac_mean = [np.array(self.pac_mean[self.RIGHT]), np.array(self.pac_mean[self.LEFT])]
-
-
 
         new_obj.state = self.state
         #return populated object
@@ -114,11 +144,15 @@ class BoltPR2MotionBuf(object):
 class LanguageTestMainThread:
 
     def __init__(self):
+        #Initialize Node for ROS
         rospy.init_node('language_test_subscribers')
         rospy.loginfo('main language test thread initializing...')
+
+        #Create buffer message to store all received data for this motion
         self.current_motion = BoltPR2MotionBuf()
         self.last_state = BoltPR2MotionBuf.DISABLED
-        # Create empty lists (temporary buffers) to store all data 
+
+        # Create empty temporary buffers to store only current
         self.gripper_velocity_buf = 0
         self.gripper_position_buf = 0
         self.gripper_effort_buf = 0
@@ -127,14 +161,10 @@ class LanguageTestMainThread:
         self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
         self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
 
-        #Create locks for the callbacks - they are all in threads of their own
-        self.accel_lock = threading.Lock()
-        #self.tf_lock = threading.Lock()
-        self.state_lock = threading.Lock()
-        #self.detailed_lock = threading.Lock()
-        #self.thread_lock = threading.Lock()
+        # Downsampling the accelerometer (for now)
         self.accel_downsample_counter = 0
-        #self.mean_init_flag = False
+
+        # Create a list of all BioTac sensor start value means
         self.electrodes_mean_list = defaultdict(list)
         self.tdc_mean_list = defaultdict(list)
         self.tac_mean_list = defaultdict(list)
@@ -145,13 +175,19 @@ class LanguageTestMainThread:
                                   BoltPR2MotionBuf.SQUEEZE, BoltPR2MotionBuf.TAP,
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)
 
+        #Create locks for the callbacks - they are all in threads of their own
+        self.accel_lock = threading.Lock()
+        self.state_lock = threading.Lock()
+
     def disabled_clear(self):
+        # If the state is disabled, call this to clear transformations and motion data
         self.current_motion = BoltPR2MotionBuf()
         self.last_state = BoltPR2MotionBuf.DISABLED
         self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
         self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
  
     def reset_run(self):
+        # Called between each complete run to start fresh
         self.current_motion = BoltPR2MotionBuf()
         self.last_state = BoltPR2MotionBuf.DISABLED
         self.mean_count = 0
@@ -164,33 +200,14 @@ class LanguageTestMainThread:
         self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
 
     def clear_motion(self):
+        #Called in between each motion
         #Reset current_motion, but populate mean list
         self.current_motion = BoltPR2MotionBuf()
-        #self.current_motion.state = current_state
         self.current_motion.electrodes_mean = self.electrodes_mean_list
         self.current_motion.pdc_mean = self.pdc_mean_list
         self.current_motion.pac_mean = self.pac_mean_list
         self.current_motion.tdc_mean = self.tdc_mean_list
         self.current_motion.tac_mean = self.tac_mean_list
-
-        #ZERO_TIME = 100
-        #NUM_MEAN_VALS = 10
-        #MEAN_INIT_PERIOD = ZERO_TIME + NUM_MEAN_VALS
-
-        #Reset current_motion, but populate mean list
-        #self.current_motion = BoltPR2MotionBuf()
-        #self.current_motion.state = current_state
-        #self.current_motion.electrodes_mean = [self.electrodes_mean_list[0][ZERO_TIME:MEAN_INIT_PERIOD], self.electrodes_mean_list[1][ZERO_TIME:MEAN_INIT_PERIOD]]
-        #self.current_motion.pdc_mean = [self.pdc_mean_list[0][ZERO_TIME:MEAN_INIT_PERIOD], self.pdc_mean_list[1][ZERO_TIME:MEAN_INIT_PERIOD]]
-        #self.current_motion.pac_mean = [self.pac_mean_list[0][ZERO_TIME:MEAN_INIT_PERIOD], self.pac_mean_list[1][ZERO_TIME:MEAN_INIT_PERIOD]]
-        #self.current_motion.tdc_mean = [self.tdc_mean_list[0][ZERO_TIME:MEAN_INIT_PERIOD], self.tdc_mean_list[1][ZERO_TIME:MEAN_INIT_PERIOD]]
-        #self.current_motion.tac_mean = [self.tac_mean_list[0][ZERO_TIME:MEAN_INIT_PERIOD], self.tac_mean_list[1][ZERO_TIME:MEAN_INIT_PERIOD]]
-
-        #self.current_motion.electrodes_mean = self.electrodes_mean_list
-        #self.current_motion.pdc_mean = self.pdc_mean_list
-        #self.current_motion.pac_mean = self.pac_mean_list
-        #self.current_motion.tdc_mean = self.tdc_mean_list
-        #self.current_motion.tac_mean = self.tac_mean_list
 
     def start_listeners(self):
         #Start BioTac Subscriber
@@ -218,6 +235,7 @@ class LanguageTestMainThread:
             self.l_tool_tf_rot_buf = (l_tool_tf.rotation.x, l_tool_tf.rotation.y, l_tool_tf.rotation.z, l_tool_tf.rotation.w)
 
     def accelerometerCallback(self, msg):
+        #Downsample the Accelerometer
         self.accel_downsample_counter = self.accel_downsample_counter + 1    
         if not self.accel_downsample_counter % 5: # 1000Hz -> 200Hz which is 2*100Hz. Yay Nyquist! 
             self.accel_downsample_counter = 0
@@ -231,8 +249,12 @@ class LanguageTestMainThread:
             self.accel_lock.release()
 
     def biotacCallback(self, msg):
+        ZERO_TIME = 100 
+        NUM_MEAN_VALS = 10
 
-        if len(self.tdc_mean_list[0]) < 10 and self.mean_count > 100:
+        #Wait for ZERO_TIME callbacks to pass, 
+        #then store off the mean of each channel for every BioTac sensors for NUM_MEAN_VALS messages
+        if len(self.tdc_mean_list[0]) < NUM_MEAN_VALS and self.mean_count > ZERO_TIME:
             num_fingers = len(msg.bt_data)
             for finger_index in xrange(num_fingers):
                 self.electrodes_mean_list[finger_index].append( msg.bt_data[finger_index].electrode_data)
@@ -240,43 +262,20 @@ class LanguageTestMainThread:
                 self.tac_mean_list[finger_index].append( msg.bt_data[finger_index].tac_data)
                 self.pdc_mean_list[finger_index].append( msg.bt_data[finger_index].pdc_data)
                 self.pac_mean_list[finger_index].append( msg.bt_data[finger_index].pac_data)
-                if len(self.tdc_mean_list[0]) is 10:
+                if len(self.tdc_mean_list[0]) == NUM_MEAN_VALS:
                     self.state_lock.acquire()
                     self.current_motion.electrodes_mean = self.electrodes_mean_list
                     self.current_motion.pdc_mean = self.pdc_mean_list
                     self.current_motion.pac_mean = self.pac_mean_list
                     self.current_motion.tdc_mean = self.tdc_mean_list
                     self.current_motion.tac_mean = self.tac_mean_list
-                    #import pdb; pdb.set_trace()
                     self.state_lock.release()
         else:
             self.mean_count = self.mean_count + 1
 
-        '''ZERO_TIME = 100
-        NUM_MEAN_VALS = 10
-        MEAN_INIT_PERIOD = ZERO_TIME + NUM_MEAN_VALS
-
-        if len(self.tdc_mean_list[0]) < MEAN_INIT_PERIOD and self.mean_init_flag == False:
-            num_fingers = len(msg.bt_data)
-            for finger_index in xrange(num_fingers):    
-                self.electrodes_mean_list[finger_index].append( msg.bt_data[finger_index].electrode_data)
-                self.tdc_mean_list[finger_index].append( msg.bt_data[finger_index].tdc_data)
-                self.tac_mean_list[finger_index].append( msg.bt_data[finger_index].tac_data)
-                self.pdc_mean_list[finger_index].append( msg.bt_data[finger_index].pdc_data)
-                self.pac_mean_list[finger_index].append( msg.bt_data[finger_index].pac_data)
-                #print len(self.tdc_mean_list[0])
-                if (len(self.tdc_mean_list[0]) == MEAN_INIT_PERIOD):
-                    self.state_lock.acquire()
-                    self.current_motion.electrodes_mean = self.electrodes_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
-                    self.current_motion.pdc_mean = self.pdc_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
-                    self.current_motion.pac_mean = self.pac_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
-                    self.current_motion.tdc_mean = self.tdc_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
-                    self.current_motion.tac_mean = self.tac_mean_list[finger_index][ZERO_TIME:MEAN_INIT_PERIOD]
-
-                    self.init_flag = True
-                    self.state_lock.release()'''
         #Lock to prevent the state controller from updating                 
         self.state_lock.acquire()
+        #If in a valid controller state, start storing off all buffered data
         if self.current_motion.state in self.valid_state_tuple:
             num_fingers = len(msg.bt_data)
             for finger_index in xrange(num_fingers):    
@@ -323,6 +322,8 @@ def main(argv):
     while not rospy.is_shutdown():
         #Acquire Lock
         main_thread.state_lock.acquire()
+
+        #If the current state is valid and the last state is valid, and its a new state...
         if  main_thread.current_motion.state in main_thread.valid_state_tuple and \
             main_thread.last_state in main_thread.valid_state_tuple and \
             main_thread.last_state is not main_thread.current_motion.state:
@@ -332,19 +333,13 @@ def main(argv):
             main_thread.current_motion.state = main_thread.last_state
             #Store the next state as the last state to be used to see when a change occurs
             main_thread.last_state = next_state
-            #Place current_motion in the que
+            #Place current_motion in the queue
             tasks.put(main_thread.current_motion)
-            #print "current pdc %d" % num_tasks
-            #print main_thread.current_motion.pdc_mean[0] 
             #Spin up a new thread
             new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
             new_process.start()
             #Reset current_motion
             main_thread.clear_motion()
-            #print "current pdc post clear %d" % num_tasks
-            #print main_thread.current_motion.pdc_mean[0] 
-            #Spin up a new thread
-            #Reset current_motion
             num_tasks = num_tasks + 1
 
             #Check to see if the motions have finished
@@ -355,9 +350,6 @@ def main(argv):
         elif main_thread.last_state is not main_thread.current_motion.state:
             #Simply update the last state
             main_thread.last_state = main_thread.current_motion.state
-        #elif main_thread.current_motion.state is BoltPR2MotionBuf.DISABLED:
-        #Simply update the last state
-        #main_thread.disabled_clear()
 
         #Release Lock
         main_thread.state_lock.release()
@@ -365,12 +357,6 @@ def main(argv):
     #Clean up all those threads!
     tasks.close()
     tasks.join_thread()
-
-
-    #for i in range(num_tasks):
-    #    result = results.get()
-    #    print result
-    #print "Done!"
 
 if __name__ == '__main__':
   main(sys.argv[1:])
