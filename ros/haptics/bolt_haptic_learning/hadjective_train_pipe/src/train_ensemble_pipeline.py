@@ -182,9 +182,9 @@ def train_svm(train_vector, train_labels, object_ids):
     # Create the obj_id_vector for cross validation
     lpl = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True)
     # Grid search with nested cross-validation
-    parameters = {'kernel': ['linear'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4], 'degree':[2,3,4,5]} 
+    parameters = {'kernel': ['rbf'], 'C': [1, 1e1, 1e2, 1e3, 1e4], 'gamma': [1, 1e-1, 1e-2, 1e-3, 1e-4]} 
     #parameters = {'kernel': ['linear'], 'C': [1, 1e1], 'gamma': [1, 1e-1, 1e-2]} 
-    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, cv=lpl)
+    svm = GridSearchCV(SVC(probability=True), parameters, score_func=f1_score, n_jobs=4, cv=lpl)
 
     # Train the SVM using the best parameters
     svm.fit(train_vector, train_labels)
@@ -321,6 +321,7 @@ def main(feature_objects_set_file, test_feature_objects_file, adj_motion_classif
         print adj
 
         if adj  in ['porous', 'elastic', 'grainy']:
+        #if adj not in ['compressible','fuzzy']:
              continue 
         #if adj not in ['soft','scratchy']:
         #    continue
@@ -336,7 +337,7 @@ def main(feature_objects_set_file, test_feature_objects_file, adj_motion_classif
         # Train ensembled svm classifier
         ensembled_classifiers[adj], ensembled_scalers[adj], weights[adj] = train_ensemble_adjective_classifier(feature_objects_set[adj]['test'], adj, adj_motion_classifier, adj_motion_scaler, feature_name_list)
 
-        cPickle.dump((ensembled_classifiers[adj], ensembled_scalers[adj]), open('ensembled/svm_and_scaler_'+adj+'.pkl','w'), cPickle.HIGHEST_PROTOCOL)
+        cPickle.dump((ensembled_classifiers[adj], ensembled_scalers[adj],weights[adj]), open('ensembled/svm_and_scaler_'+adj+'.pkl','w'), cPickle.HIGHEST_PROTOCOL)
 
         # Test ensembled svm classifier
         prediction_dict[adj], label_dict[adj], object_ids_dict[adj] = test_ensembled_classifier(test_feature_objects, adj, adj_motion_classifier, ensembled_classifiers[adj], adj_motion_scaler, ensembled_scalers[adj], feature_name_list, weights[adj], report_final_file, results_final_file)

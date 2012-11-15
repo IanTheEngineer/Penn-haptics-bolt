@@ -15,8 +15,14 @@ from sklearn.decomposition import PCA
 import utilities
 import os
 import cPickle
+import numpy as np
 
 class HMMChain(BaseEstimator, TransformerMixin):
+    """This chain contains the steps for preprocessing and probability estimation
+    of the adjectives. It behaves like an Estimator and Transformer. The parameters
+    are passed to the constructor.
+    """
+    
     def __init__(self,
                  n_pca_components = 1,
                  n_hidden_components = 1,
@@ -120,10 +126,18 @@ class HMMChain(BaseEstimator, TransformerMixin):
                 
         return score - total
         
+
+    def __fix_input(self, X):
+        if type(X) is np.ndarray:
+            if X.dtype is np.dtype(object):
+                return X.tolist()
+            else:
+                return [X]
+        else:
+            return [X]
     
     def score(self, X, y=None):
-        if type(X) is not list:
-            X = [X]
+        X = self.__fix_input(X)
         self.update_splits(X)
         if hasattr(self, "my_class") and self.my_class is not None and self.other_classes is not None:
             return self.perform_comparative_score(X)
@@ -131,14 +145,12 @@ class HMMChain(BaseEstimator, TransformerMixin):
             return self.pipeline.score(X, y)
 
     def transform(self, X):
-        if type(X) is not list:
-            X = [X]
+        X = self.__fix_input(X)
         self.update_splits(X)        
         return self.pipeline.transform(X)
 
     def fit(self, X, y=None, **fit_params):
-        if type(X) is not list:
-            X = [X]
+        X = self.__fix_input(X)
         self.update_splits(X)        
         self.pipeline.fit(X, y, **fit_params)
         return self

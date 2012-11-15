@@ -1,5 +1,10 @@
 #! /usr/bin/python
-from adjective_classifier import AdjectiveClassifier
+
+import adjective_classifier
+import upenn_features
+import numpy as np
+from sklearn.decomposition import PCA
+
 import cPickle
 import utilities
 from sklearn.externals.joblib import Parallel, delayed
@@ -7,8 +12,41 @@ import sys
 import glob
 import os
 
+class FeaturesAdjectiveClassifier(adjective_classifier.AdjectiveClassifier):
+    """This class is like AdjectiveClassifier in that it uses the HMMs to create
+    features. In addition it uses the features developed by UPenn to verify
+    if classification improves.
+    """
+    def __init__(self, adjective, 
+                 electrodes_pca = None,
+                 base_directory = None):
+        super(FeaturesAdjectiveClassifier, self).__init__(adjective, 
+                                                          base_directory)
+        self.electrodes_pca = electrodes_pca
+    
+    def extract_features(self, X):
+        """
+        X: list of dictionaries d, each with the structure:
+            d[phase][sensor] = data
+        """
+        if type(X) is not list:
+            X = [X]        
+        hmm_features = super(FeaturesAdjectiveClassifier,self).extract_features(X)
+        
+        if self.electrodes_pca is None:
+            all_electrodes = [v['electrodes'] for data in X for v in data.values()]
+            electrodes = np.vstack(all_electrodes)
+            self.electrodes_pca = PCA(4).fit(electrodes)
+        
+        additional_features = np.hstack(upenn_features.get_all_features(ep)
+                                        for x in X
+                                        for ep in x.values()
+                                        ).tolist()
+        ret = np.hstack(hmm_features + [additional_features])
+        
+        return ret
+    
 adjectives = utilities.adjectives
-#adjectives = ["hard", "nice", "compressible"]
 
 def test_adjective(adjective, chains_path, adjectives_path):
     pattern = "/*"+adjective+"*.pkl"
@@ -28,9 +66,12 @@ def test_adjective(adjective, chains_path, adjectives_path):
 
 def create_clf(a, chains_directory, adjectives_directory, h5_db):
     print "Creating classifier for adjective ", a
-    clf = AdjectiveClassifier(a, chains_directory)
-    clf.create_features_set(h5_db, store=True, verbose=False)
+    clf = FeaturesAdjectiveClassifier(a, 
+                                      base_directory=chains_directory)
+
+    assert all(l == 4 for l in (len(v) for v in clf.chains.itervalues()))
     
+    clf.create_features_set(h5_db, store=True, verbose=False)    
     classifier_file = os.path.join(adjectives_directory, 
                                    clf.adjective + ".pkl")
     print "Saving file: ", classifier_file

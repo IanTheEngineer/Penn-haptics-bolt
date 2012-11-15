@@ -21,7 +21,7 @@ def loadDataFromH5File(input_file, output_file, adjective_file):
     all_bolt_data = utilities.convertH5ToBoltObjFile(input_file, None, False);
 
     # Inserts adjectives into the bolt_data  
-    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, "yellow_foam_103.pkl", adjective_file, False)
+    all_bolt_data_adj = utilities.insertAdjectiveLabels(all_bolt_data, output_file, adjective_file, False)
 
     # Load pickle file
     pca_dict = cPickle.load(open('pca.pkl', 'r'))
