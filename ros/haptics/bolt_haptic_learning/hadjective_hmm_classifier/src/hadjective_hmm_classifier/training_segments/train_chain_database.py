@@ -10,6 +10,8 @@ import utilities
 from utilities import adjectives, phases, sensors
 import multiprocessing
 import tables
+import traceback
+import numpy as np
 
 def train_and_save(parameters, dataset, filename):
     """Creates a HMMChain and, loads its parameters, trains it on dataset and
@@ -71,11 +73,10 @@ def train_dataset(dataset):
     #print "Using parameters:\n", parameters    
     
     chain = hmm_chain.HMMChain()
-    
     grid = sklearn.grid_search.GridSearchCV(chain, parameters,
                                             cv = cv,
                                             verbose = 10,
-                                            n_jobs = 6,
+                                            n_jobs = 1,
                                             refit = False                                            
                                             )
     grid.fit(dataset)
@@ -144,7 +145,11 @@ def train_single_dataset(database, path, adjective, phase, sensor):
         p.daemon = False
         p.start()
     except:
-        print "==========ERROR WHILE DOING ", (adjective, phase, sensor)
+        raise
+        #print "==========ERROR WHILE DOING ", (adjective, phase, sensor)
+        #tb = traceback.format_exc()
+        #print "Traceback: \n", tb
+        
         
 
 def main():
