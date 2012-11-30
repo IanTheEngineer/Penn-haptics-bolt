@@ -133,6 +133,8 @@ class HMMChain(BaseEstimator, TransformerMixin):
                 return X.tolist()
             else:
                 return [X]
+        elif type(X) is list:
+            return X
         else:
             return [X]
     
