@@ -8,6 +8,7 @@ import sys
 import tables
 import cPickle
 import time
+from sklearn.externals.joblib import Parallel, delayed
 
 def test_file(f, directory):
     if f in os.listdir(directory):        
@@ -15,9 +16,9 @@ def test_file(f, directory):
     else:
         return True
 
-def main(base_directory, db):
+def main(base_directory, db, stats_folder):
     tga_directory = os.path.join(base_directory, "tgas")
-    stats_directory = os.path.join(base_directory, "tga_stats")
+    stats_directory = os.path.join(base_directory, stats_folder)
     
     num_objects = len(list(utilities.iterator_over_object_groups(db)))
 
@@ -30,7 +31,7 @@ def main(base_directory, db):
         
         try:
             clf = tga_kernel_chain.TGAEnsemble(adj, tga_directory)
-        except ValueError, e:
+        except ValueError:
             print "Adjective %s does not exist, skipping it" % adj
         
         print "\nCreating stats for adjective ", adj
@@ -50,7 +51,7 @@ def main(base_directory, db):
                              true_label = true_label,
                              classifiers = res)
             totaltime = (time.time()-now)/60.0
-            sys.stdout.write("\r%d/%d ->\t %.2f, min: %f" %(total, 
+            sys.stdout.write("\r%d/%d ->\t precision: %.2f, time: %f min" %(total, 
                                                              num_objects, 
                                                              positives / total,
                                                              totaltime
@@ -66,12 +67,19 @@ def main(base_directory, db):
         f.close()
         
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print "Usage: %s base_directory database" % sys.argv[0]
+    if not (3 <= len(sys.argv) <= 4):
+        print "Usage: %s base_directory database [stats_folder]" % sys.argv[0]
         print "tgas are in base_directory/tgas"
-        print "statistics will be saved in base_directory/tga_stats"
+        print "statistics will be saved in stats_folder (default base_directory/tga_stats)"
         sys.exit(0)
     
-    base_directory, db_name = sys.argv[1:]
+    base_directory, db_name = sys.argv[1:3]
+    if len(sys.argv) == 4:
+        stats_folder = sys.argv[3]
+    else:
+        stats_folder = os.path.join(base_directory, 
+                                    "tga_stats")
+    print "The stats folder will be ", stats_folder
+    
     db = tables.openFile(db_name)
-    main(base_directory, db)
+    main(base_directory, db, stats_folder)
