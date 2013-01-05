@@ -61,11 +61,11 @@ def smooth(x,window_len=11,window='hanning'):
     y=np.convolve(w/w.sum(),s,mode='valid')
     return y
 
-def pdc_features(pdc_data):
+def pdc_features(pdc_data, pdc_mean):
     """Area under the curve and max"""
 
     pdc_data = np.array(pdc_data)
-    pdc_data = pdc_data - np.mean(pdc_data, axis = 0)
+    pdc_data = pdc_data - np.mean(pdc_mean, axis = 0)
     
     area = np.trapz(pdc_data, axis = 0)
     pdc_max = np.max(pdc_data, axis = 0)
@@ -78,7 +78,7 @@ def pdc_features(pdc_data):
         
     return np.hstack((area, pdc_max, pdc_rise_count))
 
-def pac_features( pac):
+def pac_features(pac, pac_mean):
     """
     Given one finger's array of pac_flat this function will process textures
     and pull out specific features that are defined below:
@@ -95,7 +95,6 @@ def pac_features( pac):
     
     def single_finger_features(pac_flat):
         #normalize
-        
         texture =  pac_flat
     
         # Filter the AC pressure with a 20-700 Hz band-pass FIR filter
@@ -165,13 +164,13 @@ def pac_features( pac):
     
         return (total_energy,) + spectral_moments
     
-    pac_flat = np.array(pac) - np.mean(pac, axis = 0)    
+    pac_flat = np.array(pac) - np.mean(pac_mean, axis = 0)    
     finger_0 = pac_flat[:,:22].flatten()
     finger_1 = pac_flat[:,22:].flatten()    
     
     return single_finger_features(finger_0) + single_finger_features(finger_1)
 
-def tac_features(tac_norm):
+def tac_features(tac, tac_mean):
     """
     Given one finger's array of tac_normalized this function will calculate the:
 
@@ -185,20 +184,63 @@ def tac_features(tac_norm):
 
     """
     
-    tac_norm = np.array(tac_norm) - np.mean(tac_norm, axis=0)
+    tac_norm = np.array(tac) - np.mean(tac_mean, axis=0)
     tac_area = np.trapz( tac_norm, axis=0)    
 
     return tac_area
 
+def tdc_features(tdc, tdc_mean):
+    """
+    Given one finger's array of tac_normalized this function will calculate the:
+
+    INPUTS: tac_normalized - a normalized n x 1 numpy array of ac temperatures for one movement
+            controller_state - an integer value signalling the type of movement
+            controller_state_detail - an n x 1 array of strings detailing the
+                                      current detailed state at 100 Hz
+
+    OUTPUTS: (tac_area)
+             the area under TAC curves for each state in one trial for one finger
+
+    """
+   
+    def rindex(lis, item):
+        for i in range(len(lis)-1, -1, -1):
+            if item == lis[i]:
+                return i
+        raise ValueError("rindex(lis, item): item not in lis")
+
+    def fit_func(t, p):
+        return p[0] + p[1]*np.exp(-t/p[2])
+
+    def erf(p, tdc_n, t):
+        return sum((tdc_n-fit_func(t,p))**2)
+    
+    # Exponential fits for TDC 
+    tdc_norm_all = np.array(tdc) - np.mean(tdc_mean, axis=0)
+    
+    final_fits = []
+
+    for finger in range(tdc_norm_all.shape[1]): 
+        tdc_norm = tdc_norm_all[:,finger] 
+        t = np.arange(1.,len(tdc_norm)+1)
+        p0 = [np.mean(tdc_norm), np.max(tdc_norm)-np.min(tdc_norm), (np.max(t)-np.min(t))/2]
+
+        popt = scipy.optimize.fmin(erf,p0,args=(tdc_norm, t),xtol=1e-8, disp=0)
+
+        tdc_fit = fit_func(tdc_norm,popt)
+        final_fits.append(popt[2])
+
+    return np.hstack(final_fits)
+
 
 # Function to extract features from electrode data of a BoltPR2MotionObj
-def electrodes_features(electrodes, pca = None):
+def electrodes_features(electrodes, mean_electrodes, pca = None):
     """
     INPUTS: electrodes - normalized electrodes vector from BoltPR2MotionObj
     
     OUTPUTS: polyfit - coefficients of optimized polynomial fit for electrode principal components
-    """
-        
+    """    
+    
     # Curve-fitting function
     def electrode_poly(t, p):
         return p[0] + p[1]*t + p[2]*t**2 + p[3]*t**3 + p[4]*t**4 + p[5]*t**5
@@ -208,7 +250,7 @@ def electrodes_features(electrodes, pca = None):
         return sum((electrode-electrode_poly(t,p))**2)    
     
     # Select desired segment for fitting
-    electrodes = np.array(electrodes) - np.mean(electrodes, axis=0)
+    electrodes = np.array(electrodes) - np.mean(mean_electrodes, axis=0)
     
     if pca is None:
         pca = PCA(4)
@@ -216,17 +258,37 @@ def electrodes_features(electrodes, pca = None):
 
     # Apply dimensionality reduction on electrode data
     eigen_electrodes = pca.transform(electrodes)
-    
+   
     # Fitting a polynomial to the transormed data
     polyfit = []
+
     eigen_electrodes = np.transpose(eigen_electrodes)
     t = np.arange(1,np.size(eigen_electrodes,1)+1)
-    for comp in range(0,2):
+    
+    for comp in range(0,4):
         p0 = [eigen_electrodes[comp][0], 0, 0, 0, 0, 0]
         p_opt = scipy.optimize.fmin(erf, p0, args = (eigen_electrodes[comp], t), xtol=1e-8, disp=0)
         polyfit = np.concatenate((polyfit,p_opt),1)
+    
+    return polyfit
 
-    return (polyfit)
+def gripper_features(gripper_position):
+    end_gripper = min(gripper_position)
+    mean_gripper = np.mean(gripper_position)
+
+    return end_gripper, mean_gripper
+
+def transform_features(frame_transform):
+    num_raw = frame_transform.shape[0]
+    pick = np.array([2]*num_raw)
+    height = frame_transform[np.arange(num_raw),pick]
+    
+    height_min = min(height.tolist())
+    distance = height.tolist()[0] - height_min
+
+    return distance
+
+
 
 def get_all_features(sensors_dict):
     """Gets all the features from a dictionary with the data organized per sensor.
