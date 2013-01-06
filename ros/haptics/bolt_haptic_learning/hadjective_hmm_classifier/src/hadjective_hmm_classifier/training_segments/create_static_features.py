@@ -14,6 +14,7 @@ import traceback
 import numpy as np
 from static_feature_obj import StaticFeatureObj
 import upenn_features
+from collections import defaultdict
 
 def extract_static_features(data_dict, norm_dict):
    
@@ -67,7 +68,7 @@ def extract_static_features(data_dict, norm_dict):
 
 def create_feature_object_set(database, phase):
   
-    feature_objs = []
+    feature_objs = defaultdict(dict) 
     feature_vect = [] 
     norm_phase = "MOVE_ARM_START_POSITION"
 
@@ -95,7 +96,7 @@ def create_feature_object_set(database, phase):
         static_feature_phase.object_id = int(name[-2])
         static_feature_phase.run_num = int(name[-1])
 
-        feature_objs.append(static_feature_phase)
+        feature_objs[object_name] = static_feature_phase
         feature_vect.append(feats)
 
     return feature_objs, np.array(feature_vect)

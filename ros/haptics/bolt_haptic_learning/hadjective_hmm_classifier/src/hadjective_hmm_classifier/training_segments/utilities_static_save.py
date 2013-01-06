@@ -34,7 +34,8 @@ adjectives=['absorbent',
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
 sensors = ["electrodes", "pac", "pdc", "tac", "tdc", "gripper_aperture","transforms"]
 static_channels = ["electrodes", "pac", "pdc", "tac", "tdc", "gripper_aperture","transforms"]
-
+static_features = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
+ 
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
