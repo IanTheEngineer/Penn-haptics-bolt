@@ -15,6 +15,7 @@ import numpy as np
 from static_feature_obj import StaticFeatureObj
 import upenn_features
 from collections import defaultdict
+from sklearn.externals.joblib import Parallel, delayed
 
 
 def get_train_test_objects(database, adjective):
@@ -159,7 +160,7 @@ def create_single_dataset(database, path, adjective, phase):
     """
    
     # File name 
-    dataset_file_name = "_".join(("static_feature", phase))+".pkl"
+    dataset_file_name = "_".join(("static_feature", adjective,phase))+".pkl"
     newpath = os.path.join(path, "adjective_phase_set")
     path_name = os.path.join(newpath, dataset_file_name)
     
@@ -189,7 +190,7 @@ def create_single_dataset(database, path, adjective, phase):
 
     print "Saving dataset to file"
 
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     # Save the results in the folder
     with open(path_name, "w") as f:
         print "Saving file: ", path_name 
@@ -201,31 +202,39 @@ def main():
     if len(sys.argv) == 6:
         database, path, adjective, phase, sensor = sys.argv[1:]
         train_single_dataset(database, path, adjective, phase, sensor)
-    """
-    if len(sys.argv) == 5:
-        database, path, adjective, phase = sys.argv[1:]
+    """ 
+    if len(sys.argv) == 6:
+        database, path, adjective, phase, n_jobs = sys.argv[1:]
+        n_jobs = int(n_jobs)
         print "Training the adjectives %s and for phase %s" %(
             adjective, phase)
-        create_single_dataset(database, path, adjective, phase)
+        p = Parallel(n_jobs=n_jobs,verbose=10)
+        p(delayed(create_single_dataset)(database, path, adjective, phase))
    
-    if len(sys.argv) == 4:
-        database, path, adjective = sys.argv[1:]
+    if len(sys.argv) == 5:
+        database, path, adjective, n_jobs = sys.argv[1:]
+        n_jobs = int(n_jobs)
         print "Training all the phases for adjective %s" %(
                     adjective)
-        for phase in itertools.product(phases):
-            create_single_dataset(database, path, adjective, phase)
+        p = Parallel(n_jobs=n_jobs,verbose=10)
+        p(delayed(create_single_dataset)(database, path, adjective, phase) 
+            for phase in itertools.product(phases))
+            #    create_single_dataset(database, path, adjective, phase))
 
-    elif len(sys.argv) == 3:
-        database, path = sys.argv[1:]
+    elif len(sys.argv) == 4:
+        database, path, n_jobs = sys.argv[1:]
+        n_jobs = int(n_jobs)
         print "Training all combinations of adjectives and phases"
+        p = Parallel(n_jobs=n_jobs,verbose=10)
+        p(delayed(create_single_dataset)(database, path, adjective, phase) 
         for adjective, phase in itertools.product(adjectives,
-                                                  phases):
-            create_single_dataset(database, path, adjective, phase)
+                                                  phases))
+            #create_single_dataset(database, path, adjective, phase))
     else:
         print "Usage:"
-        print "%s database path adjective phase" % sys.argv[0]
-        print "%s database path adjective" % sys.argv[0]
-        print "%s database path" % sys.argv[0]
+        print "%s database path adjective phase n_jobs" % sys.argv[0]
+        print "%s database path adjective n_jobs" % sys.argv[0]
+        print "%s database path n_jobs" % sys.argv[0]
         print "Files will be saved in path/datasets"
 
 if __name__ == "__main__":
