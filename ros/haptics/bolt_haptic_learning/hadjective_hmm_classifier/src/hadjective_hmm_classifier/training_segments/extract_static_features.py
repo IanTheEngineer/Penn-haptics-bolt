@@ -92,9 +92,10 @@ def createFeatureVector(static_feature_obj, feature_list):
         if isinstance(feature_vector, np.ndarray):
             feature_vector = feature_vector.tolist()
 
+        if isinstance(feature_vector, float):
+            feature_vector = [feature_vector]
+
         if feature == "electrode_polyfit":
-            all_feature_vector = all_feature_vector.tolist()
-    
             for idx in range(0,len(feature_vector[0])):
                 all_feature_vector += [feature_vector[0][idx], feature_vector[1][idx]]
         else:
