@@ -44,7 +44,7 @@ def template_function(base_directory):
     """
 
     all_features = load_adjective_phase(base_directory)
-
+    import pdb; pdb.set_trace()
 
 
 def main():
