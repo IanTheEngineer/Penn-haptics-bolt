@@ -64,3 +64,30 @@ The file test_classifiers.py uses the trained classifiers and an h5 database to
 measure the scores. Again the database needs to have the "adjectives" group
 created using the script:
 Penn-haptics-bolt/ros/haptics/bolt_data_aggregator/bolt_data_parser/nodes/parsing_extracting/create_adjectives_links.py
+
+Creating Static Features
+========================
+The first thing that needs to be done is the features created from all of the objects in the database.  This is done with create_static_features.py
+
+It will take in path to database and a path to a directory where there must exist a folder datasets. THIS NEEDS TO BE CREATED BEFORE THE SCRIPT IS RUN.  
+
+This function assumes that utilities_static_save.py has been renamed to utilities.py
+
+The result should be files that have the features for each motion in its own separate file.  Be patient as this step takes some time.
+
+Extracting Static Features
+==========================
+Once the features are stored in datasets, then calling extract_static_features.py will create a train/test set from these features for each adjective.  This depends on the h5 database's split on train-test.
+
+currently it only supports positive splits and all negative exapmles are in both train/test.  This will be changed once the h5 database reflects the new category for negative splits
+
+The features pulled must be specified in the utilities.py file.  The order in which the features are listed is the order that they are extracted.  The variable specifically is static_features
+
+The files are stored in a directory adjective_phase_set.  Similar to before this folder MUST BE CREATED ahead of time.
+
+The results are stored by adjective-motion
+
+Loading Static Features
+=======================
+Currently there is a dummy function load_static_features.py that provides an example of how to load the specific features.
+
