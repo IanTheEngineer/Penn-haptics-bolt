@@ -11,10 +11,11 @@ import os
 import numpy as np
 import cPickle
 
-def create_hard_links(h5file, adjective, groups):
+def create_hard_links(h5file, adjective, groups, group_name):
     assert isinstance(h5file, tables.file.File)
     
-    newg = h5file.createGroup("/adjectives", adjective, createparents=True)
+    #newg = h5file.createGroup("/adjectives", adjective, createparents=True)
+    newg = h5file.createGroup(group_name, adjective, createparents=True)
     
     for g in groups:
         name = g._v_name
@@ -49,7 +50,24 @@ def main():
         groups = [g for g in all_objects.root._v_children.values() if any(c in g._v_name for c in cond)]
         
         print "I've got %d groups. Adding hard links" % len(groups)
-        create_hard_links(all_objects, adjective_name, groups)
+        create_hard_links(all_objects, adjective_name, groups, "/adjectives")
+
+    for i, adjective_name  in enumerate(all_adjectives):
+
+        test_exist = "/adjectives_neg/%s" % adjective_name
+        if test_exist in all_objects:
+            print "Negative Examples for Adjective %s already exist, removing it" % adjective_name
+            all_objects.removeNode("/adjectives_neg", adjective_name, recursive=True)
+
+        where_condition = "%s == 0" % (adjective_name)
+        cond = [x["object_id"] for x in table.where(where_condition)]
+
+        print "(%d/%d) Parsing h5 file for adjective %s" % (i, len(all_adjectives), adjective_name)
+        groups = [g for g in all_objects.root._v_children.values() if any(c in g._v_name for c in cond)]
+
+        print "I've got %d groups. Adding hard links" % len(groups)
+        create_hard_links(all_objects, adjective_name, groups, "/adjectives_neg")
+
 
     adjective_h5.close()
     all_objects.close()

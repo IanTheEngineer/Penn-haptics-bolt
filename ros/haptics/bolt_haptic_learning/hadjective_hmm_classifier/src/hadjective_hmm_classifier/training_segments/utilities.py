@@ -5,42 +5,32 @@ import tables
 import scipy.ndimage
 import itertools
 
-adjectives = ['sticky',
-              'deformable',
-              'hard',
-              'hollow',
-              'springy',
-              'fuzzy',
-              'rough',
-              'thick',
-              'compact',
-              'elastic',
-              'smooth',
-              'metallic',
-              'unpleasant',
-              'plasticky',
-              'meshy',
-              'nice',
-              'hairy',
-              'compressible',
-              'fibrous',
-              'squishy',
-              'gritty',
-              'textured',
-              'bumpy',
-              'grainy',
-              'scratchy',
-              'cool',
-              'absorbant',
-              'stiff',
-              'solid',
-              'crinkly',
-              'porous',
-              #'warm',
-              'slippery',
-              'thin',
-              #'sparse',
-              'soft']
+adjectives=['absorbent',
+            'bumpy',
+            'compressible',
+            'cool',
+            'crinkly',
+            'fuzzy',
+            #'gritty',
+            'hairy',
+            'hard',
+            'metallic',
+            'nice',
+            'porous',
+            'rough',
+            'scratchy',
+            'slippery',
+            'smooth',
+            'soft',
+            'solid',
+            'springy',
+            'squishy',
+            'sticky',
+            'textured',
+            'thick',
+            'thin',
+            'unpleasant']
+
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
 sensors = ["electrodes", "pac", "pdc", "tac"]
 
@@ -445,3 +435,49 @@ def add_train_test_set_to_database(database, training_ratio):
     finally:
         print "Flushing..."
         database.flush()
+
+def add_train_test_negative_set_to_database(database, training_ratio):
+    if type(database) is str:
+        database = tables.openFile(database, "r+")
+
+    try:
+        if "/train_test_negative_sets" not in database:
+            print "Creating group /train_test_negative_sets"
+            base_group = database.createGroup("/", "train_test_negative_sets")
+        else:
+            print "Group /train_test_negative_sets already exists"
+            base_group = database.root.train_test_negative_sets
+
+        adjectives_group = database.root.adjectives_neg
+
+    	#import pdb; pdb.set_trace()
+        for adjective in adjectives:
+            if adjective in base_group:
+                print "%s already exist" % adjective
+                continue
+
+            print "\nAdjective: ", adjective
+
+            newg = database.createGroup(base_group, adjective)
+            train_group = database.createGroup(newg, "train")
+            test_group = database.createGroup(newg, "test")
+
+            #getting train and test lists
+            a_group = getattr(adjectives_group, adjective)
+            train_list, test_list = create_train_test_set(a_group, training_ratio)
+
+            #creating the hard links
+            for g in train_list:
+                name = g._v_name
+                print "\tTrain link: ", name
+                database.createHardLink(train_group, name, g)
+            for g in test_list:
+                name = g._v_name
+                print "\tTest link: ", name
+                database.createHardLink(test_group, name, g)
+    finally:
+        print "Flushing..."
+        database.flush()
+
+
+
