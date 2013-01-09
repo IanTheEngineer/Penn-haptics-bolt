@@ -36,12 +36,12 @@ sensors = ["electrodes", "pac", "pdc", "tac"]
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
-    
+
     This method is based on the convolution of a scaled window with the signal.
     The signal is prepared by introducing reflected copies of the signal 
     (with the window size) in both ends so that transient parts are minimized
     in the begining and end part of the output signal.
-    
+
     input:
         x: the input signal 
         window_len: the dimension of the smoothing window; should be an odd integer
@@ -50,18 +50,18 @@ def smooth(x,window_len=11,window='hanning'):
 
     output:
         the smoothed signal
-        
+
     example:
 
     t=linspace(-2,2,0.1)
     x=sin(t)+randn(len(t))*0.1
     y=smooth(x)
-    
+
     see also: 
-    
+
     numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
     scipy.signal.lfilter
- 
+
     TODO: the window parameter could be the window itself if an array instead of a string
     NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
     """
@@ -110,15 +110,15 @@ def nan_helper(y):
 
 def plot_database(database):
     """
-    
+
     database: a dictionary as saved by aggregate_data
     """
     features = database.keys()
     sensors = database[features[0]].keys()
-    
+
     rows = int(pylab.sqrt(len(sensors)))
     cols = len(sensors) / rows + 1
-    
+
     #hold(True)
     for feature in features:
         pylab.figure()
@@ -133,7 +133,7 @@ def resample(a, dimensions, method='linear', center=False, minusone=False):
     """Arbitrary resampling of source array to new dimension sizes.
     Currently only supports maintaining the same number of dimensions.
     To use 1-D arrays, first promote them to shape (x,1).
-    
+
     Uses the same parameters and creates the same co-ordinate lookup points
     as IDL''s congrid routine, which apparently originally came from a VAX/VMS
     routine of the same name.
@@ -154,24 +154,24 @@ def resample(a, dimensions, method='linear', center=False, minusone=False):
     False - inarray is resampled by factors of (i/x) * (j/y)
     True - inarray is resampled by(i-1)/(x-1) * (j-1)/(y-1)
     This prevents extrapolation one element beyond bounds of input array.
-    
+
     -----------
     | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
     """
     if a.ndim > 1:
         if dimensions[1] != a.shape[1]:
             raise ValueError("The new shape should keep the number of columns")
-        
+
         ret = [_resample(col, (dimensions[0],), method, center, minusone)
-                        for col in a.T]
+               for col in a.T]
         return np.array(ret).T
     else:
         return _resample(a, dimensions, method, center, minusone)
-               
+
 
 def _resample(a, dimensions, method='linear', center=False, minusone=False):
     orig_data = np.asarray(a)
-    
+
     # Verify that number dimensions requested matches original shape
     if len(dimensions) != a.ndim:
         raise ValueError("Dimensions are not equal!")
@@ -193,7 +193,7 @@ def _resample(a, dimensions, method='linear', center=False, minusone=False):
         data = _resample_spline(orig_data, dimensions, offset, m1)
     else:
         raise ValueError("Unknown sampling method")
-    
+
     return data
 
 def _resample_nearest_linear(orig, dimensions, method, offset, m1):
@@ -201,7 +201,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 
 
     dimlist = []
-    
+
     # calculate new dims
     for i in range(orig.ndim):
         base = np.arange(dimensions[i])
@@ -212,7 +212,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
 
     # first interpolation - for ndims = any
-    
+
     mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
     new_data = mint(dimlist[-1])
 
@@ -233,25 +233,25 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 def _resample_neighbor(orig, dimensions, offset, m1):
     """Resample using closest-value interpolation"""
     dimlist = []
-    
+
     for i in xrange(orig.ndim):
         base = np.indices(dimensions)[i]
         dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
                        (base + offset) - offset)
     cd = np.array(dimlist).round().astype(int)
-    
+
     return orig[list(cd)]
 
 def _resample_spline(orig, dimensions, offset, m1):
     """Resample using spline-based interpolation"""
-    
+
     oslices = [slice(0, j) for j in orig.shape]
     old_coords = np.ogrid[oslices] #pylint: disable=W0612
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]
 
     newcoords_dims = range(np.rank(newcoords))
-    
+
     #make first index last
     newcoords_dims.append(newcoords_dims.pop(0))
     newcoords_tr = newcoords.transpose(newcoords_dims) #pylint: disable=W0612
@@ -284,24 +284,24 @@ def dict_from_h5_group(group, alt_phases = None, alt_sensors = None):
         all_sensors = alt_sensors
     else:
         all_sensors = sensors
-        
+
     ret_d = dict()
     try:
         ret_d["adjectives"] = group.adjectives[:]
     except tables.NoSuchNodeError:
         print "WARN: No adjectives in group %s" % group._v_name
         ret_d["adjectives"] = []
-        
+
     ret_d["name"] = group._v_name
     data = dict()
     ret_d["data"] = data
     for phase in all_phases:
         phase_data = {}
         for sensor in all_sensors:
-            
+
             #getting the indexes for the phase
             indexed = (group.state.controller_detail_state.read() == phase)
-            
+
             #finger 0
             finger_0 = group.biotacs.finger_0
             data_0 = getattr(finger_0, sensor).read()
@@ -315,12 +315,12 @@ def dict_from_h5_group(group, alt_phases = None, alt_sensors = None):
             nrows = data_1.shape[0]
             data_1 = data_1.reshape((nrows,-1))
             data_1 = data_1[indexed, :]        
-            
+
             phase_data[sensor] = np.hstack((data_0, data_1))
         data[phase] = phase_data
-    
+
     return ret_d
-            
+
 def iterator_over_object_groups(database, filter_condition = None):
     """Returns an iterator over all the objects (groups) in the h5 database.
     If database is a string it will be interpreted as a filename, otherwise
@@ -330,24 +330,24 @@ def iterator_over_object_groups(database, filter_condition = None):
         database = tables.openFile(database,"r")
 
     if filter_condition is None:
-        filter_condition = lambda g: (g._v_name != "adjectives"
+        filter_condition = lambda g: (not g._v_name.startswith("adjectives")
                                       and g._v_name != "train_test_sets")
-    
+
     return (g for g in database.root._v_children.values()
-                   if filter_condition(g))
-    
+            if filter_condition(g))
+
 def get_item_name(item):
     """
     Extract the item name from a string encoding.
-    
+
     Example: str = 
     gray_soft_foam_104_01 -> gray_soft_foam
     kitchen_sponge_114_10 -> kitchen_sponge
     """
-    
+
     if type(item) is tables.Group:
         item = item._v_name
-    
+
     chars = item.split("_")
     return "_".join(chars[:-2])
 
@@ -357,39 +357,39 @@ def create_train_test_set(adjective_group, training_ratio):
     one with all the subgroups in the first set, the other with the
     reamining subgrooups.
     """
-    
+
     train_groups = []
     test_groups = []
-    
+
     assert isinstance(adjective_group, tables.Group)
     object_names = set(get_item_name(g) for g in adjective_group._v_children)
-    
+
     if len(object_names) == 1:
         print "Dealing with a unit lenght"
         train_groups = adjective_group._v_children.values()
         test_groups = adjective_group._v_children.values()
         return train_groups, test_groups
-        
+
     train_size = int(training_ratio * len(object_names))
 
     if train_size == 0:
         train_size = 1;
     if train_size == len(object_names):
         train_size -= 1
-    
+
     #training set
     for name in itertools.islice(object_names, train_size):
         train_groups.extend( g 
                              for (g_name, g) in adjective_group._v_children.iteritems()
                              if name == get_item_name(g_name)
-                            )
+                             )
     #test set
     for name in itertools.islice(object_names, train_size, len(object_names)):
         test_groups.extend( g 
-                             for (g_name, g) in adjective_group._v_children.iteritems()
-                             if name == get_item_name(g_name)
+                            for (g_name, g) in adjective_group._v_children.iteritems()
+                            if name == get_item_name(g_name)
                             )    
-    
+
     assert len(train_groups) > 0
     assert len(test_groups) > 0
     return train_groups, test_groups
@@ -397,7 +397,7 @@ def create_train_test_set(adjective_group, training_ratio):
 def add_train_test_set_to_database(database, training_ratio):
     if type(database) is str:
         database = tables.openFile(database, "r+")
-    
+
     try:
         if "/train_test_sets" not in database:
             print "Creating group /train_test_sets"
@@ -405,24 +405,24 @@ def add_train_test_set_to_database(database, training_ratio):
         else:
             print "Group /train_test_sets already exists"
             base_group = database.root.train_test_sets
-            
+
         adjectives_group = database.root.adjectives
-        
+
         for adjective in adjectives:            
             if adjective in base_group:
                 print "%s already exist" % adjective
                 continue
-            
+
             print "\nAdjective: ", adjective
-            
+
             newg = database.createGroup(base_group, adjective)
             train_group = database.createGroup(newg, "train")
             test_group = database.createGroup(newg, "test")
-            
+
             #getting train and test lists
             a_group = getattr(adjectives_group, adjective)
             train_list, test_list = create_train_test_set(a_group, training_ratio)
-    
+
             #creating the hard links
             for g in train_list:
                 name = g._v_name
@@ -450,7 +450,7 @@ def add_train_test_negative_set_to_database(database, training_ratio):
 
         adjectives_group = database.root.adjectives_neg
 
-    	#import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         for adjective in adjectives:
             if adjective in base_group:
                 print "%s already exist" % adjective
@@ -478,6 +478,5 @@ def add_train_test_negative_set_to_database(database, training_ratio):
     finally:
         print "Flushing..."
         database.flush()
-
 
 
