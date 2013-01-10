@@ -28,12 +28,15 @@ def get_train_test_objects(database, adjective):
         raise ValueError("%s is not a known adjective" % adjective)
 
     train_group = database.getNode("/train_test_sets", adjective).train
+    train_neg_group = database.getNode("/train_test_negative_sets", adjective).train
     test_group = database.getNode("/train_test_sets", adjective).test
-    
+    test_neg_group = database.getNode("/train_test_negative_sets", adjective).test 
     train_set_object_names = train_group._v_children
+    train_set_neg_names = train_neg_group._v_children 
     test_set_object_names = test_group._v_children
-
-    return train_set_object_names.keys(), test_set_object_names.keys()
+    test_set_neg_names = test_neg_group._v_children
+    
+    return train_set_object_names.keys()+train_set_neg_names.keys(), test_set_object_names.keys()+test_set_neg_names.keys()
 
 
 def load_feature_objects(base_directory):
