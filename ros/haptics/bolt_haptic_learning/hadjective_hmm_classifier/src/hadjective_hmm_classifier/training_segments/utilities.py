@@ -334,6 +334,8 @@ def iterator_over_object_groups(database, filter_condition = None):
 
     if filter_condition is None:
         filter_condition = lambda g: (not g._v_name.startswith("adjectives")
+                                      and g._v_name != "train_test_negative_sets"
+                                      and g._v_name != "adjectives_neg"
                                       and g._v_name != "train_test_sets")
 
     return (g for g in database.root._v_children.values()
