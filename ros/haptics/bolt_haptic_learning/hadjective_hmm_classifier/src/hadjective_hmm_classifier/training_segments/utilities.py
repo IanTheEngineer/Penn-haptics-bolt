@@ -4,6 +4,10 @@ import pylab
 import tables
 import scipy.ndimage
 import itertools
+from sklearn.metrics import f1_score
+from sklearn import cross_validation
+from sklearn.grid_search import GridSearchCV
+from sklearn.svm import LinearSVC
 
 adjectives=['absorbent',
             'bumpy',
@@ -484,4 +488,91 @@ def add_train_test_negative_set_to_database(database, training_ratio):
         print "Flushing..."
         database.flush()
 
+def train_svm_gridsearch(train_X, train_Y,
+                         object_ids = None,
+                         verbose = 0,
+                         n_jobs = 6,
+                         score_fun = f1_score
+                         ):
+
+    '''
+    Performs cross validation using grid search 
+    '''
+
+    # Setup cross validation
+    if (object_ids is None) or (sum(train_Y) <= 10):
+        print "Cannot perform leave one out cross validation"
+        cv = 10 # 10 fold cross validation
+    else: 
+        # Leave one object out cross validation
+        cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True) 
+
+    parameters = {
+                  #'C': np.linspace(1,1e6,1000),
+                  'C': (1e-3,1e-2,1e-1,1.0, 10, 100, 1000, 1e4, 1e5, 1e6), 
+                  'penalty':('l1','l2'),
+                  'class_weight':('auto',None)
+                  }
+
+    clf = LinearSVC(dual=False)
+
+    grid = GridSearchCV(clf, parameters, cv=cv,
+                        verbose=verbose,
+                        n_jobs=n_jobs,
+                        score_func=score_fun
+                        )
+
+    grid.fit(train_X, train_Y)
+    svm_best = grid.best_estimator_
+
+    return svm_best
+
+
+
+def train_given_new_test(test_X, test_Y, 
+                         train_X = None, train_Y  = None,
+                         all_Cs =  None, 
+                         score_fun = None,
+                         verbose = True):
+   
+    ''' 
+    Does not perform grid search, only cross validates on error (C)
+    Uses test set to cross validate with
+    '''
+
+    if train_X is None:
+        raise ValueError("No features present, have you run create_features_set?")
+    if train_Y is None: 
+        raise ValueError("No labels present, have you run create_features_set?")        
+
+    if all_Cs is None:
+        all_Cs = np.linspace(1, 1e6, 1000)
+
+    scores = []
+    for C in all_Cs:
+        clf = LinearSVC(C=C, dual=False)
+        clf.fit(train_X, train_Y)
+        if score_fun is None:
+            score = clf.score(test_X, test_Y)
+        else:
+            pred_Y = clf.predict(test_X)
+            score = score_fun(test_Y, pred_Y)
+        scores.append(score)
+
+    best_C = np.argmax(all_Cs)
+    svc = LinearSVC(C = best_C, dual = False).fit(train_X, train_Y)
+    if verbose:
+        if score_fun is None:
+            score_training = svc.score(train_X, train_Y)
+            score_testing = svc.score(test_X, test_Y)
+        else:
+            pred_Y = svc.predict(train_X)
+            score_training = score_fun(train_Y, pred_Y)
+
+            pred_Y = svc.predict(test_X)
+            score_testing = score_fun(test_Y, pred_Y)    
+
+        print "Training score: %f, testing score: %f" %(score_training,
+                                                        score_testing)
+    return svc
 

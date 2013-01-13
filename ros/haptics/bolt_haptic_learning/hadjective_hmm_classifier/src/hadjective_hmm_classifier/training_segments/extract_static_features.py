@@ -121,6 +121,8 @@ def create_feature_set(database, feature_dict, object_set, adjective):
     """
     labels = []
     features = []
+    object_names = []
+    object_ids = []
 
     print "Building adjective %s" % adjective
 
@@ -135,11 +137,15 @@ def create_feature_set(database, feature_dict, object_set, adjective):
         # Skip over object if it is in the set
         # Training set will skip over test objects
         # and vice versa        
-        if object_name in object_set:
+        if object_name not in object_set:
             continue
  
 #        print "Loading object ", object_name
-       
+        
+        # Store object name
+        object_names.append(object_name)
+        object_ids.append(int(name[-2]))
+
         # Extract features
         feature_obj = feature_dict[object_name] 
         feature_vector = createFeatureVector(feature_obj, static_features)
@@ -151,11 +157,13 @@ def create_feature_set(database, feature_dict, object_set, adjective):
         else:
             labels.append(0)
 
-    features = np.array(features).squeeze()
-    labels = np.array(labels).flatten()
-    
-    return features, labels
+    set_dict = defaultdict(dict) 
+    set_dict['features'] = np.array(features).squeeze()
+    set_dict['labels'] = np.array(labels).flatten()
+    set_dict['object_names'] = np.array(object_names).flatten()
+    set_dict['object_ids'] = np.array(object_ids).flatten()
 
+    return set_dict
 
 
 def create_single_dataset(database, path, adjective, phase):
@@ -182,11 +190,9 @@ def create_single_dataset(database, path, adjective, phase):
     feature_set = load_feature_objects(path)
 
     # Store the train/test in a dataset
-    # train set will skip over TEST objs and test set
-    # skips over TRAIN objs
     dataset = defaultdict(dict)
-    dataset['train'] = create_feature_set(database, feature_set[phase], test_objs, adjective)
-    dataset['test'] = create_feature_set(database, feature_set[phase], train_objs, adjective)
+    dataset['train'] = create_feature_set(database, feature_set[phase], train_objs, adjective)
+    dataset['test'] = create_feature_set(database, feature_set[phase], test_objs, adjective)
 
     if len(dataset) is 0:
         print "Empty dataset???"
