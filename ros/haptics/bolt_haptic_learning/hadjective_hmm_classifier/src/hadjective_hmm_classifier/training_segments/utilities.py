@@ -331,7 +331,7 @@ def iterator_over_object_groups(database, filter_condition = None):
 
     if filter_condition is None:
         filter_condition = lambda g: (not g._v_name.startswith("adjectives")
-                                      and g._v_name != "train_test_sets")
+                                      and not g._v_name.startswith("train_test"))
 
     return (g for g in database.root._v_children.values()
             if filter_condition(g))
@@ -478,5 +478,3 @@ def add_train_test_negative_set_to_database(database, training_ratio):
     finally:
         print "Flushing..."
         database.flush()
-
-
