@@ -328,6 +328,15 @@ def dict_from_h5_group(group, alt_phases = None, alt_sensors = None):
 
     return ret_d
 
+def is_object(obj_name):
+    """Set of hacks to check is a group name is actually an object and not
+    some other stuff.
+    """
+    return (not obj_name._v_name.startswith("adjectives")
+            and not obj_name._v_name.startswith("train_test")                                      
+            and not obj_name._v_name.startswith("validation")
+            )
+
 def iterator_over_object_groups(database, filter_condition = None):
     """Returns an iterator over all the objects (groups) in the h5 database.
     If database is a string it will be interpreted as a filename, otherwise
@@ -337,9 +346,7 @@ def iterator_over_object_groups(database, filter_condition = None):
         database = tables.openFile(database,"r")
 
     if filter_condition is None:
-        filter_condition = lambda g: (not g._v_name.startswith("adjectives")
-                                      and g._v_name != "train_test_negative_sets"
-                                      and g._v_name != "adjectives_neg")
+        filter_condition = is_object
 
     return (g for g in database.root._v_children.values()
             if filter_condition(g))
