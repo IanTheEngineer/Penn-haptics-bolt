@@ -5,9 +5,10 @@ import sys
 import tables
 import utilities
 
-to_remove = ['porous', 'elastic', 'grainy']
+to_remove = ['elastic', 'grainy', 'meshy', 'sparse','hollow','compact', 'warm', 'gritty', 'plasticky', 'stiff', 'deformable', 'fibrous']
 
 def test_object(obj, classifiers):
+
     assert isinstance(obj, tables.Group)
     data_dict = utilities.dict_from_h5_group(obj)    
     true_adjectives = [a for a in sorted(data_dict["adjectives"])
@@ -24,6 +25,7 @@ def test_object(obj, classifiers):
     print "Positive classifiers:"    
     
     positives = []
+
     for clf in classifiers:
         if clf.adjective in to_remove:
             continue
