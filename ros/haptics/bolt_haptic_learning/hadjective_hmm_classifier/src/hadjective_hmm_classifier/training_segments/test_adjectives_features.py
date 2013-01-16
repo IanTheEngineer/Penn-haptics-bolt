@@ -4,10 +4,17 @@ import cPickle
 import sys
 import tables
 import utilities
-from utilities import adjectives
+from utilities import adjectives, phases
 from extract_static_features import get_train_test_objects
+import numpy as np
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import classification_report
+from sklearn import preprocessing
 
-def test_adjective(classifier, database, test_object_names, adjective_report):
+
+def test_adjective(classifier, adjective_report):
            
     true_positives = 0.0
     true_negatives = 0.0
@@ -20,52 +27,64 @@ def test_adjective(classifier, database, test_object_names, adjective_report):
     true_negative_list = []
 
 
-    print '\n \nTesting Adjective: %s' % classifier.adjective
+    print '\n \nTesting Adjective: %s' % classifier['adjective']
     
-    for group in utilities.iterator_over_object_groups(database):
-        
-        assert isinstance(group, tables.Group)
-        data_dict = utilities.dict_from_h5_group(group)
+    #Pull out test features/labels
+    test_X = []
 
-        if data_dict['name'] not in test_object_names:
-            continue
-        
-        features = classifier.extract_features(data_dict["data"])
-        output = classifier.predict(features)
-      
-        # For this object - find out if the adjective applies
-        # True label is 0 if adjective is false for this adjective
-        true_labels = data_dict['adjectives']
-        if classifier.adjective in true_labels:
-            true_label = 1
-        else:
-            true_label = 0
+    for phase in phases:
+        test_set = classifier[phase]['test']
+        test_X.append(test_set['features'])
+        test_Y = test_set['labels']
+        object_ids = test_set['object_ids']
+        object_names = test_set['object_names']
 
-        # Determine if the true label and classifier prediction match
+    
+    # Pull out the classifier and merge features
+    test_X = np.concatenate(test_X, axis=1)
+    clf = classifier['classifier']
+
+    # Predict the labels!
+    if 'scaler' in classifier:
+        if type(classifier['scaler']) == preprocessing.Scaler:
+            test_X = classifier['scaler'].transform(test_X)
+            
+    output = clf.predict(test_X)
+    
+    # Determine if the true label and classifier prediction match
+    for val in xrange(len(test_Y)):
+        true_label = test_Y[val]
+        predict_label = output[val]
+
         if true_label == 1:
-            if output[0] == 1:
+            if predict_label == 1:
                 true_positives += 1.0
-                true_positive_list.append(data_dict['name'])
+                true_positive_list.append(object_names[val])
             else:
                 false_negatives += 1.0
-                false_negative_list.append(data_dict['name'])
+                false_negative_list.append(object_names[val])
         else: # label is 0
-            if output[0] == 1:
+            if predict_label == 1:
                 false_positives += 1.0
-                false_positive_list.append(data_dict['name'])
+                false_positive_list.append(object_names[val])
             else:
                 true_negatives += 1.0
-                true_negative_list.append(data_dict['name'])
-
+                true_negative_list.append(object_names[val])
+    
     # Compute statistics for the adjective
-    precision = true_positives / (true_positives + false_positives)
-    recall = true_positives / (true_positives + false_negatives)
+    try: 
+        precision = true_positives / (true_positives + false_positives)
+        recall = true_positives / (true_positives + false_negatives)
+    
+    except ZeroDivisionError: # The case when none are found
+        precision = 0
+        recall = 0
     try:
         f1 = 2.0 * precision*recall / (precision + recall)
     except ZeroDivisionError:
         f1 = 0
     print "Precision: %f, Recall: %f, F1: %f \n" % (precision, recall, f1)
-    adjective_report.write("%s, %f, %f, %f\n" % (classifier.adjective, precision, recall, f1))
+    adjective_report.write("%s, %f, %f, %f\n" % (classifier['adjective'], precision, recall, f1))
 
     print "%d False Positive Objects are: %s \n" % (false_positives, sorted(false_positive_list))
     print "%d False Negative Objects are: %s \n" % (false_negatives, sorted(false_negative_list))
@@ -77,15 +96,13 @@ def test_adjective(classifier, database, test_object_names, adjective_report):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 3:
-        print "Usage %s h5_database classifiers" % sys.argv[0]
+    if len(sys.argv) != 2:
+        print "Usage %s classifiers" % sys.argv[0]
         sys.exit(1)
 
     # Load database and classifiers (adjectives) 
-    database = tables.openFile(sys.argv[1])
-    classifiers = cPickle.load(open(sys.argv[2]))
+    classifiers = cPickle.load(open(sys.argv[1]))
 
-    import pdb; pdb.set_trace()
     # Initialize scores
     f1s= 0
     precs = 0
@@ -98,11 +115,8 @@ if __name__ == "__main__":
 
     for classifier in classifiers:
         try:
-            # Pull out the objects that we want
-            train_objs, test_objs = get_train_test_objects(database, classifier.adjective)
-
             # Compute score for each adjective 
-            p, r, f1 = test_adjective(classifier, database, test_objs, adjective_report)
+            p, r, f1 = test_adjective(classifier, adjective_report)
             precs += p
             recalls += r
             f1s += f1

@@ -39,48 +39,51 @@ def load_adjective_phase(base_directory):
 
     return all_features
 
-def train_adjective_phase_classifier(path, adjective, phase, all_features):
+def train_adjective_phase_classifier(path, adjective, all_features):
     """
     Example function on how to access all of the features
     stored in adjective_phase_set
     """
 
     # File name 
-    dataset_file_name = "_".join(("trained", adjective, phase))+".pkl"
-    newpath = os.path.join(path, "trained_adjective_phase")
+    dataset_file_name = "_".join(("trained", adjective))+".pkl"
+    newpath = os.path.join(path, "trained_adjectives")
     path_name = os.path.join(newpath, dataset_file_name)
     
     if os.path.exists(path_name):
         print "File %s already exists, skipping it." % path_name
         return
 
-    print "Creating adjective %s and phase %s" % (adjective, phase)
+    print "Creating adjective %s" % adjective
 
-    train_set = all_features[adjective][phase]['train']
-    train_X = train_set['features']
-    train_Y = train_set['labels']
-    object_ids = train_set['object_ids']
+    train_X = []
 
-    print "Training adjective %s and phase %s" %(adjective, phase)
+    for phase in phases:
+        train_set = all_features[adjective][phase]['train']
+        train_X.append(train_set['features'])
+        train_Y = train_set['labels']
+        object_ids = train_set['object_ids']
+
+    train_X = np.concatenate(train_X, axis=1)
+
+    print "Training adjective %s" % adjective
 
     if True:
-        trained_clf, scaler = utilities.train_svm_gridsearch(train_X = train_X,
+        trained_clf,scaler = utilities.train_svm_gridsearch(train_X = train_X,
                              train_Y = train_Y,
                              verbose=True,
                              object_ids = object_ids,
                              n_jobs = 6,
                              scale = True 
-                             )   
+                             )
     else: 
         trained_clf = utilities.train_gradient_boost(train_X = train_X,
                                 train_Y = train_Y,
                                 object_ids = object_ids,
                                 )
-        scaler = False   
-
-    dataset = all_features[adjective][phase]
+    
+    dataset = all_features[adjective]
     dataset['adjective'] = adjective
-    dataset['phase'] = phase
     dataset['classifier'] = trained_clf
     dataset['scaler'] = scaler
    
@@ -92,39 +95,28 @@ def train_adjective_phase_classifier(path, adjective, phase, all_features):
          cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
 def main():
-    if len(sys.argv) == 5:
-        path, adjective, phase, n_jobs = sys.argv[1:]
-        n_jobs = int(n_jobs)
-        print "Training the adjective %s for the phase %s" % (
-                adjective, phase)
-
-        loaded_features = load_adjective_phase(path)
-        p = Parallel(n_jobs=n_jobs,verbose=10)
-        p(delayed(train_adjective_phase_classifier)(path, adjective, phase, loaded_features))
-
-    elif len(sys.argv) == 4:
+    if len(sys.argv) == 4:
         path, adjective, n_jobs = sys.argv[1:]
         n_jobs = int(n_jobs)
-        print "Training the adjective %s" % adjective
+        print "Training the adjective %s for the phase %s" % (
+                adjective)
+
         loaded_features = load_adjective_phase(path)
- 
         p = Parallel(n_jobs=n_jobs,verbose=10)
-        p(delayed(train_adjective_phase_classifier)(path, adjective, phase, loaded_features) 
-            for phase in itertools.product(phases))
- 
+        p(delayed(train_adjective_phase_classifier)(path, adjective, loaded_features))
+
     elif len(sys.argv) == 3:
         path, n_jobs = sys.argv[1:]
         n_jobs = int(n_jobs)
-        print "Training the all combinations of adjectives and phases"
+        print "Training the all adjectives"
         loaded_features = load_adjective_phase(path)
  
         p = Parallel(n_jobs=n_jobs,verbose=10)
-        p(delayed(train_adjective_phase_classifier)(path, adjective, phase, loaded_features) 
-            for adjective, phase in itertools.product(adjectives,
-                                                      phases))
+        p(delayed(train_adjective_phase_classifier)(path, adjective, loaded_features) 
+            for adjective in adjectives)
+                                                      
     else:
         print "Usage:"
-        print "%s path adjective phase n_jobs" % sys.argv[0]
         print "%s path adjective n_jobs" % sys.argv[0]
         print "%s path n_jobs" % sys.argv[0]
         print "Path to the base directory"
