@@ -76,8 +76,8 @@ def train_adjective_phase_classifier(path, adjective, phase, all_features):
 
     # Save the results in the folder
     with open(path_name, "w") as f:
-         print "Saving file: ", path_name
-         cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
+        print "Saving file: ", path_name
+        cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
 def main():
     if len(sys.argv) == 5:
