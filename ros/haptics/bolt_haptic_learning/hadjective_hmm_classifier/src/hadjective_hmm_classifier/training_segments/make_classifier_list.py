@@ -17,5 +17,5 @@ for infile in listing:
     print "current file is: " + path+ infile
 
 
-cPickle.dump(classifier_list, open(path + 'all_adjectives.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
+cPickle.dump(classifier_list, open(path + 'all_trained_adjectives.pkl', "w"), cPickle.HIGHEST_PROTOCOL)
 
