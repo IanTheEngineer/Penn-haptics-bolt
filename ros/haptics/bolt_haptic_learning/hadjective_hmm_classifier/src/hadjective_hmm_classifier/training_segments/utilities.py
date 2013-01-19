@@ -626,4 +626,3 @@ def train_gradient_boost(train_X, train_Y,
     svm_best = grid.best_estimator_
 
     return svm_best
-
