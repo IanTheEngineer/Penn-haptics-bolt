@@ -40,8 +40,8 @@ adjectives=['absorbent',
 
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
 sensors = ["electrodes", "pac", "pdc", "tac"]
-#static_features = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
-static_features = ["pdc_rise_count", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "transform_distance"]
+static_features = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
+#static_features = ["pdc_rise_count", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "transform_distance"]
 
 
 
@@ -529,7 +529,7 @@ def train_svm_gridsearch(train_X, train_Y,
     clf = LinearSVC(dual=False,class_weight='auto')
 
     if scale is True:
-        scaler = preprocessing.Scaler().fit(train_X)
+        scaler = preprocessing.StandardScaler().fit(train_X)
         train_X = scaler.transform(train_X)
     else:
         scaler = False
@@ -597,7 +597,10 @@ def train_given_new_test(test_X, test_Y,
 
 def train_gradient_boost(train_X, train_Y,
                          object_ids = None,
-                         score_fun = f1_score
+                         score_fun = f1_score,
+                         verbose = 0,
+                         n_jobs = 6,
+                         scale = False
                          ):
 
     '''
@@ -612,18 +615,29 @@ def train_gradient_boost(train_X, train_Y,
     else: 
         # Leave one object out cross validation
         cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True) 
+    if scale is True:
+        scaler = preprocessing.StandardScaler().fit(train_X)
+        train_X = scaler.transform(train_X)
+    else:
+        scaler = False
 
     parameters = {
                   'n_estimators':[1000],
-                  'learn_rate':[1e-1, 1e-2, 1, 1e-3],
-                  'max_depth':[5]
+                  'learn_rate':[1e-1, 1e-2, 1, 1e-3]
+                  #'max_depth':[4]
                   }
 
-    # class weight normalizes the lack of positive examples
-    grid = GridSearchCV(GradientBoostingClassifier(), parameters, score_func=score_fun, cv=cv)
+    print "Beginning Grid Search" 
+    grid = GridSearchCV(GradientBoostingClassifier(max_depth=4), 
+                        parameters, 
+                        score_func=score_fun, 
+                        cv=cv, 
+                        verbose = verbose, 
+                        n_jobs=n_jobs
+                        )
 
     grid.fit(train_X, train_Y)
     svm_best = grid.best_estimator_
 
-    return svm_best
+    return svm_best, scaler
 
