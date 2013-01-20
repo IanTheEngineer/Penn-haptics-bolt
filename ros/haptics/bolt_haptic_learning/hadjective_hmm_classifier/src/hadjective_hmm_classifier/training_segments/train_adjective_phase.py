@@ -141,7 +141,7 @@ def alt_train_adjective_phase_classifier(path, adjective, phase, all_features):
     dataset['scaler'] = scaler
    
     test_set = all_features[adjective][phase]['test']
-    test_X = train_set['features']
+    test_X = scaler.transform(train_set['features'])
     test_Y = train_set['labels']
     train_score =  grid.best_score_
     test_score = f1_score(test_Y, trained_clf.predict(test_X))
