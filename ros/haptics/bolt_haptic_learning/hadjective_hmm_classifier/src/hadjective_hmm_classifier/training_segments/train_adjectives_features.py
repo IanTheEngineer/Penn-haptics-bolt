@@ -13,7 +13,8 @@ from static_feature_obj import StaticFeatureObj
 import upenn_features
 from collections import defaultdict
 from sklearn.externals.joblib import Parallel, delayed
-
+import sklearn
+from sklearn.metrics import f1_score
 
 def load_adjective_phase(base_directory):
 
@@ -39,7 +40,75 @@ def load_adjective_phase(base_directory):
 
     return all_features
 
-def train_adjective_phase_classifier(path, adjective, all_features):
+def alt_train_adjective_phase_classifier(path, adjective, all_features):
+    """
+    Example function on how to access all of the features
+    stored in adjective_phase_set
+    """
+
+    # File name 
+    dataset_file_name = "_".join(("trained", adjective))+".pkl"
+    newpath = os.path.join(path, "trained_adjectives")
+    path_name = os.path.join(newpath, dataset_file_name)
+    
+    if os.path.exists(path_name):
+        print "File %s already exists, skipping it." % path_name
+        return
+
+    train_X = []
+
+    for phase in phases:
+        train_set = all_features[adjective][phase]['train']
+        train_X.append(train_set['features'])
+        train_Y = train_set['labels']
+        object_ids = train_set['object_ids']
+
+    train_X = np.concatenate(train_X, axis=1)
+
+    print "Training adjective %s" % adjective
+
+   #magic training happening here!!!
+    scaler = sklearn.preprocessing.StandardScaler().fit(train_X)
+    train_X = scaler.transform(train_X)    
+    parameters = {'C': np.linspace(0.001,1e6,100),              
+                  'penalty': ['l2','l1'],
+                  'dual': [False],
+                  'class_weight' : ('auto',),
+                  }
+    clf = sklearn.svm.LinearSVC()
+    grid = sklearn.grid_search.GridSearchCV(clf, parameters,
+                                            n_jobs=6,
+                                            score_func=f1_score,
+                                            verbose=0)
+    grid.fit(train_X, train_Y)
+    trained_clf = grid.best_estimator_
+    #end of magic training!!!
+    
+    dataset = all_features[adjective]
+    dataset['adjective'] = adjective
+    dataset['classifier'] = trained_clf
+    dataset['scaler'] = scaler
+   
+    # Save the results in the folder
+    with open(path_name, "w") as f:
+        print "Saving file: ", path_name
+        cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
+        
+    test_X = []
+
+    for phase in phases:
+        test_set = all_features[adjective][phase]['test']
+        test_X.append(test_set['features'])
+        test_Y = test_set['labels']
+        object_ids = test_set['object_ids']
+
+    test_X = scaler.transform(np.concatenate(test_X, axis=1))
+    train_score =  grid.best_score_
+    test_score = f1_score(test_Y, trained_clf.predict(test_X))
+    print "The training score is: %.2f, test score is %.2f" % (train_score, test_score)    
+    
+
+def orig_train_adjective_phase_classifier(path, adjective, all_features):
     """
     Example function on how to access all of the features
     stored in adjective_phase_set
@@ -94,6 +163,8 @@ def train_adjective_phase_classifier(path, adjective, all_features):
         print "Saving file: ", path_name
         cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
+train_adjective_phase_classifier = alt_train_adjective_phase_classifier
+
 def main():
     if len(sys.argv) == 4:
         path, adjective, n_jobs = sys.argv[1:]
@@ -124,3 +195,4 @@ def main():
 if __name__=="__main__":
     main()
     print "done"        
+
