@@ -8,6 +8,9 @@ from sklearn.metrics import f1_score
 from sklearn import cross_validation
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import LinearSVC
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn import preprocessing
+
 
 adjectives=['absorbent',
             'bumpy',
@@ -38,6 +41,7 @@ adjectives=['absorbent',
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
 sensors = ["electrodes", "pac", "pdc", "tac"]
 static_features = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
+#static_features = ["pdc_rise_count", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "transform_distance"]
 
 
 
@@ -328,6 +332,15 @@ def dict_from_h5_group(group, alt_phases = None, alt_sensors = None):
 
     return ret_d
 
+def is_object(obj_name):
+    """Set of hacks to check is a group name is actually an object and not
+    some other stuff.
+    """
+    return (not obj_name._v_name.startswith("adjectives")
+            and not obj_name._v_name.startswith("train_test")
+            and not obj_name._v_name.startswith("validation")
+            )
+
 def iterator_over_object_groups(database, filter_condition = None):
     """Returns an iterator over all the objects (groups) in the h5 database.
     If database is a string it will be interpreted as a filename, otherwise
@@ -337,10 +350,7 @@ def iterator_over_object_groups(database, filter_condition = None):
         database = tables.openFile(database,"r")
 
     if filter_condition is None:
-        filter_condition = lambda g: (not g._v_name.startswith("adjectives")
-                                      and g._v_name != "train_test_negative_sets"
-                                      and g._v_name != "adjectives_neg"
-                                      and g._v_name != "train_test_sets")
+        filter_condition = is_object
 
     return (g for g in database.root._v_children.values()
             if filter_condition(g))
@@ -505,7 +515,8 @@ def train_svm_gridsearch(train_X, train_Y,
                          object_ids = None,
                          verbose = 0,
                          n_jobs = 6,
-                         score_fun = f1_score
+                         score_fun = f1_score,
+                         scale = False
                          ):
 
     '''
@@ -515,19 +526,26 @@ def train_svm_gridsearch(train_X, train_Y,
     # Setup cross validation
     if (object_ids is None) or (sum(train_Y) <= 10):
         print "Cannot perform leave one out cross validation"
-        cv = 10 # 10 fold cross validation
+        cv = 5 # 10 fold cross validation
     else: 
         # Leave one object out cross validation
         cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True) 
 
     parameters = {
                   #'C': np.linspace(1,1e6,1000),
-                  'C': (1e-3,1e-2,1e-1,1.0, 10, 100, 1000, 1e4, 1e5, 1e6), 
+                  'C': np.linspace(1,1e6,100),
+                  #'C': (1e-3,1e-2,1e-1,1.0, 10, 100, 1000, 1e4, 1e5, 1e6), 
                   'penalty':('l1','l2'),
-                  'class_weight':('auto',None)
                   }
 
-    clf = LinearSVC(dual=False)
+    # class weight normalizes the lack of positive examples
+    clf = LinearSVC(dual=False,class_weight='auto')
+
+    if scale is True:
+        scaler = preprocessing.StandardScaler().fit(train_X)
+        train_X = scaler.transform(train_X)
+    else:
+        scaler = False
 
     grid = GridSearchCV(clf, parameters, cv=cv,
                         verbose=verbose,
@@ -538,7 +556,7 @@ def train_svm_gridsearch(train_X, train_Y,
     grid.fit(train_X, train_Y)
     svm_best = grid.best_estimator_
 
-    return svm_best
+    return svm_best,scaler
 
 
 
@@ -589,3 +607,49 @@ def train_given_new_test(test_X, test_Y,
                                                         score_testing)
     return svc
 
+
+def train_gradient_boost(train_X, train_Y,
+                         object_ids = None,
+                         score_fun = f1_score,
+                         verbose = 0,
+                         n_jobs = 6,
+                         scale = False
+                         ):
+
+    '''
+    Performs cross validation using grid search and
+    gradient tree boosting
+    '''
+
+    # Setup cross validation
+    if (object_ids is None) or (sum(train_Y) <= 10):
+        print "Cannot perform leave one out cross validation"
+        cv = 5 # 10 fold cross validation
+    else: 
+        # Leave one object out cross validation
+        cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True) 
+    if scale is True:
+        scaler = preprocessing.StandardScaler().fit(train_X)
+        train_X = scaler.transform(train_X)
+    else:
+        scaler = False
+
+    parameters = {
+                  'n_estimators':[1000],
+                  'learn_rate':[1e-1, 1e-2, 1, 1e-3]
+                  #'max_depth':[4]
+                  }
+
+    print "Beginning Grid Search" 
+    grid = GridSearchCV(GradientBoostingClassifier(max_depth=4), 
+                        parameters, 
+                        score_func=score_fun, 
+                        cv=cv, 
+                        verbose = verbose, 
+                        n_jobs=n_jobs
+                        )
+
+    grid.fit(train_X, train_Y)
+    svm_best = grid.best_estimator_
+
+    return svm_best, scaler

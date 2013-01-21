@@ -37,6 +37,7 @@ class TGAClassifier(SVC):
         self.training_vectors = None
         self._T = None
         self._sigma = None
+        self.gram_matrix = None
 
     def approximate_T(self, X):
         """The Triangular parameter T can be set to a reasonable multiple of the 
@@ -98,8 +99,8 @@ class TGAClassifier(SVC):
         self._sigma = self.approximate_sigma(X, self._T) * self.sigma_multiplier
         
         self.training_vectors = deepcopy(X)               
-        gram = self._gram(X, self._sigma, self._T)
-        return super(TGAClassifier, self).fit(gram, y, sample_weight)
+        self.gram_matrix = self._gram(X, self._sigma, self._T)
+        return super(TGAClassifier, self).fit(self.gram_matrix, y, sample_weight)
     
     def predict(self, X):
         X = self.__fix_input(X)
