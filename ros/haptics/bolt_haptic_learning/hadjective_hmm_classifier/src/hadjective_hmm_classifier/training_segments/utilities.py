@@ -360,6 +360,19 @@ def get_item_name(item):
     chars = item.split("_")
     return "_".join(chars[:-2])
 
+def get_item_id(item):
+    """ 
+    Extract the item id from a string encoding.
+
+    Example: str = 
+    gray_soft_foam_104_01 -> gray_soft_foam
+    kitchen_sponge_114_10 -> kitchen_sponge
+    """
+    if type(item) is tables.Group:
+        item = item._v_name
+    item_id = int(item[-6:-3])
+    return item_id
+
 def create_train_test_set(adjective_group, training_ratio):
     """Given an adjective, first groups the objects then splits the
     groups using the training_ratio. Finally returns two lists: 
@@ -372,33 +385,33 @@ def create_train_test_set(adjective_group, training_ratio):
 
     assert isinstance(adjective_group, tables.Group)
     object_names = set(get_item_name(g) for g in adjective_group._v_children)
-
+    object_ids = set(get_item_id(g) for g in adjective_group._v_children)
     if len(object_names) == 1:
-        print "Dealing with a unit lenght"
-        train_groups = adjective_group._v_children.values()
-        test_groups = adjective_group._v_children.values()
+        print "Dealing with a unit length"
+        half_runs = int(len(adjective_group._v_children.values())/2.0)
+        train_groups = adjective_group._v_children.values()[0:half_runs]
+        test_groups = adjective_group._v_children.values()[half_runs:]
         return train_groups, test_groups
 
-    train_size = int(training_ratio * len(object_names))
-
+    train_size = int(training_ratio * len(object_ids))
+        
     if train_size == 0:
         train_size = 1;
-    if train_size == len(object_names):
+    if train_size == len(object_ids):
         train_size -= 1
 
     #training set
-    for name in itertools.islice(object_names, train_size):
+    for num in itertools.islice(object_ids, train_size):
         train_groups.extend( g 
-                             for (g_name, g) in adjective_group._v_children.iteritems()
-                             if name == get_item_name(g_name)
+                             for (g_num, g) in adjective_group._v_children.iteritems()
+                             if num == get_item_id(g_num)
                              )
     #test set
-    for name in itertools.islice(object_names, train_size, len(object_names)):
+    for num in itertools.islice(object_ids, train_size, len(object_ids)):
         test_groups.extend( g 
-                            for (g_name, g) in adjective_group._v_children.iteritems()
-                            if name == get_item_name(g_name)
-                            )    
-
+                             for (g_num, g) in adjective_group._v_children.iteritems()
+                             if num == get_item_id(g_num)
+                             )
     assert len(train_groups) > 0
     assert len(test_groups) > 0
     return train_groups, test_groups
