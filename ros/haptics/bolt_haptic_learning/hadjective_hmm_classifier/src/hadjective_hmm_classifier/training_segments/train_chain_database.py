@@ -69,6 +69,14 @@ def train_dataset(dataset):
                    ##kmeans_max_iter = [1000]
                    #),              
               ]
+    '''parameters = [ 
+              dict(n_pca_components = [0.97],
+                   n_hidden_components=[15, 18, 25], 
+                   resampling_size=[30, 40, 50], 
+                   n_discretization_symbols=[10, 12, 15],
+                   hmm_max_iter = [300],
+                   ),  
+            ]'''
         
     #print "Using parameters:\n", parameters    
     
@@ -76,7 +84,7 @@ def train_dataset(dataset):
     grid = sklearn.grid_search.GridSearchCV(chain, parameters,
                                             cv = cv,
                                             verbose = 10,
-                                            n_jobs = 1,
+                                            n_jobs = 6,
                                             refit = False                                            
                                             )
     grid.fit(dataset)
