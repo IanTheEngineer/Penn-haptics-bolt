@@ -43,7 +43,30 @@ sensors = ["electrodes", "pac", "pdc", "tac"]
 static_features = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
 #static_features = ["pdc_rise_count", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "transform_distance"]
 
-
+human_scores = {'absorbent': 0.63341,
+                'bumpy': 0.54907,
+                'compressible': 0.74361,
+                'cool': 0.54737,
+                'crinkly': 0.52400,
+                'fuzzy': 0.63816,
+                'hairy': 0.66455,
+                'hard': 0.83411,
+                'metallic': 0.68075,
+                'nice': 0.20490,
+                'porous': 0.58147,
+                'rough': 0.70126,
+                'scratchy': 0.65699,
+                'slippery': 0.57429,
+                'smooth': 0.84894,
+                'soft': 0.76097,
+                'solid': 0.87022,
+                'springy': 0.49089,
+                'squishy': 0.79420,
+                'sticky': 0.80000,
+                'textured': 0.67367,
+                'thick': 0.49090,
+                'thin' : 0.44744,
+                'unpleasant' : 0.68611}
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
