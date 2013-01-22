@@ -191,9 +191,11 @@ def train_adjectives_only():
         static_features = load_adjective_phase(static_path)
         dynamic_features = load_adjective_phase(dynamic_path)
         
-        for adjective in adjectives:
-            train_combined_adjectives(res_path,
-                                      adjective, static_features, dynamic_features, n_jobs) 
+        p = Parallel(n_jobs=n_jobs,verbose=10)
+        p(delayed(train_combined_adjectives)(res_path,
+                                      adjective, static_features, dynamic_features, 1)
+          for adjective in adjectives)
+        
         
                                                       
     else:
@@ -221,5 +223,5 @@ def train_adjectives_phases():
         print "%s static_path dynamic_path res_path n_jobs" % sys.argv[0]
 
 if __name__=="__main__":
-    train_adjectives_phases()
+    train_adjectives_only()
     print "done"   
