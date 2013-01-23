@@ -63,7 +63,15 @@ def original_train_adjective_phase_classifier(path1, path2, adjective, phase, al
     train_X1 = train_set['features']
     train_Y = train_set['labels']
     object_ids = train_set['object_ids']
-
+   
+    # test set 
+    test_set1 = all_features1[adjective][phase]['test']
+    test_X1 = test_set1['features']
+    test_set2 = all_features2[adjective][phase]['test']
+    test_X2 = test_set2['features']
+    test_X = np.concatenate((test_X1,test_X2),axis=1)
+    all_features1[adjective][phase]['test'] = test_X
+	
     # Second set of features
     train_set2 = all_features2[adjective][phase]['train']
     train_X2 = train_set2['features']
@@ -90,7 +98,7 @@ def original_train_adjective_phase_classifier(path1, path2, adjective, phase, al
                                 scale = True
                                 )
 
-    dataset = all_features[adjective][phase]
+    dataset = all_features1[adjective][phase]
     dataset['adjective'] = adjective
     dataset['phase'] = phase
     dataset['classifier'] = trained_clf
