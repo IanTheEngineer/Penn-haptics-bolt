@@ -1,4 +1,7 @@
 import numpy as np
+import os
+import cPickle
+import sys
 import scipy.interpolate
 import pylab
 import tables
@@ -12,6 +15,8 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn import preprocessing
 from sklearn.feature_selection import SelectPercentile, f_classif
 from sklearn.pipeline import Pipeline
+from collections import defaultdict
+
 
 adjectives=['absorbent',
             'bumpy',
@@ -550,7 +555,7 @@ def train_svm_gridsearch(train_X, train_Y,
     # Setup cross validation
     if (object_ids is None) or (sum(train_Y) <= 10):
         print "Cannot perform leave one out cross validation"
-        cv = 5 # 10 fold cross validation
+        cv = 5 # 5 fold cross validation
     else: 
         # Leave one object out cross validation
         cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True) 
@@ -727,3 +732,48 @@ def train_univariate_selection(train_X, train_Y,
 
     return svm_best, scaler
 
+def load_adjective_phase(directory):
+
+    all_features = defaultdict(dict)
+
+    for f in os.listdir(directory):
+        # select pkl files associated with adjective
+        if not f.endswith('.pkl'):
+            continue
+    
+        # Load pickle file
+        path_name = os.path.join(directory, f)
+        with open(path_name, "r") as file_path:
+            features = cPickle.load(file_path)
+
+        chars = f.strip(".pkl").split("_")
+        chars = chars[2:] #static_feature
+        adjective = chars[0] #adjective
+        chars = chars[1:] #adjective
+        phase = "_".join(chars) # merge together
+        all_features[adjective][phase] = features
+
+    return all_features
+
+def get_all_train_test_features(adjective, all_features, train=True):
+    """
+    Example function on how to access all of the features
+    stored in adjective_phase_set
+    """
+
+    train_X = []
+
+    if train is True:
+        section = 'train'
+    else:
+        section = 'test'
+
+    for phase in phases:
+        train_set = all_features[adjective][phase][section]
+        train_X.append(train_set['features'])
+        train_Y = train_set['labels']
+        object_ids = train_set['object_ids']
+
+    train_X = np.concatenate(train_X, axis=1)
+
+    return (train_X, train_Y, object_ids) 
