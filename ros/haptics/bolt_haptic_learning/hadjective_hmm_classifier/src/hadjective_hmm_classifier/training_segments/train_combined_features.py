@@ -111,8 +111,78 @@ def train_combined_adjectives(path, adjective, static_features, dynamic_features
     train_score =  grid.best_score_
     test_score = f1_score(test_Y, trained_clf.predict(test_X))
     print "The training score is: %.2f, test score is %.2f" % (train_score, test_score)
+
+def train_combined_adjectives_phases(path, adjective, phase, 
+                                     static_features, dynamic_features,
+                              n_jobs):
+    """Combines all the features and then perform training
+    """
+    # File name 
+    dataset_file_name = "_".join(("trained", adjective, phase))+".pkl"
+    newpath = os.path.join(path, "trained_adjective_phase")
+    path_name = os.path.join(newpath, dataset_file_name)
     
-def main():
+    if os.path.exists(path_name):
+        print "File %s already exists, skipping it." % path_name
+        return
+    
+    print "Training adjective %s and phase %s" %(adjective, phase)
+
+    static_train_set = static_features[adjective][phase]['train']
+    static_train_X = static_train_set['features']
+    train_Y = static_train_set['labels']
+    
+    dyn_train_set = dynamic_features[adjective][phase]['train']
+    dyn_train_X = dyn_train_set['features']
+        
+    train_X = np.hstack((static_train_X, dyn_train_X))
+    
+    print "Size of training set: ", train_X.shape
+    
+    #magic training happening here!!!
+    scaler = sklearn.preprocessing.StandardScaler().fit(train_X)
+    train_X = scaler.transform(train_X)    
+    parameters = {'C': np.linspace(0.001,1e6,100),              
+                  'penalty': ['l2','l1'],
+                  'dual': [False],
+                  'class_weight' : ('auto',),
+                  }
+    clf = sklearn.svm.LinearSVC()
+    grid = sklearn.grid_search.GridSearchCV(clf, parameters,
+                                            n_jobs=n_jobs,
+                                            score_func=f1_score,
+                                            verbose=0)
+    grid.fit(train_X, train_Y)
+    trained_clf = grid.best_estimator_
+    #end of magic training!!!
+    
+    #dataset = all_features[adjective]
+    dataset = {}
+    dataset['adjective'] = adjective
+    dataset['classifier'] = trained_clf
+    dataset['scaler'] = scaler
+   
+    # Save the results in the folder
+    with open(path_name, "w") as f:
+        print "Saving file: ", path_name
+        cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
+        
+    
+    static_test_set = static_features[adjective][phase]['test']
+    static_test_X = static_test_set['features']
+    test_Y = static_test_set['labels']
+    
+    dyn_test_set = dynamic_features[adjective][phase]['test']
+    dyn_test_X = dyn_test_set['features']
+        
+    test_X = np.hstack((static_test_X, dyn_test_X))       
+    test_X = scaler.transform(test_X)
+    
+    train_score =  grid.best_score_
+    test_score = f1_score(test_Y, trained_clf.predict(test_X))
+    print "The training score is: %.2f, test score is %.2f" % (train_score, test_score)
+    
+def train_adjectives_only():
     if len(sys.argv) == 5:
         static_path, dynamic_path, res_path, n_jobs = sys.argv[1:]
         n_jobs = int(n_jobs)
@@ -121,9 +191,31 @@ def main():
         static_features = load_adjective_phase(static_path)
         dynamic_features = load_adjective_phase(dynamic_path)
         
-        for adjective in adjectives:
-            train_combined_adjectives(res_path,
-                                      adjective, static_features, dynamic_features, n_jobs) 
+        p = Parallel(n_jobs=n_jobs,verbose=10)
+        p(delayed(train_combined_adjectives)(res_path,
+                                      adjective, static_features, dynamic_features, 1)
+          for adjective in adjectives)
+        
+        
+                                                      
+    else:
+        print "Usage:"
+        print "%s static_path dynamic_path res_path n_jobs" % sys.argv[0]
+        
+def train_adjectives_phases():
+    if len(sys.argv) == 5:
+        static_path, dynamic_path, res_path, n_jobs = sys.argv[1:]
+        n_jobs = int(n_jobs)
+        print "Training the all adjectives"
+        
+        static_features = load_adjective_phase(static_path)
+        dynamic_features = load_adjective_phase(dynamic_path)
+        
+        for adjective, phase in itertools.product(adjectives,
+                                                      phases):
+            train_combined_adjectives_phases(res_path,
+                                      adjective, phase,
+                                      static_features, dynamic_features, n_jobs) 
         
                                                       
     else:
@@ -131,5 +223,5 @@ def main():
         print "%s static_path dynamic_path res_path n_jobs" % sys.argv[0]
 
 if __name__=="__main__":
-    main()
+    train_adjectives_only()
     print "done"   
