@@ -10,7 +10,8 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn import preprocessing
-
+from sklearn.feature_selection import SelectPercentile, f_classif
+from sklearn.pipeline import Pipeline
 
 adjectives=['absorbent',
             'bumpy',
@@ -41,7 +42,7 @@ adjectives=['absorbent',
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
 sensors = ["electrodes", "pac", "pdc", "tac"]
 static_features = ["pdc_rise_count", "pdc_area", "pdc_max", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "gripper_mean", "transform_distance", "electrode_polyfit"]
-#static_features = ["pdc_rise_count", "pac_energy", "pac_sc", "pac_sv", "pac_ss", "pac_sk", "tac_area", "tdc_exp_fit", "gripper_min", "transform_distance"]
+static_channels = ["electrodes", "pac", "pdc", "tac", "tdc", "gripper_aperture","transforms"]
 
 
 
@@ -640,3 +641,53 @@ def train_gradient_boost(train_X, train_Y,
     svm_best = grid.best_estimator_
 
     return svm_best, scaler
+
+def train_univariate_selection(train_X, train_Y,
+                         object_ids = None,
+                         score_fun = f1_score,
+                         verbose = 0,
+                         n_jobs = 6,
+                         scale = False):
+
+    '''
+    Cross validates on the best percentage of features to keep
+    when doing univariate feature selection
+    '''
+
+    # Setup cross validation
+    if (object_ids is None) or (sum(train_Y) <= 10):
+        print "Cannot perform leave one out cross validation"
+        cv = 5 # 10 fold cross validation
+    else: 
+        # Leave one object out cross validation
+        cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True) 
+    if scale is True:
+        scaler = preprocessing.StandardScaler().fit(train_X)
+        train_X = scaler.transform(train_X)
+    else:
+        scaler = False
+
+    univ_select = SelectPercentile(f_classif, percentile=10)
+    X_features = univ_select.fit(train_X, train_Y).transform(train_X)
+   
+    # class weight normalizes the lack of positive examples
+    svm = LinearSVC(dual=False,class_weight='auto')
+    svm.fit(X_features, train_Y)
+
+    pipeline = Pipeline([("features", univ_select), ("svm", svm)])
+   
+    param_grid = dict(features__percentile=[20,40,60,80,100],
+                      svm__C=np.linspace(1,1e6,20),
+                      svm__penalty = ['l1','l2']) 
+
+    grid = GridSearchCV(pipeline, param_grid, cv=cv,
+                        verbose=verbose,
+                        n_jobs=n_jobs,
+                        score_func=score_fun
+                        )
+
+    grid.fit(train_X, train_Y)
+    svm_best = grid.best_estimator_
+
+    return svm_best, scaler
+
