@@ -14,10 +14,13 @@ from sklearn.metrics import classification_report
 from sklearn import preprocessing
 from mkl_xvalidation import standardize, linear_kernel
 from sklearn.metrics.pairwise import pairwise_kernels
+from collections import defaultdict
 
 def linear_kernel_test(testK, origK, n_jobs):
     return pairwise_kernels(testK, origK, metric="linear", n_jobs=n_jobs)
 
+
+c_dict = defaultdict()
 
 def test_adjective(classifier, adjective_report ):
     
@@ -87,7 +90,10 @@ def test_adjective(classifier, adjective_report ):
     
     # Pull out the classifier and merge features
     #test_X = np.concatenate(test_X, axis=1)
+    #import pdb; pdb.set_trace()
+    
     clf = classifier['classifier']
+    c_dict[classifier['adjective']] = clf.C
     #import pdb; pdb.set_trace()
     print clf
 
@@ -184,5 +190,5 @@ if __name__ == "__main__":
     print "Average f1s: ", f1s / total
     print "Average precision: ", precs / total
     print "Average recall: ", recalls / total
-
+    print c_dict
 

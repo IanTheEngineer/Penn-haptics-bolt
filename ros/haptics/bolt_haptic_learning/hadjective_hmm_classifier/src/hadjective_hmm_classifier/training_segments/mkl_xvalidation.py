@@ -22,6 +22,13 @@ def linear_kernel(X, n_jobs):
 def standardize(A):
     return (A - np.mean(A)) / np.std(A)
 
+c_dict = {'porous': 100, 'hard': 1.0, 'sticky': 10, 'springy': 1.0, 'squishy': 1.0, 'rough': 100, 'thick': 100, 'metallic': 100, 'unpleasant': 1.0, 'absorbent': 100, 'nice': 10, 'hairy': 10, 'compressible': 1.0, 'textured': 1000, 'bumpy': 100, 'fuzzy': 10, 'scratchy': 10, 'cool': 1000, 'solid': 10, 'crinkly': 100, 'smooth': 1.0, 'slippery': 10, 'thin': 10, 'soft': 1.0}
+
+refined_range_dict = {1.0: (10e-3, 10e-2, 10e-1, 0.5, 1.5, 3.5, 5.5, 7.5, 9.5),
+                      10.0: (1.5, 3.5, 5.5, 7.5, 9.5, 10.5, 32.75, 55.0, 77.25, 99.5),
+                      100.0: (10.5, 32.75, 55.0, 77.25, 90.5, 110.5, 325.25, 550.0, 774.75, 999.5),
+                      1000.0: (100.5, 325.25, 550.0, 774.75, 925, 1075, 3250.375, 5500.25, 7750.125, 10000.0)}
+
 def begin_train(dynamic_path, static_path, out_path):
 
     dynamic_features = utilities.load_adjective_phase(dynamic_path)
@@ -87,7 +94,7 @@ def begin_train(dynamic_path, static_path, out_path):
             print "Saving file: ", path_name
             cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
-def gram_grid_search(gram, labels, object_ids=None, n_jobs=6, score_fun=f1_score, verbose = 0):
+def gram_grid_search(gram, labels, object_ids=None, n_jobs=6, score_fun=f1_score, verbose = 0, refined_range=None):
 
     if (object_ids is None) or (sum(labels) <= 10):
         print "Cannot perform leave one out cross validation"
@@ -95,13 +102,17 @@ def gram_grid_search(gram, labels, object_ids=None, n_jobs=6, score_fun=f1_score
     else:
         # Leave one object out cross validation
         cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True)
-    parameters = {
-                  #'C': np.linspace(1,1e6,1000),
-                  #'C': np.linspace(1,1e6,100),
-                  'C': (1, 10, 100, 1000)
-                  #'C': (1.0, 10, 100, 1000, 1e4, 1e5, 1e6) 
-                  #'penalty':('l1','l2'),
-                  }
+
+    if refine_range != None:
+        parameters = { 'C': refined_range_dict[c_dict[refined_range]] }
+    else:
+        parameters = {
+                      #'C': np.linspace(1,1e6,1000),
+                      #'C': np.linspace(1,1e6,100),
+                      'C': (1, 10, 100, 1000)
+                      #'C': (1.0, 10, 100, 1000, 1e4, 1e5, 1e6) 
+                      #'penalty':('l1','l2'),
+                      }
     # class weight normalizes the lack of positive examples
     clf = svm.SVC(class_weight='auto',kernel='precomputed')
     import pdb; pdb.set_trace()
