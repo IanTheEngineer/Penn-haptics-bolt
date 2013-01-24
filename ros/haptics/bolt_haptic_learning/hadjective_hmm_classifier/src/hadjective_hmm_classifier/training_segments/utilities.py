@@ -74,6 +74,33 @@ human_scores = {'absorbent': 0.63341,
                 'thin' : 0.44744,
                 'unpleasant' : 0.68611}
 
+mkl_scores =  {
+'compressible': 0.952381,
+'sticky': 0.384615,
+'unpleasant': 0.769231,
+'squishy': 0.909091,
+'hairy': 0.333333,
+'solid': 1.000000,
+'bumpy': 0.487805,
+'fuzzy': 0.346154,
+'nice': 0.303030,
+'absorbent': 0.370370,
+'springy': 0.370370,
+'hard': 0.983051,
+'slippery': 0.545455,
+'metallic': 0.769231,
+'cool': 0.382979,
+'soft': 0.466667,
+'thin': 0.526316,
+'porous': 0.526316,
+'rough': 0.689655,
+'textured': 0.315789,
+'smooth': 0.580645,
+'crinkly': 0.326531,
+'thick': 0.466667,
+'scratchy': 0.352941,
+}
+
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
 
