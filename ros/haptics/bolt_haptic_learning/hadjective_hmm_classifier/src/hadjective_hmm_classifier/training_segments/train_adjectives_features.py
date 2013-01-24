@@ -15,6 +15,8 @@ from collections import defaultdict
 from sklearn.externals.joblib import Parallel, delayed
 import sklearn
 from sklearn.metrics import f1_score
+from sklearn.pipeline import Pipeline
+from safe_leave_p_out import SafeLeavePLabelOut
 
 def load_adjective_phase(base_directory):
 
@@ -40,7 +42,40 @@ def load_adjective_phase(base_directory):
 
     return all_features
 
-def alt_train_adjective_phase_classifier(path, adjective, all_features):
+def load_adjective_collective(base_directory):
+    
+    all_features_phase = load_adjective_phase(base_directory)
+    all_features = defaultdict(dict)
+    
+    for adjective in adjectives:
+        train_X = []
+        test_X = []
+        for phase in phases:
+            train_set = all_features_phase[adjective][phase]['train']
+            train_X.append(train_set['features'])
+            train_Y = train_set['labels']
+            train_object_ids = train_set['object_ids']
+            
+            test_set = all_features_phase[adjective][phase]['test']
+            test_X.append(test_set['features'])
+            test_Y = test_set['labels']
+            test_object_ids = test_set['object_ids']
+        
+        train_X = np.concatenate(train_X, axis=1)
+        test_X = np.concatenate(test_X, axis=1)
+        
+        all_features[adjective]['adjective'] = adjective
+        all_features[adjective]['train'] = {'X': train_X,
+                                            'Y': train_Y,
+                                            'ids':train_object_ids}
+        
+        all_features[adjective]['test'] = {'X': test_X,
+                                            'Y': test_Y,
+                                            'ids':test_object_ids}
+    return all_features
+        
+
+def alt_train_adjective_phase_classifier(path, adjective, all_features, njobs):
     """
     Example function on how to access all of the features
     stored in adjective_phase_set
@@ -55,57 +90,60 @@ def alt_train_adjective_phase_classifier(path, adjective, all_features):
         print "File %s already exists, skipping it." % path_name
         return
 
-    train_X = []
+    all_features =  all_features[adjective]
 
-    for phase in phases:
-        train_set = all_features[adjective][phase]['train']
-        train_X.append(train_set['features'])
-        train_Y = train_set['labels']
-        object_ids = train_set['object_ids']
-
-    train_X = np.concatenate(train_X, axis=1)
+    train_X = all_features['train']['X']
+    train_Y = all_features['train']['Y']
+    train_ids = all_features['train']['ids']
 
     print "Training adjective %s" % adjective
 
-   #magic training happening here!!!
-    scaler = sklearn.preprocessing.StandardScaler().fit(train_X)
-    train_X = scaler.transform(train_X)    
-    parameters = {'C': np.linspace(0.001,1e6,100),              
-                  'penalty': ['l2','l1'],
-                  'dual': [False],
-                  'class_weight' : ('auto',),
+    #magic training happening here!!!
+    leav_out = 3
+    clf = Pipeline([
+        ('scaler', sklearn.preprocessing.StandardScaler()),
+        ('svm', sklearn.svm.LinearSVC()), 
+         ])   
+    
+    #cv = sklearn.cross_validation.LeavePLabelOut(train_ids, leav_out)
+    cv = SafeLeavePLabelOut(train_ids, leav_out, 100, train_Y)
+    parameters = {
+        #'svm_C': np.linspace(0.001,1e6,100),
+        #'svm__C': [10101.011090909091 ],
+        'svm__C': np.linspace(1e2, 1e6, 100),                      
+        #'svm__penalty': ['l2','l1'],
+        'svm__penalty': ['l2'],
+        'svm__dual': [False],
+        'svm__class_weight' : ('auto',),
                   }
-    clf = sklearn.svm.LinearSVC()
+    
+    verbose = 1
     grid = sklearn.grid_search.GridSearchCV(clf, parameters,
-                                            n_jobs=6,
+                                            n_jobs=njobs,
+                                            cv=cv, 
                                             score_func=f1_score,
-                                            verbose=0)
+                                            verbose=verbose)
     grid.fit(train_X, train_Y)
     trained_clf = grid.best_estimator_
     #end of magic training!!!
     
-    dataset = all_features[adjective]
+    dataset = all_features
     dataset['adjective'] = adjective
     dataset['classifier'] = trained_clf
-    dataset['scaler'] = scaler
+    dataset['scaler'] = False
    
     # Save the results in the folder
     with open(path_name, "w") as f:
         print "Saving file: ", path_name
         cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
         
-    test_X = []
-
-    for phase in phases:
-        test_set = all_features[adjective][phase]['test']
-        test_X.append(test_set['features'])
-        test_Y = test_set['labels']
-        object_ids = test_set['object_ids']
-
-    test_X = scaler.transform(np.concatenate(test_X, axis=1))
+    test_X = all_features['test']['X']
+    test_Y = all_features['test']['Y']
+    
     train_score =  grid.best_score_
     test_score = f1_score(test_Y, trained_clf.predict(test_X))
-    print "The training score is: %.2f, test score is %.2f" % (train_score, test_score)    
+    print "The training score is: %.2f, test score is %.2f" % (train_score, test_score)
+    print "Params are: ", grid.best_params_
     
 
 def orig_train_adjective_phase_classifier(path, adjective, all_features):
@@ -163,9 +201,8 @@ def orig_train_adjective_phase_classifier(path, adjective, all_features):
         print "Saving file: ", path_name
         cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
-train_adjective_phase_classifier = alt_train_adjective_phase_classifier
 
-def main():
+def orig_main():
     if len(sys.argv) == 4:
         path, adjective, n_jobs = sys.argv[1:]
         n_jobs = int(n_jobs)
@@ -174,7 +211,7 @@ def main():
 
         loaded_features = load_adjective_phase(path)
         p = Parallel(n_jobs=n_jobs,verbose=10)
-        p(delayed(train_adjective_phase_classifier)(path, adjective, loaded_features))
+        p(delayed(orig_train_adjective_phase_classifier)(path, adjective, loaded_features))
 
     elif len(sys.argv) == 3:
         path, n_jobs = sys.argv[1:]
@@ -183,8 +220,45 @@ def main():
         loaded_features = load_adjective_phase(path)
  
         p = Parallel(n_jobs=n_jobs,verbose=10)
-        p(delayed(train_adjective_phase_classifier)(path, adjective, loaded_features) 
+        p(delayed(orig_train_adjective_phase_classifier)(path, adjective, loaded_features) 
             for adjective in adjectives)
+                                                      
+    else:
+        print "Usage:"
+        print "%s path adjective n_jobs" % sys.argv[0]
+        print "%s path n_jobs" % sys.argv[0]
+        print "Path to the base directory"
+
+def main():
+    if len(sys.argv) == 4:
+        path, adjective, n_jobs = sys.argv[1:]
+        n_jobs = int(n_jobs)
+        print "Training only the adjective %s" % (adjective)
+        
+        all_features =  load_adjective_collective(path)
+        alt_train_adjective_phase_classifier(path, adjective, all_features, n_jobs)
+
+    elif len(sys.argv) == 3:
+        path, n_jobs = sys.argv[1:]
+        n_jobs = int(n_jobs)
+        print "Training the all adjectives"
+        
+        all_features =  load_adjective_collective(path)
+
+        #sleep tight while random race conditions happen
+        failed_adjectives = adjectives[:]        
+        while len(failed_adjectives) > 0:
+            adjective = failed_adjectives.pop()
+            try:
+                alt_train_adjective_phase_classifier(path, adjective, all_features, n_jobs)
+            except ValueError:
+                print "adjective %s has problems, retrying..."
+                failed_adjectives.append(adjective)
+        
+        
+        #p = Parallel(n_jobs=n_jobs,verbose=10)
+        #p(delayed(alt_train_adjective_phase_classifier)(path, adjective, all_features, 1) 
+            #for adjective in adjectives)
                                                       
     else:
         print "Usage:"
