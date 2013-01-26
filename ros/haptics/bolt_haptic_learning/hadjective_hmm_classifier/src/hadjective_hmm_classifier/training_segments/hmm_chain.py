@@ -75,6 +75,15 @@ class HMMChain(BaseEstimator, TransformerMixin):
         self.my_class = my_class
         self.other_classes = other_classes
     
+    def transform_to_step(self, X, step_max):
+        X = self.__fix_input(X)
+        self.update_splits(X)
+        
+        for i in range(step_max):
+            print "Applying ", self.pipeline.steps[i][0]
+            step =  self.pipeline.steps[i][1] 
+            X = step.transform(X)
+        return X
         
     def update_splits(self, X):
         neworig_splits = [len(x) for x in X]
