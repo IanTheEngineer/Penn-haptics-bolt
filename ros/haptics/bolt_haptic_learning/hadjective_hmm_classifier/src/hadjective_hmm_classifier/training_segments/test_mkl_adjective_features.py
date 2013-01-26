@@ -168,15 +168,24 @@ if __name__ == "__main__":
     adjective_f1_dict.write("d = {")
     adjective_report = open("adjective_score_report.txt", "w")
     adjective_report.write("Adjective, alpha, precision, recall, f1\n")
-
+    precision_dict = defaultdict()
+    recall_dict = defaultdict()
+    f1_dict = defaultdict()
     for classifier in classifiers:
         #try:
             # Compute score for each adjective 
             p, r, f1 = test_adjective(classifier, adjective_report)
+
+            #if classifier['adjective'] != 'unpleasant' and classifier['adjective'] != 'sticky' and classifier['adjective'] != 'nice':
             precs += p
             recalls += r
             f1s += f1
             total += 1
+
+
+            precision_dict[classifier['adjective']] = p
+            recall_dict[classifier['adjective']] = r
+            f1_dict[classifier['adjective']] = f1
             adjective_f1_dict.write("'%s': %1.5f,\n"%(classifier['adjective'], f1))
 
         #except ValueError:
@@ -190,5 +199,8 @@ if __name__ == "__main__":
     print "Average f1s: ", f1s / total
     print "Average precision: ", precs / total
     print "Average recall: ", recalls / total
-    print c_dict
+    print precision_dict
+    print recall_dict
+    print f1_dict
+
 
