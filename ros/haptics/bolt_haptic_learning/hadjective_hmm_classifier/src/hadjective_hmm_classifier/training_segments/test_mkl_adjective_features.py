@@ -48,13 +48,13 @@ def test_adjective(classifier, adjective_report ):
     dynamic_train_scaler = preprocessing.StandardScaler().fit(dynamic_train[0])
     dynamic_train_scaled_X = dynamic_train_scaler.transform(dynamic_train[0])
     dynamic_train_kernel = linear_kernel(dynamic_train_scaled_X, -2) 
-    dynamic_train_kernel = standardize(dynamic_train_kernel)
+    #dynamic_train_kernel = standardize(dynamic_train_kernel)
     #Static Train
     static_train = utilities.get_all_train_test_features(adjective, static_features, train=True)
     static_train_scaler = preprocessing.StandardScaler().fit(static_train[0])
     static_train_scaled_X = static_train_scaler.transform(static_train[0])
     static_train_kernel = linear_kernel(static_train_scaled_X, -2) 
-    static_train_kernel = standardize(static_train_kernel)
+    #static_train_kernel = standardize(static_train_kernel)
     #Recompute the GRAM matrix
     #alpha = classifier['alpha'];
     #train_X = (alpha)*static_train_kernel + (1-alpha)*dynamic_train_kernel
@@ -63,12 +63,12 @@ def test_adjective(classifier, adjective_report ):
     dynamic_test = utilities.get_all_train_test_features(adjective, dynamic_features, train=False)
     dynamic_test_scaled_X = classifier['dynamic_scaler'].transform(dynamic_test[0])
     dynamic_kernel = linear_kernel_test(dynamic_test_scaled_X, dynamic_train_scaled_X, -2)
-    dynamic_kernel = (dynamic_kernel - classifier['dynamic_kernel_mean']) / classifier['dynamic_kernel_std']
+    #dynamic_kernel = (dynamic_kernel - classifier['dynamic_kernel_mean']) / classifier['dynamic_kernel_std']
     
     static_test = utilities.get_all_train_test_features(adjective, static_features, train=False)
     static_test_scaled_X = classifier['static_scaler'].transform(static_test[0])
     static_kernel = linear_kernel_test(static_test_scaled_X, static_train_scaled_X, -2)
-    static_kernel = (static_kernel - classifier['static_kernel_mean']) / classifier['static_kernel_std']
+    #static_kernel = (static_kernel - classifier['static_kernel_mean']) / classifier['static_kernel_std']
 
     alpha = classifier['alpha'];
 
@@ -145,7 +145,7 @@ def test_adjective(classifier, adjective_report ):
     print "%d True Positive Objects\n" % true_positives
     print "%d True Negative Objects\n" % true_negatives
     
-    return (precision, recall, f1)
+    return (alpha, precision, recall, f1)
             
 
 if __name__ == "__main__":
@@ -168,21 +168,23 @@ if __name__ == "__main__":
     adjective_f1_dict.write("d = {")
     adjective_report = open("adjective_score_report.txt", "w")
     adjective_report.write("Adjective, alpha, precision, recall, f1\n")
+    alpha_dict = defaultdict()
     precision_dict = defaultdict()
     recall_dict = defaultdict()
     f1_dict = defaultdict()
     for classifier in classifiers:
         #try:
             # Compute score for each adjective 
-            p, r, f1 = test_adjective(classifier, adjective_report)
+            a, p, r, f1 = test_adjective(classifier, adjective_report)
 
-            #if classifier['adjective'] != 'unpleasant' and classifier['adjective'] != 'sticky' and classifier['adjective'] != 'nice':
-            precs += p
-            recalls += r
-            f1s += f1
-            total += 1
+            if classifier['adjective'] != 'unpleasant' and classifier['adjective'] != 'sticky' and classifier['adjective'] != 'nice':
+                precs += p
+                recalls += r
+                f1s += f1
+                total += 1
 
 
+            alpha_dict[classifier['adjective']] = a
             precision_dict[classifier['adjective']] = p
             recall_dict[classifier['adjective']] = r
             f1_dict[classifier['adjective']] = f1
@@ -199,8 +201,8 @@ if __name__ == "__main__":
     print "Average f1s: ", f1s / total
     print "Average precision: ", precs / total
     print "Average recall: ", recalls / total
+    print alpha_dict
     print precision_dict
     print recall_dict
     print f1_dict
-
 
