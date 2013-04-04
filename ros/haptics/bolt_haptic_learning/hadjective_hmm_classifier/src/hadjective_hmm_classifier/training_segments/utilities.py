@@ -17,6 +17,7 @@ from sklearn.feature_selection import SelectPercentile, f_classif
 from sklearn.pipeline import Pipeline
 from collections import defaultdict
 
+bad_adjectives = ['unpleasant', 'sticky', 'nice']
 
 adjectives=['absorbent',
             'bumpy',
@@ -43,6 +44,10 @@ adjectives=['absorbent',
             'thick',
             'thin',
             'unpleasant']
+
+
+def filter_adjectives(a_dict):
+    return dict((adj, v) for adj, v in a_dict.iteritems() if adj not in bad_adjectives)
 
 phases = ["SQUEEZE_SET_PRESSURE_SLOW", "HOLD_FOR_10_SECONDS", "SLIDE_5CM", "MOVE_DOWN_5CM"]
 sensors = ["electrodes", "pac", "pdc", "tac"]
@@ -74,32 +79,70 @@ human_scores = {'absorbent': 0.63341,
                 'thin' : 0.44744,
                 'unpleasant' : 0.68611}
 
-mkl_scores =  {
-'compressible': 0.952381,
-'sticky': 0.384615,
-'unpleasant': 0.769231,
-'squishy': 0.909091,
-'hairy': 0.333333,
-'solid': 1.000000,
-'bumpy': 0.487805,
-'fuzzy': 0.346154,
-'nice': 0.303030,
-'absorbent': 0.370370,
-'springy': 0.370370,
-'hard': 0.983051,
-'slippery': 0.545455,
-'metallic': 0.769231,
-'cool': 0.382979,
-'soft': 0.466667,
-'thin': 0.526316,
-'porous': 0.526316,
-'rough': 0.689655,
-'textured': 0.315789,
-'smooth': 0.580645,
-'crinkly': 0.326531,
-'thick': 0.466667,
-'scratchy': 0.352941,
-}
+mkl_scores =  {'porous': 0.8695652173913044,
+               'hard': 0.846153846153846,
+               'sticky': 1.0,
+               'springy': 0.9523809523809523,
+               'squishy': 0.9206349206349207,
+               'rough': 0.6363636363636365,
+               'thick': 0.6111111111111112,
+               'metallic': 0.9473684210526316,
+               'unpleasant': 1.0,
+               'absorbent': 0.9523809523809523,
+               'nice': 1.0,
+               'hairy': 0.7499999999999999,
+               'compressible': 0.9,
+               'textured': 0.20000000000000004,
+               'bumpy': 0.888888888888889,
+               'fuzzy': 0.4,
+               'scratchy': 0,
+               'cool': 0.8235294117647058,
+               'solid': 1.0,
+               'crinkly': 1.0,
+               'smooth': 0.7142857142857143,
+               'slippery': 0.8695652173913044,
+               'thin': 1.0,
+               'soft': 0.8095238095238095}
+
+train_pos_examples = {'porous': 6,
+                      'hard': 20,
+                      'sticky': 0.5,
+                      'springy': 6,
+                      'squishy': 21,
+                      'rough': 9,
+                      'thick': 9,
+                      'metallic': 2,
+                      'unpleasant': 0.5,
+                      'absorbent': 9,
+                      'nice': 0.5,
+                      'hairy': 4,
+                      'compressible': 20,
+                      'textured': 16,
+                      'bumpy': 2,
+                      'fuzzy': 6,
+                      'scratchy': 5,
+                      'cool': 8,
+                      'solid': 22,
+                      'crinkly': 1,
+                      'smooth': 25,
+                      'slippery': 8,
+                      'thin': 1,
+                      'soft': 13}
+
+alpha_unstandard_mkl =  {'porous': 0, 'hard': 0,
+                         'sticky': 0, 'springy': 0.3, 'squishy': 0, 'rough': 0.1, 'thick': 0.1,
+                         'metallic': 0, 'unpleasant': 0, 'absorbent': 0.3, 'nice': 0,
+                         'hairy': 0.5, 'compressible': 0, 'textured': 0.3,
+                         'bumpy': 0.1, 'fuzzy': 0.1, 'scratchy': 0.3, 'cool': 0.1,
+                         'solid': 0.7, 'crinkly': 0, 'smooth': 0, 'slippery': 0,
+                         'thin': 0, 'soft': 0}
+
+sorted_adjectives = sorted(adjectives,
+                           key=lambda x:train_pos_examples[x],
+                           reverse=True)
+
+def get_ordered_values(a_dict):
+    return [a_dict[k] for k in sorted_adjectives]
 
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.

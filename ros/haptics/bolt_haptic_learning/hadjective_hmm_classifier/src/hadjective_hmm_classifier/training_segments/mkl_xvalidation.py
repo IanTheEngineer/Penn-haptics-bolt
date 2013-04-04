@@ -12,6 +12,7 @@ from sklearn import cross_validation
 from sklearn.metrics import f1_score
 from collections import defaultdict
 import time
+from safe_leave_p_out import SafeLeavePLabelOut
 
 def rbf_kernel(X, n_jobs):
     return pairwise_kernels(X, metric="rbf", n_jobs=n_jobs, gamma=0.1)
@@ -54,13 +55,13 @@ def begin_train(dynamic_path, static_path, out_path):
         dynamic_scaler = preprocessing.StandardScaler().fit(dynamic_train[0])
         dynamic_X = dynamic_scaler.transform(dynamic_train[0])
         dynamic_kernel = linear_kernel(dynamic_X, -2)
-        dynamic_kernel = standardize(dynamic_kernel)
+        #dynamic_kernel = standardize(dynamic_kernel)
 
         static_train = utilities.get_all_train_test_features(adjective, static_features) 
         static_scaler = preprocessing.StandardScaler().fit(static_train[0])
         static_X = static_scaler.transform(static_train[0])
         static_kernel = linear_kernel(static_X, -2)
-        static_kernel = standardize(static_kernel)
+        #static_kernel = standardize(static_kernel)
 
         alpha_range = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
         #alpha_range = [0.5]
@@ -96,27 +97,29 @@ def begin_train(dynamic_path, static_path, out_path):
 
 def gram_grid_search(gram, labels, object_ids=None, n_jobs=6, score_fun=f1_score, verbose = 0, refined_range=None):
 
-    if (object_ids is None) or (sum(labels) <= 10):
-        print "Cannot perform leave one out cross validation"
-        cv = 5 # 5 fold cross validation
-    else:
-        # Leave one object out cross validation
-        cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True)
+    #if (object_ids is None) or (sum(labels) <= 10):
+    #    print "Cannot perform leave one out cross validation"
+    #    cv = 5 # 5 fold cross validation
+    #else:
+    # Leave one object out cross validation
+    #cv = cross_validation.LeavePLabelOut(object_ids, p=1,indices=True)
+    leav_out = 3
+    cv = SafeLeavePLabelOut(object_ids, leav_out, 100, labels)
 
     #if refined_range != None:
     #    parameters = { 'C': refined_range_dict[c_dict[refined_range]] }
     #else:
-    #    parameters = {
+    parameters = {
     #                  #'C': np.linspace(1,1e6,1000),
     #                  #'C': np.linspace(1,1e6,100),
-    #                  'C': (1, 10, 100, 1000)
+                 'C': (1, 10, 100, 1000)
     #                  #'C': (1.0, 10, 100, 1000, 1e4, 1e5, 1e6) 
     #                  #'penalty':('l1','l2'),
-    #                  }
+                 }
 
-    parameters = { 'C': np.linspace(1,1e6,100),
+    #parameters = { 'C': np.linspace(1,1e6,100),
                   #'penalty':('l1','l2'),
-                  } 
+    #              } 
 
     # class weight normalizes the lack of positive examples
     clf = svm.SVC(class_weight='auto',kernel='precomputed')
