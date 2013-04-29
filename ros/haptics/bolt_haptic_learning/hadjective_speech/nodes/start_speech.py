@@ -55,25 +55,40 @@ if __name__ == '__main__':
     response = raw_input( color.set_green(query) + color.set_blue("\n>> ") )
 
     #import pdb; pdb.set_trace()
-    s = "It's a pleasure to meet you, %s. I am Brett1, the PR2 roe-bot." % response
+    s = "It's a pleasure to meet you, %s. I am GRASPY, the PR2 roe-bot." % response
     soundhandle.say(s,voice)
+    s = "It's a pleasure to meet you, %s. I am GRASPY, the PR2 robot." % response
     print color.set_green(s)
     rospy.sleep(5)
 
-    query = 'Shall we begin?'
-    soundhandle.say(query,voice)
-    response = raw_input( color.set_green(query) + color.set_blue("\n>> ") )
+    iteration = []
+    first_time = ['', '']
+    next_time = [', again', 'other']
+    iteration = [first_time, next_time]
+    i=0
+    while not rospy.is_shutdown():
+      if i > 0:
+        i = 1
 
-    if response.lower().find('yes') is not -1 or response.lower().find('sure') is not -1:
-        s = "Excellent! May I have an ob-ject to play with?"
+      query = 'Shall we begin%s?' %iteration[i][0]
+      soundhandle.say(query,voice)
+      response = raw_input( color.set_green(query) + color.set_blue("\n>> ") )
+
+      if response.lower().find('yes') is not -1 or response.lower().find('sure') is not -1:
+        s = "Excellent! May I have an%s ob-ject to touch?"%iteration[i][1] # Tell me when you are ready."
         soundhandle.say(s,voice)
+        s = "Excellent! May I have an%s object to touch?" %iteration[i][1] #\nTell me when you are ready."
         print color.set_green(s)
-        rospy.sleep(3)
-    else:
+        rospy.sleep(4)
+        query = "Tell me when you are ready."
+        soundhandle.say(query,voice)
+        response = raw_input(color.set_green(query) + color.set_blue("\n>> ") )
+        i = i + 1
+      else:
         s = "That's fine. I'm not going anywhere. I've got all the time in the world."
         soundhandle.say(s,voice)
         print color.set_green(s)
-        rospy.sleep(3)
+        rospy.sleep(10)
 
-    #main(sys.argv[1:])
+        #main(sys.argv[1:])
 
