@@ -1,0 +1,2600 @@
+Object kleenex_package_313_10 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly fuzzy plasticky smooth soft squishy sticky
+True posititives 0.875000, False positivies 0.125000, False negatives 0.125000
+Precision: 0.875000, Recall: 0.875000, F1: 0.875000
+Object chalkboard_eraser_406_01 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible hairy hard squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.400000
+Precision: 0.750000, Recall: 0.652174, F1: 0.697674
+Object chalkboard_eraser_406_02 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	hairy smooth squishy
+True posititives 0.666667, False positivies 0.333333, False negatives 0.600000
+Precision: 0.666667, Recall: 0.526316, F1: 0.588235
+Object chalkboard_eraser_406_03 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible scratchy smooth squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.600000
+Precision: 0.500000, Recall: 0.454545, F1: 0.476190
+Object chalkboard_eraser_406_04 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible hairy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.600000
+Precision: 1.000000, Recall: 0.625000, F1: 0.769231
+Object chalkboard_eraser_406_05 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible rough
+True posititives 0.500000, False positivies 0.500000, False negatives 0.800000
+Precision: 0.500000, Recall: 0.384615, F1: 0.434783
+Object chalkboard_eraser_406_06 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible hard rough
+True posititives 0.333333, False positivies 0.666667, False negatives 0.800000
+Precision: 0.333333, Recall: 0.294118, F1: 0.312500
+Object chalkboard_eraser_406_07 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compact compressible hairy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.400000
+Precision: 0.750000, Recall: 0.652174, F1: 0.697674
+Object chalkboard_eraser_406_08 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible hairy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object chalkboard_eraser_406_09 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compressible hairy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object pool_noodle_105_10 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object pillowcase_401_05 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible deformable soft squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.400000
+Precision: 0.750000, Recall: 0.652174, F1: 0.697674
+Object soap_dispenser_201_08 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	hollow smooth springy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object pen_case_swe_301_09 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	compressible cool hard slippery smooth sticky stiff textured
+True posititives 0.375000, False positivies 0.625000, False negatives 0.500000
+Precision: 0.375000, Recall: 0.428571, F1: 0.400000
+Object pen_case_swe_301_08 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	hard textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.666667
+Precision: 1.000000, Recall: 0.600000, F1: 0.750000
+Object pen_case_swe_301_07 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	hard smooth stiff textured
+True posititives 0.750000, False positivies 0.250000, False negatives 0.500000
+Precision: 0.750000, Recall: 0.600000, F1: 0.666667
+Object pen_case_swe_301_06 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	compact hard smooth solid sticky stiff textured
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object pen_case_swe_301_05 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	compact hard plasticky smooth solid sticky stiff textured
+True posititives 0.625000, False positivies 0.375000, False negatives 0.166667
+Precision: 0.625000, Recall: 0.789474, F1: 0.697674
+Object pen_case_swe_301_04 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	compact hard plasticky smooth solid stiff textured
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object pen_case_swe_301_03 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	hard smooth solid sticky stiff textured
+True posititives 0.666667, False positivies 0.333333, False negatives 0.333333
+Precision: 0.666667, Recall: 0.666667, F1: 0.666667
+Object pen_case_swe_301_02 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	compressible cool hard sticky stiff textured
+True posititives 0.500000, False positivies 0.500000, False negatives 0.500000
+Precision: 0.500000, Recall: 0.500000, F1: 0.500000
+Object pen_case_swe_301_01 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	hard stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object tooth_paste_box_316_10 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hard hollow solid
+True posititives 0.600000, False positivies 0.400000, False negatives 0.400000
+Precision: 0.600000, Recall: 0.600000, F1: 0.600000
+Object shelf_liner_106_07 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable fuzzy smooth soft squishy sticky thin
+True posititives 0.555556, False positivies 0.444444, False negatives 0.000000
+Precision: 0.555556, Recall: 1.000000, F1: 0.714286
+Object cookie_box_315_08 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compressible hard hollow smooth solid sticky stiff thick
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object cookie_box_315_09 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	hard hollow solid sticky stiff thin
+True posititives 0.333333, False positivies 0.666667, False negatives 0.600000
+Precision: 0.333333, Recall: 0.357143, F1: 0.344828
+Object cookie_box_315_06 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compact compressible cool hard smooth solid sticky stiff thick
+True posititives 0.555556, False positivies 0.444444, False negatives 0.000000
+Precision: 0.555556, Recall: 1.000000, F1: 0.714286
+Object cookie_box_315_07 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	hard sticky stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.600000
+Precision: 0.666667, Recall: 0.526316, F1: 0.588235
+Object cookie_box_315_04 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compact compressible cool hard smooth sticky thick
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object cookie_box_315_05 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compact compressible hard smooth solid sticky thick
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object cookie_box_315_02 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compressible hard smooth sticky thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object cookie_box_315_03 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compressible cool hard smooth sticky thick
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object cookie_box_315_01 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compact compressible cool hard plasticky smooth sticky thick
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object car_sponge_101_04 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object toilet_paper_309_10 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable fuzzy nice smooth soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object mdf_320_10 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact compressible hard slippery smooth solid sticky stiff thick
+True posititives 0.555556, False positivies 0.444444, False negatives 0.000000
+Precision: 0.555556, Recall: 1.000000, F1: 0.714286
+Object soap_dispenser_201_01 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	hard plasticky smooth springy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.500000
+Precision: 0.750000, Recall: 0.600000, F1: 0.666667
+Object soap_dispenser_201_07 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	hollow smooth springy sticky stiff unpleasant
+True posititives 0.666667, False positivies 0.333333, False negatives 0.333333
+Precision: 0.666667, Recall: 0.666667, F1: 0.666667
+Object shower_cloth_208_10 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy smooth soft squishy thin
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object coco_liner_502_07 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy hairy meshy scratchy smooth squishy unpleasant
+True posititives 0.888889, False positivies 0.111111, False negatives 0.111111
+Precision: 0.888889, Recall: 0.888889, F1: 0.888889
+Object coco_liner_502_06 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fuzzy meshy scratchy smooth squishy unpleasant
+True posititives 0.857143, False positivies 0.142857, False negatives 0.333333
+Precision: 0.857143, Recall: 0.720000, F1: 0.782609
+Object coco_liner_502_05 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy meshy scratchy smooth squishy unpleasant
+True posititives 0.875000, False positivies 0.125000, False negatives 0.222222
+Precision: 0.875000, Recall: 0.797468, F1: 0.834437
+Object coco_liner_502_04 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy hairy meshy scratchy smooth squishy unpleasant
+True posititives 0.888889, False positivies 0.111111, False negatives 0.111111
+Precision: 0.888889, Recall: 0.888889, F1: 0.888889
+Object coco_liner_502_03 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy hairy meshy scratchy squishy unpleasant
+True posititives 1.000000, False positivies 0.000000, False negatives 0.111111
+Precision: 1.000000, Recall: 0.900000, F1: 0.947368
+Object coco_liner_502_02 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy hairy meshy scratchy smooth springy squishy unpleasant
+True posititives 0.800000, False positivies 0.200000, False negatives 0.111111
+Precision: 0.800000, Recall: 0.878049, F1: 0.837209
+Object coco_liner_502_01 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fuzzy hairy meshy scratchy soft squishy unpleasant
+True posititives 0.875000, False positivies 0.125000, False negatives 0.222222
+Precision: 0.875000, Recall: 0.797468, F1: 0.834437
+Object car_sponge_101_10 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object coco_liner_502_09 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy hairy meshy scratchy smooth squishy unpleasant
+True posititives 0.888889, False positivies 0.111111, False negatives 0.111111
+Precision: 0.888889, Recall: 0.888889, F1: 0.888889
+Object coco_liner_502_08 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous hairy meshy scratchy smooth squishy unpleasant
+True posititives 0.875000, False positivies 0.125000, False negatives 0.222222
+Precision: 0.875000, Recall: 0.797468, F1: 0.834437
+Object pillowcase_401_01 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible deformable squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object black_foam_110_08 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible fuzzy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.750000
+Precision: 0.500000, Recall: 0.400000, F1: 0.444444
+Object black_foam_110_09 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible scratchy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object black_foam_110_06 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible scratchy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object black_foam_110_07 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible scratchy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object black_foam_110_04 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible smooth springy squishy
+True posititives 0.250000, False positivies 0.750000, False negatives 0.750000
+Precision: 0.250000, Recall: 0.250000, F1: 0.250000
+Object black_foam_110_05 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	scratchy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.750000
+Precision: 1.000000, Recall: 0.571429, F1: 0.727273
+Object black_foam_110_02 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible
+True posititives 1.000000, False positivies 0.000000, False negatives 0.750000
+Precision: 1.000000, Recall: 0.571429, F1: 0.727273
+Object black_foam_110_03 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	solid
+True posititives 0.000000, False positivies 1.000000, False negatives 1.000000
+Precision: 0.000000, Recall: 0.000000, F1: 0.000000
+Object black_foam_110_01 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	scratchy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.750000
+Precision: 1.000000, Recall: 0.571429, F1: 0.727273
+Object pillowcase_401_10 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible deformable fuzzy scratchy squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.400000
+Precision: 0.600000, Recall: 0.600000, F1: 0.600000
+Object dish_cloth_407_09 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible soft squishy sticky thin
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object dish_cloth_407_08 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy hairy slippery smooth soft springy sticky thin
+True posititives 0.444444, False positivies 0.555556, False negatives 0.000000
+Precision: 0.444444, Recall: 1.000000, F1: 0.615385
+Object dish_cloth_407_07 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible plasticky soft squishy thin
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object dish_cloth_407_06 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy slippery smooth soft squishy sticky
+True posititives 0.428571, False positivies 0.571429, False negatives 0.250000
+Precision: 0.428571, Recall: 0.631579, F1: 0.510638
+Object dish_cloth_407_05 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy smooth soft squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object dish_cloth_407_04 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy soft squishy thin
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object dish_cloth_407_03 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy nice smooth soft squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.250000
+Precision: 0.500000, Recall: 0.666667, F1: 0.571429
+Object dish_cloth_407_02 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy soft squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object dish_cloth_407_01 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy hairy soft squishy thin
+True posititives 0.666667, False positivies 0.333333, False negatives 0.000000
+Precision: 0.666667, Recall: 1.000000, F1: 0.800000
+Object soap_dispenser_201_10 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	hard sticky stiff
+True posititives 0.333333, False positivies 0.666667, False negatives 0.833333
+Precision: 0.333333, Recall: 0.285714, F1: 0.307692
+Object marker_erasers_113_06 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	fibrous fuzzy nice smooth squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object bubble_wrap_214_02 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly nice squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object marker_erasers_113_04 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous fuzzy plasticky slippery squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.250000
+Precision: 0.500000, Recall: 0.666667, F1: 0.571429
+Object marker_erasers_113_05 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous fuzzy smooth squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object marker_erasers_113_02 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous springy squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.500000
+Precision: 0.500000, Recall: 0.500000, F1: 0.500000
+Object marker_erasers_113_03 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous fuzzy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object marker_erasers_113_01 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fuzzy smooth squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.500000
+Precision: 0.500000, Recall: 0.500000, F1: 0.500000
+Object marker_erasers_113_08 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous fuzzy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object marker_erasers_113_09 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous fuzzy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object kitchen_sponge_114_07 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object bubble_wrap_214_07 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly fibrous fuzzy squishy
+True posititives 0.666667, False positivies 0.333333, False negatives 0.200000
+Precision: 0.666667, Recall: 0.769231, F1: 0.714286
+Object bubble_wrap_214_04 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly fuzzy squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.200000
+Precision: 0.800000, Recall: 0.800000, F1: 0.800000
+Object bubble_wrap_214_05 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly scratchy squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.200000
+Precision: 0.800000, Recall: 0.800000, F1: 0.800000
+Object eco_flex_stiff_509_10 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object foam_sample_108_10 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact compressible hard smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object placemat_403_05 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	fuzzy nice smooth squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.600000
+Precision: 0.500000, Recall: 0.454545, F1: 0.476190
+Object placemat_403_04 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible plasticky thin
+True posititives 0.666667, False positivies 0.333333, False negatives 0.600000
+Precision: 0.666667, Recall: 0.526316, F1: 0.588235
+Object placemat_403_07 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible smooth squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object placemat_403_06 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible fuzzy sticky
+True posititives 0.666667, False positivies 0.333333, False negatives 0.600000
+Precision: 0.666667, Recall: 0.526316, F1: 0.588235
+Object placemat_403_01 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible smooth squishy sticky thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object oil_bottle_601_07 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	cool hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object placemat_403_03 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible squishy sticky thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object placemat_403_02 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object placemat_403_09 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.600000
+Precision: 1.000000, Recall: 0.625000, F1: 0.769231
+Object placemat_403_08 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible smooth sticky thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object index_card_case_206_08 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible hollow plasticky slippery springy sticky thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object index_card_case_206_09 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible cool hard hollow plasticky scratchy smooth solid springy sticky thin
+True posititives 0.636364, False positivies 0.363636, False negatives 0.125000
+Precision: 0.636364, Recall: 0.835821, F1: 0.722581
+Object programming_language_book_303_10 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object index_card_case_206_02 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible fuzzy hollow plasticky smooth springy sticky thin
+True posititives 0.875000, False positivies 0.125000, False negatives 0.125000
+Precision: 0.875000, Recall: 0.875000, F1: 0.875000
+Object index_card_case_206_03 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compact compressible hollow nice plasticky scratchy slippery smooth solid springy squishy sticky thin
+True posititives 0.615385, False positivies 0.384615, False negatives 0.000000
+Precision: 0.615385, Recall: 1.000000, F1: 0.761905
+Object index_card_case_206_01 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible cool hollow plasticky slippery smooth solid springy sticky
+True posititives 0.777778, False positivies 0.222222, False negatives 0.125000
+Precision: 0.777778, Recall: 0.861538, F1: 0.817518
+Object index_card_case_206_06 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compact compressible cool hard hollow nice plasticky scratchy slippery smooth solid springy squishy sticky thin
+True posititives 0.533333, False positivies 0.466667, False negatives 0.000000
+Precision: 0.533333, Recall: 1.000000, F1: 0.695652
+Object index_card_case_206_07 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible hollow nice plasticky slippery smooth springy squishy sticky thin
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object index_card_case_206_04 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible hollow nice plasticky slippery smooth solid springy squishy sticky thin
+True posititives 0.727273, False positivies 0.272727, False negatives 0.000000
+Precision: 0.727273, Recall: 1.000000, F1: 0.842105
+Object index_card_case_206_05 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible hollow plasticky slippery smooth springy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object shelf_liner_106_09 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable smooth soft squishy sticky thick thin
+True posititives 0.555556, False positivies 0.444444, False negatives 0.000000
+Precision: 0.555556, Recall: 1.000000, F1: 0.714286
+Object bubble_wrap_214_08 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object bubble_wrap_214_09 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly nice smooth squishy sticky
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object kitchen_sponge_114_08 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object kitchen_sponge_114_09 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object kitchen_sponge_114_04 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object kitchen_sponge_114_05 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible fuzzy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.500000
+Precision: 0.750000, Recall: 0.600000, F1: 0.666667
+Object kitchen_sponge_114_06 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object bubble_wrap_214_01 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object bubble_wrap_214_06 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object kitchen_sponge_114_01 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.333333
+Precision: 0.800000, Recall: 0.705882, F1: 0.750000
+Object kitchen_sponge_114_02 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object kitchen_sponge_114_03 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object flour_sack_410_09 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object flour_sack_410_08 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible soft springy squishy thin
+True posititives 0.600000, False positivies 0.400000, False negatives 0.000000
+Precision: 0.600000, Recall: 1.000000, F1: 0.750000
+Object flour_sack_410_07 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible soft springy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object flour_sack_410_06 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible fuzzy smooth soft squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.000000
+Precision: 0.600000, Recall: 1.000000, F1: 0.750000
+Object flour_sack_410_05 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible fuzzy soft squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object flour_sack_410_04 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object flour_sack_410_03 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible smooth soft squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object flour_sack_410_02 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible fuzzy smooth soft squishy thin
+True posititives 0.500000, False positivies 0.500000, False negatives 0.000000
+Precision: 0.500000, Recall: 1.000000, F1: 0.666667
+Object flour_sack_410_01 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible fuzzy smooth soft squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.000000
+Precision: 0.600000, Recall: 1.000000, F1: 0.750000
+Object tooth_paste_box_314_10 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object toilet_paper_309_09 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable fuzzy nice smooth soft squishy sticky unpleasant
+True posititives 0.777778, False positivies 0.222222, False negatives 0.000000
+Precision: 0.777778, Recall: 1.000000, F1: 0.875000
+Object toilet_paper_309_08 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object toilet_paper_309_01 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.571429
+Precision: 1.000000, Recall: 0.636364, F1: 0.777778
+Object toilet_paper_309_03 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object toilet_paper_309_02 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable nice smooth soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object toilet_paper_309_05 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable fuzzy smooth soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object toilet_paper_309_04 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable fuzzy nice smooth soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object toilet_paper_309_07 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object toilet_paper_309_06 has adjectives compressible deformable fuzzy nice smooth soft squishy
+Positive classifiers:
+	compressible deformable nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object cutting_board_213_09 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object cutting_board_213_08 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object cutting_board_213_01 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard plasticky smooth solid stiff textured
+True posititives 0.875000, False positivies 0.125000, False negatives 0.125000
+Precision: 0.875000, Recall: 0.875000, F1: 0.875000
+Object cutting_board_213_03 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object cutting_board_213_02 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact compressible cool hard smooth solid stiff textured thick
+True posititives 0.777778, False positivies 0.222222, False negatives 0.125000
+Precision: 0.777778, Recall: 0.861538, F1: 0.817518
+Object cutting_board_213_05 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard smooth solid sticky stiff textured
+True posititives 0.875000, False positivies 0.125000, False negatives 0.125000
+Precision: 0.875000, Recall: 0.875000, F1: 0.875000
+Object cutting_board_213_04 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard smooth solid stiff textured thick
+True posititives 0.875000, False positivies 0.125000, False negatives 0.125000
+Precision: 0.875000, Recall: 0.875000, F1: 0.875000
+Object cutting_board_213_07 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object cutting_board_213_06 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object shelf_liner_106_01 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable fuzzy smooth squishy thin
+True posititives 0.571429, False positivies 0.428571, False negatives 0.200000
+Precision: 0.571429, Recall: 0.740741, F1: 0.645161
+Object aluminum_bar_701_10 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	cool gritty hard metallic slippery smooth solid stiff
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object yellow_soft_foam_103_10 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object hollow_plastic_box_216_06 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact compressible hard plasticky slippery smooth solid stiff thick
+True posititives 0.555556, False positivies 0.444444, False negatives 0.166667
+Precision: 0.555556, Recall: 0.769231, F1: 0.645161
+Object hollow_plastic_box_216_07 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	hard plasticky smooth sticky stiff thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object hollow_plastic_box_216_04 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact hard smooth solid stiff thin
+True posititives 0.500000, False positivies 0.500000, False negatives 0.500000
+Precision: 0.500000, Recall: 0.500000, F1: 0.500000
+Object hollow_plastic_box_216_05 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	hard plasticky smooth solid stiff thick
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object hollow_plastic_box_216_02 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact hard smooth solid stiff thin
+True posititives 0.500000, False positivies 0.500000, False negatives 0.500000
+Precision: 0.500000, Recall: 0.500000, F1: 0.500000
+Object hollow_plastic_box_216_03 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	cool hard solid thick
+True posititives 0.500000, False positivies 0.500000, False negatives 0.666667
+Precision: 0.500000, Recall: 0.428571, F1: 0.461538
+Object hollow_plastic_box_216_01 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact hard plasticky rough smooth solid sticky stiff
+True posititives 0.625000, False positivies 0.375000, False negatives 0.166667
+Precision: 0.625000, Recall: 0.789474, F1: 0.697674
+Object non_bumpy_foam_119_10 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy smooth soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object hollow_plastic_box_216_08 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact hard plasticky smooth solid sticky stiff thick
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object hollow_plastic_box_216_09 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact hard smooth solid stiff thick
+True posititives 0.666667, False positivies 0.333333, False negatives 0.333333
+Precision: 0.666667, Recall: 0.666667, F1: 0.666667
+Object mdf_sample_320_10 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object shelf_liner_106_04 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object microfiber_applicator_pad_111_10 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object shelf_liner_106_05 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable soft squishy sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object chalkboard_eraser_406_10 has adjectives compressible fibrous fuzzy hairy squishy
+Positive classifiers:
+	compact fibrous hairy rough squishy stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.400000
+Precision: 0.500000, Recall: 0.555556, F1: 0.526316
+Object mdf_sample_320_06 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object mdf_sample_320_07 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard plasticky smooth solid sticky stiff textured
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object mdf_sample_320_04 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object mdf_sample_320_05 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact cool hard plasticky smooth solid sticky stiff
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object kleenex_package_313_04 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly plasticky slippery smooth soft squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object chalkboard_eraser_408_07 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact compressible hard solid stiff
+True posititives 0.800000, False positivies 0.200000, False negatives 0.500000
+Precision: 0.800000, Recall: 0.615385, F1: 0.695652
+Object pen_case_swe_301_10 has adjectives compact hard solid stiff textured thin
+Positive classifiers:
+	hard smooth solid stiff textured
+True posititives 0.800000, False positivies 0.200000, False negatives 0.333333
+Precision: 0.800000, Recall: 0.705882, F1: 0.750000
+Object mdf_sample_320_08 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object chalkboard_eraser_408_05 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact hard slippery smooth solid stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.625000
+Precision: 0.500000, Recall: 0.444444, F1: 0.470588
+Object shelf_liner_106_08 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable smooth soft squishy sticky
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object soap_dispenser_201_03 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	compressible hollow plasticky smooth springy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object polishing_serum_container_218_10 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	hard plasticky slippery smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object kleenex_package_313_01 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly hairy nice plasticky smooth soft squishy sticky
+True posititives 0.777778, False positivies 0.222222, False negatives 0.125000
+Precision: 0.777778, Recall: 0.861538, F1: 0.817518
+Object chalkboard_eraser_408_01 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact compressible slippery smooth solid stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.500000
+Precision: 0.666667, Recall: 0.571429, F1: 0.615385
+Object shower_cloth_208_08 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous fuzzy meshy nice scratchy squishy thin
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object shower_cloth_208_09 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy soft squishy thin
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object shower_cloth_208_04 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy nice scratchy squishy thin
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object shower_cloth_208_05 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy scratchy squishy thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object shower_cloth_208_06 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous fuzzy meshy nice scratchy squishy thin
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object shower_cloth_208_07 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy nice scratchy soft squishy thin
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object shower_cloth_208_01 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy scratchy soft squishy thin
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object shower_cloth_208_02 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous meshy scratchy squishy thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object shower_cloth_208_03 has adjectives compressible fibrous meshy scratchy squishy thin
+Positive classifiers:
+	compressible fibrous fuzzy meshy scratchy squishy thin
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object car_sponge_101_08 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object car_sponge_101_09 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice smooth soft squishy thick
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object coco_liner_502_10 has adjectives compressible fibrous fuzzy hairy meshy rough scratchy squishy unpleasant
+Positive classifiers:
+	compressible fibrous fuzzy hairy meshy scratchy smooth squishy unpleasant
+True posititives 0.888889, False positivies 0.111111, False negatives 0.111111
+Precision: 0.888889, Recall: 0.888889, F1: 0.888889
+Object car_sponge_101_05 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object car_sponge_101_06 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object car_sponge_101_07 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object car_sponge_101_01 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy nice soft squishy sticky thick
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object car_sponge_101_02 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object car_sponge_101_03 has adjectives compressible fuzzy nice soft squishy thick
+Positive classifiers:
+	compressible fuzzy soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object dish_cloth_407_10 has adjectives compressible fuzzy soft thin
+Positive classifiers:
+	compressible fuzzy hairy soft squishy thin
+True posititives 0.666667, False positivies 0.333333, False negatives 0.000000
+Precision: 0.666667, Recall: 1.000000, F1: 0.800000
+Object car_sponge_109_10 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable fuzzy soft squishy thick thin
+True posititives 0.714286, False positivies 0.285714, False negatives 0.285714
+Precision: 0.714286, Recall: 0.714286, F1: 0.714286
+Object shelf_liner_106_03 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable fuzzy soft squishy
+True posititives 0.666667, False positivies 0.333333, False negatives 0.200000
+Precision: 0.666667, Recall: 0.769231, F1: 0.714286
+Object pinball_launcher_703_04 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact hard metallic nice slippery solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.300000
+Precision: 1.000000, Recall: 0.769231, F1: 0.869565
+Object pinball_launcher_703_05 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact hard metallic nice smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object pinball_launcher_703_06 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard metallic slippery smooth stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object pinball_launcher_703_07 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard metallic slippery smooth solid stiff textured
+True posititives 1.000000, False positivies 0.000000, False negatives 0.100000
+Precision: 1.000000, Recall: 0.909091, F1: 0.952381
+Object pinball_launcher_703_01 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact hard metallic scratchy smooth solid stiff textured
+True posititives 0.875000, False positivies 0.125000, False negatives 0.300000
+Precision: 0.875000, Recall: 0.744681, F1: 0.804598
+Object pinball_launcher_703_02 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	hard metallic smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object pinball_launcher_703_03 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard metallic slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object pinball_launcher_703_08 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	hard metallic nice slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.300000
+Precision: 1.000000, Recall: 0.769231, F1: 0.869565
+Object pinball_launcher_703_09 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact compressible cool hard metallic slippery smooth stiff textured
+True posititives 0.888889, False positivies 0.111111, False negatives 0.200000
+Precision: 0.888889, Recall: 0.816327, F1: 0.851064
+Object soap_dispenser_201_05 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	smooth stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.833333
+Precision: 0.500000, Recall: 0.375000, F1: 0.428571
+Object foam_sample_108_09 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact slippery smooth
+True posititives 0.666667, False positivies 0.333333, False negatives 0.600000
+Precision: 0.666667, Recall: 0.526316, F1: 0.588235
+Object foam_sample_108_08 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact compressible hard smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object foam_sample_108_05 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object foam_sample_108_04 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object foam_sample_108_07 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object foam_sample_108_06 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	cool hard smooth solid stiff
+True posititives 0.800000, False positivies 0.200000, False negatives 0.200000
+Precision: 0.800000, Recall: 0.800000, F1: 0.800000
+Object foam_sample_108_01 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object foam_sample_108_03 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object foam_sample_108_02 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact compressible hard smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object placemat_403_10 has adjectives compressible smooth squishy sticky thin
+Positive classifiers:
+	compressible slippery smooth squishy sticky thin
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object soap_dispenser_201_04 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	compact hard hollow plasticky smooth solid springy sticky
+True posititives 0.625000, False positivies 0.375000, False negatives 0.166667
+Precision: 0.625000, Recall: 0.789474, F1: 0.697674
+Object index_card_case_206_10 has adjectives compressible hollow plasticky slippery smooth springy sticky thin
+Positive classifiers:
+	compressible hollow plasticky slippery smooth springy sticky thin
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object soap_dispenser_201_02 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	compact compressible hard hollow smooth solid springy sticky stiff
+True posititives 0.555556, False positivies 0.444444, False negatives 0.166667
+Precision: 0.555556, Recall: 0.769231, F1: 0.645161
+Object bubble_wrap_214_10 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly fuzzy smooth squishy sticky
+True posititives 0.571429, False positivies 0.428571, False negatives 0.200000
+Precision: 0.571429, Recall: 0.740741, F1: 0.645161
+Object bubble_wrap_214_03 has adjectives bumpy compressible crinkly nice squishy
+Positive classifiers:
+	bumpy compressible crinkly squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object gray_soft_foam_104_10 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object flour_sack_410_10 has adjectives compressible soft squishy
+Positive classifiers:
+	compressible smooth soft squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object brick_508_08 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object brick_508_09 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	gritty hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object brick_508_02 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	compact hard rough stiff
+True posititives 0.750000, False positivies 0.250000, False negatives 0.400000
+Precision: 0.750000, Recall: 0.652174, F1: 0.697674
+Object brick_508_03 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object brick_508_01 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard rough solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object brick_508_06 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	rough stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.600000
+Precision: 1.000000, Recall: 0.625000, F1: 0.769231
+Object brick_508_07 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard rough solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object brick_508_04 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object brick_508_05 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard rough solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object package_foam_120_10 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.666667
+Precision: 1.000000, Recall: 0.600000, F1: 0.750000
+Object bottle_cover_115_10 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible nice squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object oil_bottle_601_09 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	compact cool hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object oil_bottle_601_08 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object oil_bottle_601_01 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object oil_bottle_601_03 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object oil_bottle_601_02 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	cool hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object oil_bottle_601_05 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object oil_bottle_601_04 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	cool hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object acrylic_211_10 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object oil_bottle_601_06 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.285714
+Precision: 0.833333, Recall: 0.744681, F1: 0.786517
+Object tooth_paste_box_314_07 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible cool hard hollow smooth sticky stiff
+True posititives 0.571429, False positivies 0.428571, False negatives 0.000000
+Precision: 0.571429, Recall: 1.000000, F1: 0.727273
+Object mdf_sample_320_02 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object mdf_sample_320_03 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object shelf_liner_106_06 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable smooth soft squishy thick
+True posititives 0.571429, False positivies 0.428571, False negatives 0.200000
+Precision: 0.571429, Recall: 0.740741, F1: 0.645161
+Object mdf_sample_320_01 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard plasticky smooth solid springy sticky stiff thick
+True posititives 0.555556, False positivies 0.444444, False negatives 0.000000
+Precision: 0.555556, Recall: 1.000000, F1: 0.714286
+Object kleenex_package_313_08 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly fuzzy plasticky slippery smooth soft squishy sticky
+True posititives 0.888889, False positivies 0.111111, False negatives 0.000000
+Precision: 0.888889, Recall: 1.000000, F1: 0.941176
+Object kleenex_package_313_09 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly hairy nice slippery smooth squishy sticky thin unpleasant
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object chalkboard_eraser_408_08 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compressible solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.625000
+Precision: 1.000000, Recall: 0.615385, F1: 0.761905
+Object chalkboard_eraser_408_09 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact compressible smooth solid stiff
+True posititives 0.800000, False positivies 0.200000, False negatives 0.500000
+Precision: 0.800000, Recall: 0.615385, F1: 0.695652
+Object chalkboard_eraser_408_06 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact hard slippery smooth solid stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.625000
+Precision: 0.500000, Recall: 0.444444, F1: 0.470588
+Object kleenex_package_313_05 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly plasticky smooth soft squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object chalkboard_eraser_408_04 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact smooth solid stiff
+True posititives 0.750000, False positivies 0.250000, False negatives 0.625000
+Precision: 0.750000, Recall: 0.545455, F1: 0.631579
+Object mdf_sample_320_09 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object chalkboard_eraser_408_02 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compact compressible smooth solid stiff
+True posititives 0.800000, False positivies 0.200000, False negatives 0.500000
+Precision: 0.800000, Recall: 0.615385, F1: 0.695652
+Object chalkboard_eraser_408_03 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compressible solid
+True posititives 1.000000, False positivies 0.000000, False negatives 0.750000
+Precision: 1.000000, Recall: 0.571429, F1: 0.727273
+Object kleenex_package_313_02 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly nice plasticky slippery smooth soft squishy sticky thin unpleasant
+True posititives 0.727273, False positivies 0.272727, False negatives 0.000000
+Precision: 0.727273, Recall: 1.000000, F1: 0.842105
+Object kleenex_package_313_03 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly plasticky slippery smooth soft squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object notepad_319_04 has adjectives hard solid stiff
+Positive classifiers:
+	fibrous smooth thin
+True posititives 0.000000, False positivies 1.000000, False negatives 1.000000
+Precision: 0.000000, Recall: 0.000000, F1: 0.000000
+Object notepad_319_05 has adjectives hard solid stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object notepad_319_06 has adjectives hard solid stiff
+Positive classifiers:
+	hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object notepad_319_07 has adjectives hard solid stiff
+Positive classifiers:
+	compressible hard slippery smooth stiff
+True posititives 0.400000, False positivies 0.600000, False negatives 0.333333
+Precision: 0.400000, Recall: 0.545455, F1: 0.461538
+Object notepad_319_01 has adjectives hard solid stiff
+Positive classifiers:
+	hard smooth solid springy stiff
+True posititives 0.600000, False positivies 0.400000, False negatives 0.000000
+Precision: 0.600000, Recall: 1.000000, F1: 0.750000
+Object notepad_319_02 has adjectives hard solid stiff
+Positive classifiers:
+	compressible cool hard smooth stiff
+True posititives 0.400000, False positivies 0.600000, False negatives 0.333333
+Precision: 0.400000, Recall: 0.545455, F1: 0.461538
+Object notepad_319_03 has adjectives hard solid stiff
+Positive classifiers:
+	fibrous hard
+True posititives 0.500000, False positivies 0.500000, False negatives 0.666667
+Precision: 0.500000, Recall: 0.428571, F1: 0.461538
+Object notepad_319_08 has adjectives hard solid stiff
+Positive classifiers:
+	hard smooth solid sticky stiff
+True posititives 0.600000, False positivies 0.400000, False negatives 0.000000
+Precision: 0.600000, Recall: 1.000000, F1: 0.750000
+Object notepad_319_09 has adjectives hard solid stiff
+Positive classifiers:
+	compact compressible cool hard hollow smooth solid sticky stiff
+True posititives 0.333333, False positivies 0.666667, False negatives 0.000000
+Precision: 0.333333, Recall: 1.000000, F1: 0.500000
+Object microfiber_applicator_pad_111_09 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object microfiber_applicator_pad_111_08 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object microfiber_applicator_pad_111_01 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy gritty slippery soft squishy
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object yellow_soft_foam_103_09 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object microfiber_applicator_pad_111_03 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object microfiber_applicator_pad_111_02 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object microfiber_applicator_pad_111_05 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant bumpy compressible fuzzy nice soft squishy
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object microfiber_applicator_pad_111_04 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy nice soft squishy stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object microfiber_applicator_pad_111_07 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object microfiber_applicator_pad_111_06 has adjectives absorbant compressible fuzzy soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object polishing_serum_container_218_09 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compressible cool hard hollow plasticky slippery smooth sticky stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.000000
+Precision: 0.666667, Recall: 1.000000, F1: 0.800000
+Object polishing_serum_container_218_08 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compact compressible hard plasticky smooth squishy stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object polishing_serum_container_218_07 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compressible hard smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object polishing_serum_container_218_06 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compact hard plasticky smooth solid stiff textured
+True posititives 0.571429, False positivies 0.428571, False negatives 0.333333
+Precision: 0.571429, Recall: 0.631579, F1: 0.600000
+Object polishing_serum_container_218_05 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compact hard plasticky slippery smooth solid stiff unpleasant
+True posititives 0.625000, False positivies 0.375000, False negatives 0.166667
+Precision: 0.625000, Recall: 0.789474, F1: 0.697674
+Object polishing_serum_container_218_04 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compact hard plasticky slippery smooth solid stiff textured
+True posititives 0.625000, False positivies 0.375000, False negatives 0.166667
+Precision: 0.625000, Recall: 0.789474, F1: 0.697674
+Object polishing_serum_container_218_03 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compact hard plasticky smooth solid stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.333333
+Precision: 0.666667, Recall: 0.666667, F1: 0.666667
+Object polishing_serum_container_218_02 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	hard
+True posititives 1.000000, False positivies 0.000000, False negatives 0.833333
+Precision: 1.000000, Recall: 0.545455, F1: 0.705882
+Object polishing_serum_container_218_01 has adjectives compressible hard plasticky slippery smooth stiff
+Positive classifiers:
+	compact cool hard hollow plasticky slippery smooth solid sticky stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.166667
+Precision: 0.500000, Recall: 0.750000, F1: 0.600000
+Object loreal_box_317_03 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow slippery smooth sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object loreal_box_317_02 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible hollow smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object loreal_box_317_01 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object loreal_box_317_07 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible hollow smooth solid sticky stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.200000
+Precision: 0.666667, Recall: 0.769231, F1: 0.714286
+Object loreal_box_317_06 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object loreal_box_317_05 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object loreal_box_317_04 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object loreal_box_317_09 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compact compressible hollow smooth sticky stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.200000
+Precision: 0.666667, Recall: 0.769231, F1: 0.714286
+Object loreal_box_317_08 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object tarp_202_10 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object pinball_launcher_703_10 has adjectives compact cool hard metallic nice slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard metallic slippery smooth solid sticky stiff textured
+True posititives 0.900000, False positivies 0.100000, False negatives 0.100000
+Precision: 0.900000, Recall: 0.900000, F1: 0.900000
+Object car_sponge_109_04 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable fuzzy soft squishy thick
+True posititives 0.833333, False positivies 0.166667, False negatives 0.285714
+Precision: 0.833333, Recall: 0.744681, F1: 0.786517
+Object bumpy_foam_118_10 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fuzzy nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object car_sponge_109_06 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable fuzzy soft squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.428571
+Precision: 0.800000, Recall: 0.651163, F1: 0.717949
+Object car_sponge_109_07 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object car_sponge_109_01 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object car_sponge_109_02 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object car_sponge_109_03 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable fuzzy plasticky soft squishy thick
+True posititives 0.714286, False positivies 0.285714, False negatives 0.285714
+Precision: 0.714286, Recall: 0.714286, F1: 0.714286
+Object car_sponge_109_08 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object car_sponge_109_09 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object cologne_container__602_03 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	hard slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object cologne_container__602_02 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.857143
+Precision: 1.000000, Recall: 0.538462, F1: 0.700000
+Object cologne_container__602_01 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object cologne_container__602_07 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.285714
+Precision: 0.833333, Recall: 0.744681, F1: 0.786517
+Object cologne_container__602_06 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	compact cool hard slippery smooth solid stiff thick
+True posititives 0.875000, False positivies 0.125000, False negatives 0.000000
+Precision: 0.875000, Recall: 1.000000, F1: 0.933333
+Object cologne_container__602_05 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	hard slippery smooth sticky stiff
+True posititives 0.800000, False positivies 0.200000, False negatives 0.428571
+Precision: 0.800000, Recall: 0.651163, F1: 0.717949
+Object concrete_504_08 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact cool hard smooth solid stiff unpleasant
+True posititives 0.857143, False positivies 0.142857, False negatives 0.333333
+Precision: 0.857143, Recall: 0.720000, F1: 0.782609
+Object concrete_504_07 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact hard rough smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.444444
+Precision: 0.833333, Recall: 0.652174, F1: 0.731707
+Object concrete_504_06 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact cool hard smooth solid stiff unpleasant
+True posititives 0.857143, False positivies 0.142857, False negatives 0.333333
+Precision: 0.857143, Recall: 0.720000, F1: 0.782609
+Object cologne_container__602_09 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	compact compressible hard slippery smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.142857
+Precision: 0.857143, Recall: 0.857143, F1: 0.857143
+Object cologne_container__602_08 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	compact hard smooth solid stiff thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object concrete_504_03 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact cool hard rough smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.333333
+Precision: 0.857143, Recall: 0.720000, F1: 0.782609
+Object concrete_504_02 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact cool gritty hard smooth solid stiff unpleasant
+True posititives 0.875000, False positivies 0.125000, False negatives 0.222222
+Precision: 0.875000, Recall: 0.797468, F1: 0.834437
+Object concrete_504_01 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact hard rough solid stiff unpleasant
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object steel_vase_702_09 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.142857
+Precision: 0.857143, Recall: 0.857143, F1: 0.857143
+Object steel_vase_702_08 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact hard metallic smooth solid sticky stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.142857
+Precision: 0.857143, Recall: 0.857143, F1: 0.857143
+Object steel_vase_702_03 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.142857
+Precision: 0.857143, Recall: 0.857143, F1: 0.857143
+Object steel_vase_702_02 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact hard metallic slippery smooth solid stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.285714
+Precision: 0.714286, Recall: 0.714286, F1: 0.714286
+Object steel_vase_702_01 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid sticky stiff
+True posititives 0.875000, False positivies 0.125000, False negatives 0.000000
+Precision: 0.875000, Recall: 1.000000, F1: 0.933333
+Object steel_vase_702_07 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.142857
+Precision: 0.857143, Recall: 0.857143, F1: 0.857143
+Object steel_vase_702_06 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.142857
+Precision: 0.857143, Recall: 0.857143, F1: 0.857143
+Object steel_vase_702_05 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	cool hard metallic smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object steel_vase_702_04 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid sticky stiff
+True posititives 0.875000, False positivies 0.125000, False negatives 0.000000
+Precision: 0.875000, Recall: 1.000000, F1: 0.933333
+Object loofah_503_10 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible hard solid
+True posititives 0.333333, False positivies 0.666667, False negatives 0.857143
+Precision: 0.333333, Recall: 0.280000, F1: 0.304348
+Object cork_board_501_09 has adjectives compact hard solid stiff
+Positive classifiers:
+	hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object cork_board_501_08 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact compressible hard hollow solid sticky stiff
+True posititives 0.571429, False positivies 0.428571, False negatives 0.000000
+Precision: 0.571429, Recall: 1.000000, F1: 0.727273
+Object cork_board_501_07 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object cork_board_501_06 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object cork_board_501_05 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact hard stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object cork_board_501_04 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact cool hard smooth solid stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.000000
+Precision: 0.666667, Recall: 1.000000, F1: 0.800000
+Object cork_board_501_03 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact hard smooth
+True posititives 0.666667, False positivies 0.333333, False negatives 0.500000
+Precision: 0.666667, Recall: 0.571429, F1: 0.615385
+Object cork_board_501_02 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact compressible hard smooth solid stiff
+True posititives 0.666667, False positivies 0.333333, False negatives 0.000000
+Precision: 0.666667, Recall: 1.000000, F1: 0.800000
+Object cork_board_501_01 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object yellow_soft_foam_103_04 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object pool_noodle_105_08 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object pool_noodle_105_09 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object pool_noodle_105_06 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object pool_noodle_105_07 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compact compressible smooth springy squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object pool_noodle_105_04 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object pool_noodle_105_05 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object pool_noodle_105_02 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object pool_noodle_105_03 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object pool_noodle_105_01 has adjectives compressible springy squishy sticky
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object non_bumpy_foam_119_04 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy scratchy soft squishy thin
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object tooth_paste_box_316_01 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hollow slippery smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object tooth_paste_box_316_02 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible hollow slippery smooth sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.200000
+Precision: 0.800000, Recall: 0.800000, F1: 0.800000
+Object tooth_paste_box_316_03 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hard hollow solid stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.400000
+Precision: 0.500000, Recall: 0.555556, F1: 0.526316
+Object tooth_paste_box_316_04 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hard hollow slippery smooth solid
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object tooth_paste_box_316_05 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hollow slippery smooth sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object tooth_paste_box_316_06 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compact compressible cool smooth stiff
+True posititives 0.600000, False positivies 0.400000, False negatives 0.400000
+Precision: 0.600000, Recall: 0.600000, F1: 0.600000
+Object tooth_paste_box_316_07 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hollow smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object tooth_paste_box_316_08 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible hollow smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object tooth_paste_box_316_09 has adjectives compressible cool hollow slippery smooth
+Positive classifiers:
+	compressible cool hollow smooth sticky thin
+True posititives 0.666667, False positivies 0.333333, False negatives 0.200000
+Precision: 0.666667, Recall: 0.769231, F1: 0.714286
+Object tooth_paste_box_314_08 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible hollow slippery smooth
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object tooth_paste_box_314_09 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible hollow smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object tooth_paste_box_314_02 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object tooth_paste_box_314_03 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible hard smooth sticky
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object tooth_paste_box_314_01 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow smooth sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object tooth_paste_box_314_06 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible hollow sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object cookie_box_315_10 has adjectives compressible hard smooth sticky thick
+Positive classifiers:
+	compact compressible cool hard hollow smooth solid sticky stiff thick
+True posititives 0.500000, False positivies 0.500000, False negatives 0.000000
+Precision: 0.500000, Recall: 1.000000, F1: 0.666667
+Object tooth_paste_box_314_04 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible hollow smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object tooth_paste_box_314_05 has adjectives compressible hollow smooth sticky
+Positive classifiers:
+	compressible cool hard hollow smooth solid sticky stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.000000
+Precision: 0.500000, Recall: 1.000000, F1: 0.666667
+Object mdf_320_01 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard slippery smooth solid sticky stiff textured
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object mdf_320_02 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object mdf_320_03 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object mdf_320_04 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact compressible hard smooth solid sticky stiff textured
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object mdf_320_05 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object mdf_320_06 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact cool hard smooth solid sticky stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object mdf_320_07 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object mdf_320_08 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard nice smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object mdf_320_09 has adjectives compact hard smooth solid stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object gray_soft_foam_104_06 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy scratchy soft springy squishy
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object gray_soft_foam_104_07 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object gray_soft_foam_104_04 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object gray_soft_foam_104_05 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object gray_soft_foam_104_02 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object gray_soft_foam_104_03 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object gray_soft_foam_104_01 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy plasticky soft springy squishy
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object gray_soft_foam_104_08 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft springy squishy thin
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object gray_soft_foam_104_09 has adjectives absorbant compressible fuzzy soft springy squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft springy squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object brick_508_10 has adjectives gritty hard rough solid stiff
+Positive classifiers:
+	hard rough solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object package_foam_120_06 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible slippery smooth squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object package_foam_120_07 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.666667
+Precision: 1.000000, Recall: 0.600000, F1: 0.750000
+Object package_foam_120_04 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compact compressible slippery smooth solid springy squishy sticky
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object package_foam_120_05 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible
+True posititives 1.000000, False positivies 0.000000, False negatives 0.833333
+Precision: 1.000000, Recall: 0.545455, F1: 0.705882
+Object package_foam_120_02 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible rough squishy sticky
+True posititives 0.750000, False positivies 0.250000, False negatives 0.500000
+Precision: 0.750000, Recall: 0.600000, F1: 0.666667
+Object package_foam_120_03 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible slippery sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object package_foam_120_01 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compact compressible fuzzy smooth sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.333333
+Precision: 0.800000, Recall: 0.705882, F1: 0.750000
+Object package_foam_120_08 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible slippery squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object package_foam_120_09 has adjectives compact compressible slippery smooth squishy sticky
+Positive classifiers:
+	compressible slippery smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object acrylic_211_09 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object acrylic_211_08 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object pillowcase_401_09 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compact compressible deformable squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object pillowcase_401_08 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.600000
+Precision: 1.000000, Recall: 0.625000, F1: 0.769231
+Object acrylic_211_05 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object acrylic_211_04 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard slippery smooth solid sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object acrylic_211_07 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard slippery smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.142857
+Precision: 1.000000, Recall: 0.875000, F1: 0.933333
+Object acrylic_211_06 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object acrylic_211_01 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object black_foam_110_10 has adjectives compressible gritty rough scratchy
+Positive classifiers:
+	compressible slippery smooth squishy
+True posititives 0.250000, False positivies 0.750000, False negatives 0.750000
+Precision: 0.250000, Recall: 0.250000, F1: 0.250000
+Object acrylic_211_03 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	compact compressible hard slippery smooth solid sticky stiff thick
+True posititives 0.777778, False positivies 0.222222, False negatives 0.000000
+Precision: 0.777778, Recall: 1.000000, F1: 0.875000
+Object acrylic_211_02 has adjectives compact hard slippery smooth solid sticky stiff
+Positive classifiers:
+	smooth sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.571429
+Precision: 1.000000, Recall: 0.636364, F1: 0.777778
+Object pillowcase_401_07 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compact compressible deformable fuzzy squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.200000
+Precision: 0.800000, Recall: 0.800000, F1: 0.800000
+Object pillowcase_401_06 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compact compressible deformable fuzzy soft squishy
+True posititives 0.666667, False positivies 0.333333, False negatives 0.200000
+Precision: 0.666667, Recall: 0.769231, F1: 0.714286
+Object oil_bottle_601_10 has adjectives compact cool hard slippery smooth solid stiff
+Positive classifiers:
+	hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object pillowcase_401_04 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible deformable smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object pillowcase_401_03 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible deformable fuzzy squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.400000
+Precision: 0.750000, Recall: 0.652174, F1: 0.697674
+Object pillowcase_401_02 has adjectives compact compressible deformable smooth squishy
+Positive classifiers:
+	compressible deformable smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object marker_erasers_113_10 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous squishy
+True posititives 0.666667, False positivies 0.333333, False negatives 0.500000
+Precision: 0.666667, Recall: 0.571429, F1: 0.615385
+Object bottle_cover_115_02 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compact compressible nice smooth solid squishy
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object bottle_cover_115_03 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible nice smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object bottle_cover_115_01 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible
+True posititives 1.000000, False positivies 0.000000, False negatives 0.800000
+Precision: 1.000000, Recall: 0.555556, F1: 0.714286
+Object bottle_cover_115_06 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible nice squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object bottle_cover_115_07 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	nice squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.600000
+Precision: 1.000000, Recall: 0.625000, F1: 0.769231
+Object bottle_cover_115_04 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compact compressible fuzzy nice smooth solid squishy
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object bottle_cover_115_05 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible nice squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object bottle_cover_115_08 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible nice smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.200000
+Precision: 1.000000, Recall: 0.833333, F1: 0.909091
+Object bottle_cover_115_09 has adjectives compact compressible nice smooth squishy
+Positive classifiers:
+	compressible nice squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.400000
+Precision: 1.000000, Recall: 0.714286, F1: 0.833333
+Object soap_dispenser_201_09 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.833333
+Precision: 1.000000, Recall: 0.545455, F1: 0.705882
+Object notepad_319_10 has adjectives hard solid stiff
+Positive classifiers:
+	compressible cool hard slippery smooth stiff
+True posititives 0.333333, False positivies 0.666667, False negatives 0.333333
+Precision: 0.333333, Recall: 0.500000, F1: 0.400000
+Object eco_flex_stiff_509_09 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool nice smooth squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object eco_flex_stiff_509_08 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool nice smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object eco_flex_stiff_509_05 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool nice smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object eco_flex_stiff_509_04 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool nice smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object eco_flex_stiff_509_07 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool nice smooth squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.166667
+Precision: 1.000000, Recall: 0.857143, F1: 0.923077
+Object eco_flex_stiff_509_06 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool fuzzy smooth soft squishy sticky
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object eco_flex_stiff_509_01 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool nice slippery smooth squishy
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object soap_dispenser_201_06 has adjectives compressible hollow plasticky smooth springy sticky
+Positive classifiers:
+	hard smooth sticky stiff
+True posititives 0.500000, False positivies 0.500000, False negatives 0.666667
+Precision: 0.500000, Recall: 0.428571, F1: 0.461538
+Object eco_flex_stiff_509_03 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible nice smooth
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object eco_flex_stiff_509_02 has adjectives compressible cool nice smooth squishy sticky
+Positive classifiers:
+	compressible cool slippery smooth squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.333333
+Precision: 0.800000, Recall: 0.705882, F1: 0.750000
+Object shelf_liner_106_10 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable smooth squishy sticky
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object shelf_liner_106_02 has adjectives bumpy compressible deformable squishy sticky
+Positive classifiers:
+	bumpy compressible deformable fuzzy scratchy smooth soft squishy
+True posititives 0.500000, False positivies 0.500000, False negatives 0.200000
+Precision: 0.500000, Recall: 0.714286, F1: 0.588235
+Object programming_language_book_303_04 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+Object programming_language_book_303_05 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object programming_language_book_303_06 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object programming_language_book_303_07 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object programming_language_book_303_01 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	hard
+True posititives 1.000000, False positivies 0.000000, False negatives 0.833333
+Precision: 1.000000, Recall: 0.545455, F1: 0.705882
+Object programming_language_book_303_02 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object programming_language_book_303_03 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	hard sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object programming_language_book_303_08 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard smooth solid sticky stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object programming_language_book_303_09 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object loreal_box_317_10 has adjectives compressible cool hollow smooth sticky
+Positive classifiers:
+	compressible cool hollow smooth solid sticky stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object car_sponge_109_05 has adjectives compressible deformable gritty rough soft squishy thick
+Positive classifiers:
+	compressible deformable soft squishy thick
+True posititives 1.000000, False positivies 0.000000, False negatives 0.285714
+Precision: 1.000000, Recall: 0.777778, F1: 0.875000
+Object yellow_soft_foam_103_08 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object kitchen_sponge_114_10 has adjectives absorbant compressible rough soft squishy thin
+Positive classifiers:
+	absorbant compressible squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.500000
+Precision: 1.000000, Recall: 0.666667, F1: 0.800000
+Object tarp_202_08 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth solid squishy sticky
+True posititives 0.666667, False positivies 0.333333, False negatives 0.000000
+Precision: 0.666667, Recall: 1.000000, F1: 0.800000
+Object tarp_202_09 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth squishy sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object tarp_202_06 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth squishy sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object tarp_202_07 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth squishy sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object tarp_202_04 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object tarp_202_05 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object tarp_202_02 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible smooth squishy sticky
+True posititives 0.750000, False positivies 0.250000, False negatives 0.250000
+Precision: 0.750000, Recall: 0.750000, F1: 0.750000
+Object tarp_202_03 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible plasticky smooth squishy sticky
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object tarp_202_01 has adjectives compressible plasticky squishy sticky
+Positive classifiers:
+	compressible scratchy solid sticky
+True posititives 0.500000, False positivies 0.500000, False negatives 0.500000
+Precision: 0.500000, Recall: 0.500000, F1: 0.500000
+Object yellow_soft_foam_103_02 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object aluminum_bar_701_09 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	cool hard metallic smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object aluminum_bar_701_08 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	compact cool hard metallic slippery smooth solid stiff
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object yellow_soft_foam_103_03 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft springy squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object aluminum_bar_701_05 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff
+True posititives 0.714286, False positivies 0.285714, False negatives 0.000000
+Precision: 0.714286, Recall: 1.000000, F1: 0.833333
+Object aluminum_bar_701_04 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff unpleasant
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object aluminum_bar_701_07 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	compact cool hard metallic smooth solid stiff textured
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object aluminum_bar_701_06 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	cool hard metallic smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object aluminum_bar_701_01 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	cool hard metallic smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.000000
+Precision: 0.833333, Recall: 1.000000, F1: 0.909091
+Object aluminum_bar_701_03 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	compact hard metallic slippery smooth solid stiff textured
+True posititives 0.500000, False positivies 0.500000, False negatives 0.200000
+Precision: 0.500000, Recall: 0.714286, F1: 0.588235
+Object aluminum_bar_701_02 has adjectives cool hard metallic solid stiff
+Positive classifiers:
+	compact cool hard metallic slippery smooth solid stiff
+True posititives 0.625000, False positivies 0.375000, False negatives 0.000000
+Precision: 0.625000, Recall: 1.000000, F1: 0.769231
+Object yellow_soft_foam_103_01 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object yellow_soft_foam_103_06 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object yellow_soft_foam_103_07 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object bumpy_foam_118_02 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fuzzy nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object bumpy_foam_118_03 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fuzzy nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object bumpy_foam_118_01 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fuzzy nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object bumpy_foam_118_06 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fibrous fuzzy nice soft squishy thin
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object bumpy_foam_118_07 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fibrous fuzzy nice soft squishy
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object bumpy_foam_118_04 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fibrous fuzzy nice scratchy soft squishy
+True posititives 0.750000, False positivies 0.250000, False negatives 0.000000
+Precision: 0.750000, Recall: 1.000000, F1: 0.857143
+Object bumpy_foam_118_05 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fuzzy nice soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object bumpy_foam_118_08 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fibrous fuzzy nice soft squishy
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object bumpy_foam_118_09 has adjectives bumpy compressible fuzzy nice soft squishy
+Positive classifiers:
+	bumpy compressible fibrous fuzzy nice soft squishy
+True posititives 0.857143, False positivies 0.142857, False negatives 0.000000
+Precision: 0.857143, Recall: 1.000000, F1: 0.923077
+Object cologne_container__602_10 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	compact compressible hard slippery smooth solid stiff thick
+True posititives 0.875000, False positivies 0.125000, False negatives 0.000000
+Precision: 0.875000, Recall: 1.000000, F1: 0.933333
+Object marker_erasers_113_07 has adjectives fibrous fuzzy solid squishy
+Positive classifiers:
+	compressible fibrous fuzzy nice squishy
+True posititives 0.600000, False positivies 0.400000, False negatives 0.250000
+Precision: 0.600000, Recall: 0.705882, F1: 0.648649
+Object concrete_504_10 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact cool gritty hard smooth solid stiff
+True posititives 0.857143, False positivies 0.142857, False negatives 0.333333
+Precision: 0.857143, Recall: 0.720000, F1: 0.782609
+Object kleenex_package_313_06 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly plasticky smooth soft squishy sticky
+True posititives 1.000000, False positivies 0.000000, False negatives 0.125000
+Precision: 1.000000, Recall: 0.888889, F1: 0.941176
+Object cutting_board_213_10 has adjectives compact cool hard slippery smooth solid stiff textured
+Positive classifiers:
+	compact cool hard smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.375000
+Precision: 1.000000, Recall: 0.727273, F1: 0.842105
+Object concrete_504_09 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact gritty hard rough
+True posititives 1.000000, False positivies 0.000000, False negatives 0.555556
+Precision: 1.000000, Recall: 0.642857, F1: 0.782609
+Object cologne_container__602_04 has adjectives compact hard slippery smooth solid stiff thick
+Positive classifiers:
+	hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.428571
+Precision: 1.000000, Recall: 0.700000, F1: 0.823529
+Object non_bumpy_foam_119_09 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy thick
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object non_bumpy_foam_119_08 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible deformable fuzzy soft squishy
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object kleenex_package_313_07 has adjectives compressible crinkly plasticky slippery smooth soft squishy sticky
+Positive classifiers:
+	compressible crinkly fibrous plasticky slippery smooth soft squishy sticky unpleasant
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Object hollow_plastic_box_216_10 has adjectives hard plasticky smooth sticky stiff thick
+Positive classifiers:
+	compact hard slippery smooth solid stiff thick thin
+True posititives 0.500000, False positivies 0.500000, False negatives 0.333333
+Precision: 0.500000, Recall: 0.600000, F1: 0.545455
+Object non_bumpy_foam_119_01 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy soft squishy thick
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object non_bumpy_foam_119_03 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy nice soft squishy thick
+True posititives 0.714286, False positivies 0.285714, False negatives 0.166667
+Precision: 0.714286, Recall: 0.810811, F1: 0.759494
+Object non_bumpy_foam_119_02 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy nice soft squishy sticky thick
+True posititives 0.625000, False positivies 0.375000, False negatives 0.166667
+Precision: 0.625000, Recall: 0.789474, F1: 0.697674
+Object non_bumpy_foam_119_05 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible deformable fuzzy nice plasticky smooth soft squishy sticky
+True posititives 0.600000, False positivies 0.400000, False negatives 0.000000
+Precision: 0.600000, Recall: 1.000000, F1: 0.750000
+Object concrete_504_05 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact cool hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.444444
+Precision: 1.000000, Recall: 0.692308, F1: 0.818182
+Object non_bumpy_foam_119_07 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible deformable fuzzy soft squishy
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object non_bumpy_foam_119_06 has adjectives absorbant compressible fuzzy smooth soft squishy
+Positive classifiers:
+	absorbant compressible fuzzy smooth soft squishy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object concrete_504_04 has adjectives compact cool gritty hard rough scratchy solid stiff unpleasant
+Positive classifiers:
+	compact hard solid stiff unpleasant
+True posititives 1.000000, False positivies 0.000000, False negatives 0.444444
+Precision: 1.000000, Recall: 0.692308, F1: 0.818182
+Object chalkboard_eraser_408_10 has adjectives compact compressible fibrous fuzzy hairy scratchy solid stiff
+Positive classifiers:
+	compressible solid
+True posititives 1.000000, False positivies 0.000000, False negatives 0.750000
+Precision: 1.000000, Recall: 0.571429, F1: 0.727273
+Object steel_vase_702_10 has adjectives cool hard metallic smooth solid sticky stiff
+Positive classifiers:
+	compact hard metallic smooth solid stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.285714
+Precision: 0.833333, Recall: 0.744681, F1: 0.786517
+Object loofah_503_08 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible unpleasant
+True posititives 1.000000, False positivies 0.000000, False negatives 0.714286
+Precision: 1.000000, Recall: 0.583333, F1: 0.736842
+Object loofah_503_09 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible squishy unpleasant
+True posititives 0.666667, False positivies 0.333333, False negatives 0.714286
+Precision: 0.666667, Recall: 0.482759, F1: 0.560000
+Object loofah_503_02 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible hairy
+True posititives 1.000000, False positivies 0.000000, False negatives 0.714286
+Precision: 1.000000, Recall: 0.583333, F1: 0.736842
+Object loofah_503_03 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible smooth
+True posititives 0.500000, False positivies 0.500000, False negatives 0.857143
+Precision: 0.500000, Recall: 0.368421, F1: 0.424242
+Object loofah_503_01 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible
+True posititives 1.000000, False positivies 0.000000, False negatives 0.857143
+Precision: 1.000000, Recall: 0.538462, F1: 0.700000
+Object loofah_503_06 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible unpleasant
+True posititives 1.000000, False positivies 0.000000, False negatives 0.714286
+Precision: 1.000000, Recall: 0.583333, F1: 0.736842
+Object loofah_503_07 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible solid stiff unpleasant
+True posititives 0.500000, False positivies 0.500000, False negatives 0.714286
+Precision: 0.500000, Recall: 0.411765, F1: 0.451613
+Object loofah_503_04 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	cool smooth solid unpleasant
+True posititives 0.250000, False positivies 0.750000, False negatives 0.857143
+Precision: 0.250000, Recall: 0.225806, F1: 0.237288
+Object loofah_503_05 has adjectives compressible fibrous hairy rough scratchy thin unpleasant
+Positive classifiers:
+	compressible
+True posititives 1.000000, False positivies 0.000000, False negatives 0.857143
+Precision: 1.000000, Recall: 0.538462, F1: 0.700000
+Object cork_board_501_10 has adjectives compact hard solid stiff
+Positive classifiers:
+	compact hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object yellow_soft_foam_103_05 has adjectives absorbant compressible soft squishy
+Positive classifiers:
+	absorbant compressible soft springy squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.000000
+Precision: 0.800000, Recall: 1.000000, F1: 0.888889
+Average f1s:  0.806991130982
+Average precision:  0.831387255906
+Average recall:  0.810952889945

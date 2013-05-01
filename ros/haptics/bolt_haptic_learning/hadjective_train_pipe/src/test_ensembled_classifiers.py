@@ -94,14 +94,27 @@ def test_ensembled_classifier(test_feature_objects, adjective, adj_motion_classi
     # Pull out the features
     test_vector, test_labels, object_ids, weights_notneeded= build_ensemble_feature_vector(test_feature_objects, adjective, adj_motion_classifiers, scalers, feature_name_list)
 
+    all_test_vector, adjective_labels = utilities.bolt_feature_obj_2_feature_vector(test_feature_objects, feature_name_list)
+
+    # import pdb; pdb.set_trace()
     # Compute results given a test vector of motions and weights
     #results = compute_weighted_sum_prediction(test_vector, weights)
 
+    best_motion_name = get_best_motion_given_weights(weights)
+    
+    # Pull out best motion classifier
+    best_motion_classifier = adj_motion_classifiers[best_motion_name]
+    best_motion_scaler = scalers[best_motion_name]
+
+    #import pdb; pdb.set_trace()
     # Scale the probability vectors
-    scaled_test_vector = ensemble_scaler.transform(test_vector)
+    #scaled_test_vector = ensemble_scaler.transform(test_vector)
+    scaled_test_vector = best_motion_scaler.transform(all_test_vector[best_motion_name][0])
+    object_ids = all_test_vector[best_motion_name][1]
 
     # Compute results
-    results = ensembled_classifier.predict(scaled_test_vector)
+    #results = ensembled_classifier.predict(scaled_test_vector)
+    results = best_motion_classifier.predict(scaled_test_vector)
 
     print classification_report(test_labels, results)
 
@@ -111,26 +124,62 @@ def test_ensembled_classifier(test_feature_objects, adjective, adj_motion_classi
     # Write results to comma split file to load
     comma_file_ptr.write(adjective+','+str(precision_score(test_labels,results))+','+str(recall_score(test_labels, results))+','+str(f1_score(test_labels,results))+'\n')
 
-    return (results, test_labels, object_ids)
+    #import pdb; pdb.set_trace()
+    print adjective_labels.keys()
+    adjective_keys = adjective_labels.keys()
+    del adjective_labels['warm']
+    del adjective_labels['sparse']
+    del adjective_labels['elastic']
+    del adjective_labels['grainy']
+    del adjective_labels['porous']
+    adjective_keys = adjective_labels.keys()
 
-def test_ensembled_classifier_object(prediction_dict, label_dict, object_name, comma_file_ptr, report_ptr):
+
+    return (results, test_labels, object_ids, adjective_keys)
+
+
+def get_best_motion_given_weights(weights):
+    
+    motions = ['tap', 'squeeze','thermal_hold','slide', 'slide_fast']
+
+    best_motion_int = 0
+    best_motion_score = 0.0
+
+    for run_num in xrange(len(weights)):
+        motion_score = weights[run_num]
+        
+        if motion_score > best_motion_score:
+            best_motion_int = run_num
+            best_motion_score = motion_score
+
+    return motions[best_motion_int]
+
+def test_ensembled_classifier_object(adjective_list, prediction_dict, label_dict, object_name, comma_file_ptr, report_ptr):
 
     run_prediction = dict()
     run_truth = dict()
-    adjectives = []
+    object_ids_ordered = []
+    adjective_list = []
+    import pdb; pdb.set_trace()
+    
+    count = 0
     for adj in prediction_dict:
-
+        
         adjective_truth = label_dict[adj]
         adjective_prediction = prediction_dict[adj]
-        adjectives.append(adj)
+        adjective_list.append(adj)
 
         for run in xrange(len(adjective_truth)):
-            if run in run_truth:
-                run_prediction[run].append(adjective_prediction[run])
-                run_truth[run].append(adjective_truth[run])
-            else:
+            #object_ids_ordered.append(object_name['sticky'][count])
+            #count = count + 1
+            
+            if run not in run_truth:
                 run_prediction[run] = []
                 run_truth[run] = []
+            
+            run_prediction[run].append(adjective_prediction[run])
+            run_truth[run].append(adjective_truth[run])
+
 
     # Compute and write scores to file
     for obj in run_prediction:
@@ -138,11 +187,22 @@ def test_ensembled_classifier_object(prediction_dict, label_dict, object_name, c
         results = run_prediction[obj]
         test_labels = run_truth[obj]
         object_id = object_name['sticky'][obj]
-       
+    
+        prediction_adjectives = []
+        truth_adjectives = []
+     
+        for adjective_location in xrange(len(results)):
+            if results[adjective_location] == 1:  
+                prediction_adjectives.append(adjective_list[adjective_location])
+
+            if test_labels[adjective_location] == 1:
+                truth_adjectives.append(adjective_list[adjective_location])
+
         # Compute the scores now per run
         comma_file_ptr.write(str(object_id)+','+str(precision_score(test_labels,results))+','+str(recall_score(test_labels, results))+','+str(f1_score(test_labels,results))+'\n')
         report_ptr.write('Object ID: '+str(object_id)+'\n\n') 
-        report_ptr.write(str(adjectives)+'\n') 
+        report_ptr.write('Truth adjectives: ' + str(truth_adjectives)+'\n') 
+        report_ptr.write('Prediction adjectives: ' + str(prediction_adjectives)+'\n') 
         report_ptr.write('Prediction: '+str(results) + '\nTruth: '+ str(test_labels)+'\n\n')
         report_ptr.write(classification_report(test_labels, results)+ '\n\n')
         
@@ -262,7 +322,7 @@ def main(ensembled_classifiers_dir, test_feature_objects_file, adj_motion_classi
         adj_motion_dir = adj_motion_classifier_file
 
     # Check if directory for ensembled classifiers exist
-    if ensemble_classifier_dir == None:
+    if ensembled_classifiers_dir == None:
         raise Exception('No ensembled specific classifier folder given')
     
     # Check output SVM filename
@@ -278,8 +338,7 @@ def main(ensembled_classifiers_dir, test_feature_objects_file, adj_motion_classi
     adj_motion_classifiers = dict()
     weights = dict()
     
-    adjective_list = feature_objects_set.keys()
-    adjective_list.sort()
+    adjective_list = []#test_feature_objects.keys()
 
     # Reports for individual classifiers
     report_file = open('reports/Gradient_Boosting_Results.txt', 'w')
@@ -305,20 +364,22 @@ def main(ensembled_classifiers_dir, test_feature_objects_file, adj_motion_classi
         adj_name = file_name.split('_')[-1]
         adj_name = adj_name.split('.')[0]
 
+        adjective_list.append(adj_name)
         adj_motion_classifiers[adj_name] = one_adj_motion
         
 
     # import all of the ensembled_classifiers
-    for file_name in glob.glob(ensemble_classifier_dir+'/*.pkl')
+    for file_name in glob.glob(ensembled_classifiers_dir+'/*.pkl'):
         print file_name
         ensembled_classifiers_all = cPickle.load(open(file_name, 'r'))
         adj_name = file_name.split('_')[-1]
         adj_name = adj_name.split('.')[0]
+        
+        ensembled_classifiers[adj_name] = ensembled_classifiers_all[0]
+        ensembled_scalers[adj_name] = ensembled_classifiers_all[1]
+        weights[adj_name] = ensembled_classifiers_all[2]
 
-        ensembled_classifiers[adj] = ensembled_classifiers_all[0]
-        ensembled_scalers[adj] = ensembled_classifiers_all[1]
-        weights[adj] = ensembled_classifiers_weights[2]
-
+    adjective_list.sort()
 
     # Store all of the scores by adjective
     object_results = dict()
@@ -329,7 +390,8 @@ def main(ensembled_classifiers_dir, test_feature_objects_file, adj_motion_classi
     # For each adjective - train a classifier
     for adj in adjective_list:
         print adj
-
+        
+        #if adj not in ['scratchy']:
         if adj  in ['porous', 'elastic', 'grainy']:
              continue 
         #if adj not in ['soft','scratchy']:
@@ -346,15 +408,15 @@ def main(ensembled_classifiers_dir, test_feature_objects_file, adj_motion_classi
         # Train ensembled svm classifier
         #ensembled_classifiers[adj], ensembled_scalers[adj], weights[adj] = train_ensemble_adjective_classifier(feature_objects_set[adj]['test'], adj, adj_motion_classifier, adj_motion_scaler, feature_name_list)
 
-        cPickle.dump((ensembled_classifiers[adj], ensembled_scalers[adj]), open('ensembled/svm_and_scaler_'+adj+'.pkl','w'), cPickle.HIGHEST_PROTOCOL)
+        #cPickle.dump((ensembled_classifiers[adj], ensembled_scalers[adj]), open('ensembled/svm_and_scaler_'+adj+'.pkl','w'), cPickle.HIGHEST_PROTOCOL)
 
         # Test ensembled svm classifier
-        prediction_dict[adj], label_dict[adj], object_ids_dict[adj] = test_ensembled_classifier(test_feature_objects, adj, adj_motion_classifier, ensembled_classifiers[adj], adj_motion_scaler, ensembled_scalers[adj], feature_name_list, weights[adj], report_final_file, results_final_file)
+        prediction_dict[adj], label_dict[adj], object_ids_dict[adj], adjective_keys = test_ensembled_classifier(test_feature_objects, adj, adj_motion_classifier, ensembled_classifiers[adj], adj_motion_scaler, ensembled_scalers[adj], feature_name_list, weights[adj], report_final_file, results_final_file)
 
         #object_results[adj] = (prediction_dict, label_dict, object_ids)
 
     # Test by object
-    test_ensembled_classifier_object(prediction_dict, label_dict, object_ids_dict, results_object_file, file_report_final)
+    test_ensembled_classifier_object(adjective_keys, prediction_dict, label_dict, object_ids_dict, results_object_file, file_report_final)
 
     report_file.close()
     results_file.close()
@@ -377,21 +439,21 @@ def parse_arguments():
     (feature_objects_set, output_svm_filename)
     """
     parser = OptionParser()
-    parser.add_option("-i", "--feature_obj_file", action="store", type="string", dest = "feature_obj_file")
+    parser.add_option("-e", "--ensembled_classifiers", action="store", type="string", dest = "ensembled_classifiers")
     parser.add_option("-c", "--adjective_motion_classifiers", action="store", type="string", dest = "adjective_motion_classifier_file")
     parser.add_option("-o", "--output_svm", action="store", type="string", dest = "output_svm_file", default = None)
     parser.add_option("-t", "--test_set", action="store", type="string", dest = "test_feature_obj", default = None)
 
     (options, args) = parser.parse_args()
 
-    feature_objects_set = options.feature_obj_file
+    ensembled_dir = options.ensembled_classifiers
     adjective_motion_classifier_file = options.adjective_motion_classifier_file 
     output_svm_filename = options.output_svm_file
     test_objects_set = options.test_feature_obj
 
-    return (feature_objects_set, test_objects_set, adjective_motion_classifier_file, output_svm_filename)
+    return (ensembled_dir, test_objects_set, adjective_motion_classifier_file, output_svm_filename)
 
 if __name__ == "__main__":
-    feature_objects_set, test_objects_set, adj_motion_classifiers, output_svm_filename = parse_arguments()
-    main(feature_objects_set, test_objects_set, adj_motion_classifiers, output_svm_filename)
+    ensembled_dir, test_objects_set, adj_motion_classifiers, output_svm_filename = parse_arguments()
+    main(ensembled_dir, test_objects_set, adj_motion_classifiers, output_svm_filename)
 

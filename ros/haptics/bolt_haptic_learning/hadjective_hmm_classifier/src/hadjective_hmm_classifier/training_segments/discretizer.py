@@ -111,6 +111,9 @@ class KMeansDiscretizer(KMeans):
         This replaces KMeans.transform by calling predict.
         """
         return n.atleast_2d(self.predict(X)).T
+
+    def fit_transform(self, X, y=None):
+        return self.fit(X).transform(X)
     
     def inverse_transform(self, labels):
         """

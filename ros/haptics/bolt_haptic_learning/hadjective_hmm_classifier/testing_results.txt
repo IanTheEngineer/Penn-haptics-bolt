@@ -1,0 +1,83 @@
+Object black_mini_E_03 has adjectives absorbant compressible fuzzy soft squishy thick
+Positive classifiers:
+        compressible fuzzy smooth soft squishy thick
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object yellow_elastic_foam_B_04 has adjectives compressible cool fuzzy soft springy squishy thin
+Positive classifiers:
+        compact compressible fuzzy soft squishy sticky
+True posititives 0.666667, False positivies 0.333333, False negatives 0.428571
+Precision: 0.666667, Recall: 0.608696, F1: 0.636364
+Object smooth_yellow_acrylic_G_02 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+        gritty hard smooth solid sticky stiff
+True posititives 0.833333, False positivies 0.166667, False negatives 0.166667
+Precision: 0.833333, Recall: 0.833333, F1: 0.833333
+Object black_mini_E_04 has adjectives absorbant compressible fuzzy soft squishy thick
+Positive classifiers:
+        absorbant compressible smooth soft squishy
+True posititives 0.800000, False positivies 0.200000, False negatives 0.333333
+Precision: 0.800000, Recall: 0.705882, F1: 0.750000
+Object cardboard_box_A_04 has adjectives compressible hard hollow smooth sticky stiff
+Positive classifiers:
+        hard smooth solid stiff
+True posititives 0.750000, False positivies 0.250000, False negatives 0.500000
+Precision: 0.750000, Recall: 0.600000, F1: 0.666667
+Object cork_layered_C_04 has adjectives compressible hard solid stiff
+Positive classifiers:
+        hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.250000
+Precision: 1.000000, Recall: 0.800000, F1: 0.888889
+Object cushioned_envelope_F_02 has adjectives compressible crinkly slippery smooth squishy thin
+Positive classifiers:
+        compressible squishy sticky
+True posititives 0.666667, False positivies 0.333333, False negatives 0.666667
+Precision: 0.666667, Recall: 0.500000, F1: 0.571429
+Object cork_layered_C_03 has adjectives compressible hard solid stiff
+Positive classifiers:
+        compressible hard solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.000000
+Precision: 1.000000, Recall: 1.000000, F1: 1.000000
+Object cardboard_box_A_03 has adjectives compressible hard hollow smooth sticky stiff
+Positive classifiers:
+        compressible hollow smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object cushioned_envelope_F_01 has adjectives compressible crinkly slippery smooth squishy thin
+Positive classifiers:
+        hollow squishy thin
+True posititives 0.666667, False positivies 0.333333, False negatives 0.666667
+Precision: 0.666667, Recall: 0.500000, F1: 0.571429
+Object smooth_yellow_acrylic_G_01 has adjectives compact hard smooth solid sticky stiff
+Positive classifiers:
+        hard smooth solid stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.333333
+Precision: 1.000000, Recall: 0.750000, F1: 0.857143
+Object hardcover_plt_book_D_04 has adjectives compact cool hard smooth solid stiff thin
+Positive classifiers:
+        hard smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.571429
+Precision: 1.000000, Recall: 0.636364, F1: 0.777778
+Object hardcover_plt_book_D_03 has adjectives compact cool hard smooth solid stiff thin
+Positive classifiers:
+        hard smooth stiff
+True posititives 1.000000, False positivies 0.000000, False negatives 0.571429
+Precision: 1.000000, Recall: 0.636364, F1: 0.777778
+Object rough_yellow_acrylic_H_02 has adjectives bumpy compact hard solid stiff
+Positive classifiers:
+        compact hard slippery smooth stiff
+True posititives 0.600000, False positivies 0.400000, False negatives 0.400000
+Precision: 0.600000, Recall: 0.600000, F1: 0.600000
+Object rough_yellow_acrylic_H_01 has adjectives bumpy compact hard solid stiff
+Positive classifiers:
+        compact hard smooth stiff
+True posititives 0.750000, False positivies 0.250000, False negatives 0.400000
+Precision: 0.750000, Recall: 0.652174, F1: 0.697674
+Object yellow_elastic_foam_B_03 has adjectives compressible cool fuzzy soft springy squishy thin
+Positive classifiers:
+        compressible soft squishy sticky
+True posititives 0.750000, False positivies 0.250000, False negatives 0.571429
+Precision: 0.750000, Recall: 0.567568, F1: 0.646154
+Average f1s:  0.747819533503
+Average precision:  0.832291666667
+Average recall:  0.68585708907 

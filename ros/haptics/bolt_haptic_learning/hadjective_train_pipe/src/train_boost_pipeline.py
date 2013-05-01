@@ -61,11 +61,12 @@ def train_weak_classifier_adjective(train_feature_objects, adjective, feature_di
         # create scaler
         scaler_motion_store[motion] = preprocessing.Scaler().fit(train_feature_vector)
         train_feature_vector_scaled = scaler_motion_store[motion].transform(train_feature_vector)
-     
-        #params = {'n_estimators': 1000, 'max_depth': 4, 'min_samples_split': 1,'learn_rate': 0.01, 'loss': 'deviance'} 
-        #clf = ensemble.GradientBoostingClassifier(**params)
-        #clf.fit(train_feature_vector_scaled, train_label_dict[1][adjective])
-        clf = train_gradient_boost(train_feature_vector_scaled, train_label_dict[1][adjective], train_label_dict[0])
+        params = {'n_estimators': 1000, 'max_depth': 4, 'min_samples_split': 1,'learn_rate': 0.01, 'loss': 'deviance'} 
+
+        #params = {'n_estimators': 1, 'max_depth': 1, 'min_samples_split': 1,'learn_rate': 0.1, 'loss': 'deviance'} 
+        clf = ensemble.GradientBoostingClassifier(**params)
+        clf.fit(train_feature_vector_scaled, train_label_dict[1][adjective])
+        #clf = train_gradient_boost(train_feature_vector_scaled, train_label_dict[1][adjective], train_label_dict[0])
 
         classifiers[motion] = clf
  
@@ -236,19 +237,21 @@ def main(feature_objects_set_file, pca_file, output_svm_filename, split):
 
     adjective_list = feature_objects_set.keys()
 
+    ''' 
     if split == 0:
         adjective_run = adjective_list[0:10] 
     elif split == 1:
         adjective_run = adjective_list[11:20]
     else:
         adjective_run = adjective_list[20:-1]
-
+    '''
 
     # For each adjective - train a classifier
-    for adj in adjective_run:
+    for adj in adjective_list:
         print adj
-   
-        if adj in ['porous', 'elastic', 'grainy']:
+  
+        #if adj not in ['porous', 'elastic', 'grainy']:
+        if adj not in ['soft','scratchy']:
             continue     
         
         # Build a weak classifier for each feature

@@ -8,7 +8,7 @@
   <include file="$(find biotac_simple_gripper)/launch/robot_motion.launch"/>
 
   <!--Start up master thread-->
-  <node pkg="hadjective_test_pipe" type="test_master_thread.py" name="test_master_thread" output="screen"/>
+  <node pkg="hadjective_test_pipe" type="bolt_data_collector_thread.py" name="bolt_data_collector_thread" output="screen"/>
 
   <!-- Start controller -->
   <node pkg="biotac_simple_gripper" type="biotac_gripper_controller" name="biotac_gripper_controller" output="screen" args="$(arg data_path) $(arg filename).json" />

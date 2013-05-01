@@ -24,7 +24,7 @@ def main():
     adjectives_database = tables.openFile(sys.argv[2])
     table = adjectives_database.root.clases
     all_objects = [v for v in main_database.root._v_children.values() 
-                   if v._v_name != "adjectives"]
+                   if (v._v_name != "adjectives" or v._v_name != "adjectives_neg")]
     
     adjective_names = [n for n in table.colnames if n != "object_id"]
     for obj in all_objects:
@@ -44,6 +44,11 @@ def main():
         main_database.createArray(obj,
                                   "adjectives",
                                   adjectives
+                                  )
+	adjectives_neg = [n for n in adjective_names if row[n] == 0]
+        main_database.createArray(obj,
+                                  "adjectives_neg",
+                                  adjectives_neg
                                   )
         print "Object %s, adjectives: %s" % (obj._v_name, adjectives)
     main_database.close()
