@@ -131,6 +131,7 @@ class LanguageTestMainThread:
         self.tac_mean_list = defaultdict(list)
         self.pdc_mean_list = defaultdict(list)
         self.pac_mean_list = defaultdict(list)
+        #self.valid_state_tuple = (BoltPR2MotionBuf.DISABLED, BoltPR2MotionBuf.THERMAL_HOLD, BoltPR2MotionBuf.SLIDE,
         self.valid_state_tuple = (BoltPR2MotionBuf.THERMAL_HOLD, BoltPR2MotionBuf.SLIDE,
                                   BoltPR2MotionBuf.SQUEEZE, BoltPR2MotionBuf.TAP,
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)

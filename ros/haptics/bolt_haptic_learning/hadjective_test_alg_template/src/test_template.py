@@ -4,7 +4,7 @@ import roslib; roslib.load_manifest('hadjective_test_alg_template')
 import rospy
 import cPickle, sys
 from bolt_pr2_motion_obj import BoltPR2MotionObj
-
+from std_msgs.msg import String
 
 def callback(msg):
     current_motion = cPickle.loads(msg.data)
@@ -12,7 +12,7 @@ def callback(msg):
 
 def listener():
     rospy.init_node('hadjective_test_alg')
-    rospy.Subscriber("hadjective_motion_pickle", String, callback)
+    rospy.Subscriber("new_hadjective_motion_pickle", String, callback)
     rospy.spin()
 
 def main(argv):
