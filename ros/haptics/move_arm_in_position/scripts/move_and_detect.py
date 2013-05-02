@@ -8,6 +8,7 @@ import rospy
 def main():
     rospy.loginfo("Moving to ideal position")
     haptics = move_arm_in_position.MoveToHaptics()
+    # ROBOT SEIZURE!!!!!!!!!!!!!!!
     #_, box = haptics.detect_and_filter()
     #haptics.move_to_ideal_position(box)
     if haptics.move_arm_to_pre_haptics():

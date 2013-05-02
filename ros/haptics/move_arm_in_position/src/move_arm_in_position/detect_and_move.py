@@ -6,7 +6,7 @@ from pr2_control_utilities import PR2MoveArm
 from pr2_control_utilities import ControllerManagerClient
 from pr2_control_utilities import PR2BaseMover
 from tabletop_actions.object_detector import GenericDetector, FindClusterBoundingBox2Response
-from octomap_filters.srv import FilterDefine, FilterDefineRequest
+#from octomap_filters.srv import FilterDefine, FilterDefineRequest
 from std_srvs.srv import Empty
 
 class MoveToHaptics(object):
@@ -14,7 +14,7 @@ class MoveToHaptics(object):
     in between the gripper.
     """
     def __init__(self, whicharm = "left_arm",
-                 octomap_filters_service="/create_filter",
+                 #octomap_filters_service="/create_filter",
                  planner = None,
                  padding = 0.1):
         """
@@ -34,11 +34,12 @@ class MoveToHaptics(object):
         else:
             self.planner = planner
         
-        rospy.loginfo("Waiting for %s", octomap_filters_service)
-        rospy.wait_for_service(octomap_filters_service)
-        self.filter_srv = rospy.ServiceProxy(octomap_filters_service,
-                                             FilterDefine)
+        self.planner.update_planning_scene()        
+        #rospy.loginfo("Waiting for %s", octomap_filters_service)
+        #rospy.wait_for_service(octomap_filters_service)
+        #self.filter_srv = rospy.ServiceProxy(octomap_filters_service,FilterDefine)
 
+        import pdb; pdb.set_trace()
         self.manager = ControllerManagerClient()
         if self.whicharm.startswith("right"):
             self.manager.switch_controllers(["r_arm_controller"],
@@ -59,7 +60,8 @@ class MoveToHaptics(object):
         rospy.loginfo("%s is ready", self.__class__.__name__)
 
     def filter_bounding_box(self, box):
-        assert isinstance(box, FindClusterBoundingBox2Response)
+        pass
+        '''assert isinstance(box, FindClusterBoundingBox2Response)
         xmin, xmax = self.detector.get_min_max_box(box, self.padding)
                 
         #now filtering the octomap
@@ -83,7 +85,7 @@ class MoveToHaptics(object):
             rospy.logerr("Error while calling the filtering service: %s", e)
             return None
         
-        self.planner.update_planning_scene()        
+        self.planner.update_planning_scene()'''        
         
     
     def detect_and_filter(self):
@@ -147,7 +149,7 @@ class MoveToHaptics(object):
         pre_touch_pose[2] += pre_touch_difference[2]
         
         rospy.loginfo("Moving to a pre-touch position")
-        if not move_arm_planning(pre_touch_pose, orientation, frame_id, 10):
+        if not move_arm_non_planning(pre_touch_pose, orientation, frame_id, 10):
             rospy.logerr("Could not move to pre-touch position!")
             return False
             
