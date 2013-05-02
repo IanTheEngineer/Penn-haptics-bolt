@@ -91,7 +91,7 @@ class BoltPR2MotionBuf(object):
     RIGHT = BoltPR2MotionObj.RIGHT 
     LEFT = BoltPR2MotionObj.LEFT
 
-    def __init__(self):
+    def __init__(self,prev_state=None):
         #Initialize all lists / Dictionaries storing data to be empty
         self.electrodes = defaultdict(list)
         self.tdc = defaultdict(list)
@@ -105,7 +105,12 @@ class BoltPR2MotionBuf(object):
         self.detailed_state = []
         self.l_tool_frame_transform_rot = []
         self.l_tool_frame_transform_trans = []
-        self.state = BoltPR2MotionBuf.DISABLED
+        
+        if prev_state == None:
+            self.state = BoltPR2MotionBuf.DISABLED
+        else:
+            self.state = prev_state
+
         self.electrodes_mean = defaultdict(list)
         self.pdc_mean = defaultdict(list)
         self.pac_mean = defaultdict(list)
@@ -125,7 +130,8 @@ class BoltPR2MotionBuf(object):
         new_obj.gripper_velocity = np.array(self.gripper_velocity)
         new_obj.gripper_position = np.array(self.gripper_position)
         new_obj.gripper_effort = np.array(self.gripper_effort)
-        new_obj.accelerometer = np.array(self.accelerometer)
+        #new_obj.accelerometer = np.array(self.accelerometer)
+        new_obj.accelerometer = np.zeros(shape=(5,2))
         new_obj.l_tool_frame_transform_trans = np.array(self.l_tool_frame_transform_trans)
         new_obj.l_tool_frame_transform_rot = np.array(self.l_tool_frame_transform_rot)
 
@@ -171,7 +177,7 @@ class LanguageTestMainThread:
         self.pdc_mean_list = defaultdict(list)
         self.pac_mean_list = defaultdict(list)
         self.mean_count = 0
-        self.valid_state_tuple = (BoltPR2MotionBuf.THERMAL_HOLD, BoltPR2MotionBuf.SLIDE,
+        self.valid_state_tuple = (BoltPR2MotionBuf.DISABLED, BoltPR2MotionBuf.THERMAL_HOLD, BoltPR2MotionBuf.SLIDE,
                                   BoltPR2MotionBuf.SQUEEZE, BoltPR2MotionBuf.TAP,
                                   BoltPR2MotionBuf.SLIDE_FAST, BoltPR2MotionBuf.DONE)
 
@@ -179,9 +185,9 @@ class LanguageTestMainThread:
         self.accel_lock = threading.Lock()
         self.state_lock = threading.Lock()
 
-    def disabled_clear(self):
+    def disabled_clear(self, prev_state):
         # If the state is disabled, call this to clear transformations and motion data
-        self.current_motion = BoltPR2MotionBuf()
+        self.current_motion = BoltPR2MotionBuf(prev_state)
         self.last_state = BoltPR2MotionBuf.DISABLED
         self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
         self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
@@ -199,10 +205,10 @@ class LanguageTestMainThread:
         self.l_tool_tf_trans_buf = (0.0,0.0,0.0)
         self.l_tool_tf_rot_buf = (0.0,0.0,0.0,0.0)
 
-    def clear_motion(self):
+    def clear_motion(self,prev_state):
         #Called in between each motion
         #Reset current_motion, but populate mean list
-        self.current_motion = BoltPR2MotionBuf()
+        self.current_motion = BoltPR2MotionBuf(prev_state)
         self.current_motion.electrodes_mean = self.electrodes_mean_list
         self.current_motion.pdc_mean = self.pdc_mean_list
         self.current_motion.pac_mean = self.pac_mean_list
@@ -324,9 +330,11 @@ def main(argv):
         main_thread.state_lock.acquire()
 
         #If the current state is valid and the last state is valid, and its a new state...
-        if  main_thread.current_motion.state in main_thread.valid_state_tuple and \
-            main_thread.last_state in main_thread.valid_state_tuple and \
-            main_thread.last_state is not main_thread.current_motion.state:
+        if  main_thread.last_state in main_thread.valid_state_tuple and \
+            main_thread.last_state != main_thread.current_motion.state:
+            
+            print 'The state is %s' % main_thread.last_state 
+             
             #Store off next state to see if we're done
             next_state = main_thread.current_motion.state
             #Close up the current current_motion and send it to a thread
@@ -339,7 +347,7 @@ def main(argv):
             new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
             new_process.start()
             #Reset current_motion
-            main_thread.clear_motion()
+            main_thread.clear_motion(next_state)
             num_tasks = num_tasks + 1
 
             #Check to see if the motions have finished

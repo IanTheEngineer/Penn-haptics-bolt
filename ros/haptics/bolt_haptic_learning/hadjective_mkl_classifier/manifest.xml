@@ -1,0 +1,18 @@
+<package>
+  <description brief="hadjective_mkl_classifier">
+
+     hadjective_mkl_classifier
+
+  </description>
+  <author>Vivian Chu</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hadjective_mkl_classifier</url>
+  <depend package="rospy"/>
+  <depend package="bolt_learning_utilities"/>
+  <depend package="std_msgs"/>
+  <depend package="hadjective_hmm_classifier"/>
+
+</package>
+
+

@@ -1,0 +1,18 @@
+    parameters = [ 
+              dict(n_pca_components = [0.97],
+                   n_hidden_components=[12, 15, 18], 
+                   resampling_size=[20, 25, 30], 
+                   n_discretization_symbols=[5, 10, 12],
+                   hmm_max_iter = [100],
+                   #kmeans_max_iter = [1000]
+                   ),  
+              #dict(n_pca_components = [0.97],
+                   #n_hidden_components=[40, 50], 
+                   #resampling_size=[20], 
+                   #n_discretization_symbols=[30, ],
+                   #hmm_max_iter = [2000],
+                   ##kmeans_max_iter = [1000]
+                   #),              
+              ]
+
+              split 90/10 with fixed splits
