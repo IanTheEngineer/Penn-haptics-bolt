@@ -195,7 +195,7 @@ class HadjectiveMKLClassifier(object):
                 print "Results from MKL classification"
                 #print self.mkl_results
                 print str(adjectives_found) 
-                self.adjectives_pub.publish(adjectives_found)
+                self.adjectives_pub.publish(publish_string)
 
 
     def callback(self, msg):
