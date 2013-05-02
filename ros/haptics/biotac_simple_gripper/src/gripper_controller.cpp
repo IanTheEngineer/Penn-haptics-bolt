@@ -708,7 +708,17 @@ int start_motion(std_srvs::Empty::Request bogus1, std_srvs::Empty::Response)
   double x = controller.arm_controller->getTransform('x');
   double y = controller.arm_controller->getTransform('y');
   double z = controller.arm_controller->getTransform('z');
-  
+
+  // Move arm forward X 2 cm 
+  ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
+  controller.arm_controller->move_arm_to(x+0.02,y,z, 2);
+ 
+  // recheck the location of the arm again
+  controller.arm_controller->getArmTransform();
+  x = controller.arm_controller->getTransform('x');
+  y = controller.arm_controller->getTransform('y');
+  z = controller.arm_controller->getTransform('z');
+
   // Start recording data
   ROS_INFO("Starting data logging");
   boost::thread loggingThread( boost::bind( &gripperController::startLogger, &controller));
