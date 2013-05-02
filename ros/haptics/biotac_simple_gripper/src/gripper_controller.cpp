@@ -700,8 +700,8 @@ int start_motion(std_srvs::Empty::Request bogus1, std_srvs::Empty::Response)
   controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
  
   // Move gripper to a set point in front of it
-  //ROS_INFO("Moving arm to start position");
-  //controller.detail_state = "MOVE_ARM_START_POSITION";
+  ROS_INFO("Moving arm to start position");
+  controller.detail_state = "MOVE_ARM_START_POSITION";
   //controller.arm_controller->moveArmToStart();
 
   controller.arm_controller->getArmTransform();
@@ -711,7 +711,7 @@ int start_motion(std_srvs::Empty::Request bogus1, std_srvs::Empty::Response)
 
   // Move arm forward X 2 cm 
   ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
-  controller.arm_controller->move_arm_to(x+0.02,y,z, 2);
+  controller.arm_controller->move_arm_to(x+0.03,y,z, 2);
  
   // recheck the location of the arm again
   controller.arm_controller->getArmTransform();
@@ -918,6 +918,21 @@ int start_motion(std_srvs::Empty::Request bogus1, std_srvs::Empty::Response)
   controller.detail_state = "OPEN_GRIPPER_FAST_MAX";
   controller.simple_gripper->open2Position(controller.GripperMaxOpenPosition);
   //controller.arm_controller->moveArmToStart();
+
+  // Move back arm 5cm to be away from object
+  controller.arm_controller->getArmTransform();
+  x = controller.arm_controller->getTransform('x');
+  y = controller.arm_controller->getTransform('y');
+  z = controller.arm_controller->getTransform('z');
+  
+  ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
+  controller.arm_controller->move_arm_to(x-0.08,y,z, 2);
+ 
+  // recheck the location of the arm again
+  controller.arm_controller->getArmTransform();
+  x = controller.arm_controller->getTransform('x');
+  y = controller.arm_controller->getTransform('y');
+  z = controller.arm_controller->getTransform('z');
 
   //================================================================
   // Destroy logger
