@@ -12,6 +12,7 @@
   <depend package="bolt_learning_utilities"/>
   <depend package="std_msgs"/>
   <depend package="hadjective_hmm_classifier"/>
+  <depend package="hadjective_speech"/>
 
 </package>
 

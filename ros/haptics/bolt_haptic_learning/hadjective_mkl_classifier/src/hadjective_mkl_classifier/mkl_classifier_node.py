@@ -16,6 +16,7 @@ import static_features_penn as upenn_features
 import matplotlib.pyplot as plt 
 import os
 
+from hadjective_speech.msg import Adj, AdjList
 from std_msgs.msg import String
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC 
@@ -185,13 +186,16 @@ class HadjectiveMKLClassifier(object):
                 adjectives_found = []
                 for adj in self.mkl_results:
                     if self.mkl_results[adj] == 1:
-                        adjectives_found.append(adj)
+                        adjectives_found.append(Adj(adj))
+
+                publish_string = AdjList()
+                publish_string = adjectives_found
 
                 # Print and publish results!
                 print "Results from MKL classification"
                 #print self.mkl_results
                 print str(adjectives_found) 
-                self.adjectives_pub.publish(str(adjectives_found))
+                self.adjectives_pub.publish(adjectives_found)
 
 
     def callback(self, msg):
