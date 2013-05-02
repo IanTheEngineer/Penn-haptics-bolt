@@ -39,7 +39,6 @@ class MoveToHaptics(object):
         #rospy.wait_for_service(octomap_filters_service)
         #self.filter_srv = rospy.ServiceProxy(octomap_filters_service,FilterDefine)
 
-        import pdb; pdb.set_trace()
         self.manager = ControllerManagerClient()
         if self.whicharm.startswith("right"):
             self.manager.switch_controllers(["r_arm_controller"],
