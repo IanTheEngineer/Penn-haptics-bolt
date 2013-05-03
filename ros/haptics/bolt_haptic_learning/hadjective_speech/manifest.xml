@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/hadjective_speech</url>
   <depend package="rospy"/>
   <depend package="sound_play"/>
+  <depend package="std_msgs"/>
 
 </package>
 

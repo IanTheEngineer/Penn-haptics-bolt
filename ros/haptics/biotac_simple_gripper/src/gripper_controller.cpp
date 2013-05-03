@@ -263,10 +263,10 @@ class gripperController{
           move_counter = 0;
         } 
 
-        ROS_INFO("Pressure Min is: [%d]", pressure_min);
-        ROS_INFO("Pressure Max is: [%d]", pressure_max);
-        ROS_INFO("Left finger is: [%d]", pressure_left);
-        ROS_INFO("Right finger is: [%d]", pressure_right);
+        //ROS_INFO("Pressure Min is: [%d]", pressure_min);
+        //ROS_INFO("Pressure Max is: [%d]", pressure_max);
+        //ROS_INFO("Left finger is: [%d]", pressure_left);
+        //ROS_INFO("Right finger is: [%d]", pressure_right);
         move_counter++;
         ros::spinOnce();
         rate.sleep();
@@ -711,7 +711,7 @@ int start_motion(std_srvs::Empty::Request bogus1, std_srvs::Empty::Response)
 
   // Move arm forward X 2 cm 
   ROS_INFO("Arm location will move to: X: [%f], Y: [%f], Z: [%f]", x,y,z);
-  controller.arm_controller->move_arm_to(x+0.03,y,z, 2);
+  controller.arm_controller->move_arm_to(x+0.02,y,z+0.01, 2);
  
   // recheck the location of the arm again
   controller.arm_controller->getArmTransform();

@@ -49,7 +49,7 @@ class HadjectiveMKLClassifier(object):
 
         # Setup subscriber and publisher nodes
         rospy.Subscriber("new_hadjective_motion_pickle", String, self.callback)
-        self.adjectives_pub = rospy.Publisher("/feature_MKL_adjectives", String)
+        self.adjectives_pub = rospy.Publisher("/hadjective_speech", AdjList)
 
         rospy.loginfo("All MKL classifiers loaded")
 

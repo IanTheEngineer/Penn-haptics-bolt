@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <!--Start up controller thread-->
+  <node pkg="biotac_simple_gripper" type="start_run.sh" name="start_robot_node" output="screen"/>
+
+  <!--Start up manipulation pipeline--> 
+  <include file="/u/imcmahon/ros/bolt_demo/pr2_tabletop_manipulation.launch"/>
+
+  <!--Start up the robot command for speech node-->
+  <node pkg="hadjective_speech" type="robot_commands.py" name="robot_cmd_node" output="screen"/>
+
+</launch>
+
