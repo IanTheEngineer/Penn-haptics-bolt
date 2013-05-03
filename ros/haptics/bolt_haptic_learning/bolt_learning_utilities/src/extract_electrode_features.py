@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from scipy import optimize
 from bolt_pr2_motion_obj import BoltPR2MotionObj
-import extract_features_darpa as extract_features
+import extract_features as extract_features
 import pylab
 
 # Curve-fitting function

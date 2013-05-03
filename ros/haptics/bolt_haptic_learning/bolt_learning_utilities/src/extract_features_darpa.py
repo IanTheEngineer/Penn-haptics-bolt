@@ -15,7 +15,7 @@ from scipy.signal import filtfilt
 from scipy.integrate import trapz
 
 from extract_features_thermal import thermal_features
-from extract_electrode_features import electrode_features
+from extract_electrode_features_darpa import electrode_features
 
 # Functions to help extract features from a BoltPR2MotionObj
 def extract_features(bolt_pr2_motion_obj, electrode_pca):
