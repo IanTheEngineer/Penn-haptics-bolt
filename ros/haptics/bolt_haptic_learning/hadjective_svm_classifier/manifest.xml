@@ -11,6 +11,7 @@
   <depend package="rospy"/>
   <depend package="bolt_learning_utilities"/>
   <depend package="std_msgs"/>
+  <depend package="hadjective_speech"/>
 
 </package>
 

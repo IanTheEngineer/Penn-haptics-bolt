@@ -7,10 +7,11 @@ from bolt_pr2_motion_obj import BoltPR2MotionObj
 from bolt_feature_obj import BoltFeatureObj
 
 import bolt_learning_utilities as utilities
-import extract_features as extract_features
+import extract_features_darpa as extract_features
 import matplotlib.pyplot as plt 
 import os
 
+from hadjective_speech.msg import Adj, AdjList
 from std_msgs.msg import String
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC 
@@ -37,7 +38,7 @@ class HadjectiveSVMClassifier(object):
         self.scaler_dict = cPickle.load(open(scaler_file))
 
         rospy.Subscriber("new_hadjective_motion_pickle", String, self.callback)
-        self.adjectives_pub = rospy.Publisher("/feature_svm_adjectives", String)
+        self.adjectives_pub = rospy.Publisher("/hadjective_speech", AdjList)
 
         rospy.loginfo("All svm classifiers loaded")
 
@@ -69,7 +70,11 @@ class HadjectiveSVMClassifier(object):
         # Build the feature vector
         self.bolt_object = bolt_obj 
         utilities.normalize_data(self.bolt_object)
-        self.bolt_feature_object = extract_features.extract_features(self.bolt_object, self.pca_model[current_motion]) 
+       
+        if self.bolt_object.state == bolt_obj.DISABLED: 
+            return
+        else:
+            self.bolt_feature_object = extract_features.extract_features(self.bolt_object, self.pca_model[current_motion]) 
 
         # Create a dictionary to store the results in
         for adj in self.all_classifiers:
@@ -109,6 +114,8 @@ class HadjectiveSVMClassifier(object):
                 if ensembled_results[adj] == 1:
                     adjectives_ensemble.append(adj)
 
+            publish_string = AdjList()
+            publish_string = adjective_found
 
             print "Results from max classification"
             print self.all_motion_results

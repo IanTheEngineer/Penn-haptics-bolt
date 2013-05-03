@@ -5,8 +5,8 @@ import numpy as np
 from sklearn.decomposition import PCA
 from scipy import optimize
 from bolt_pr2_motion_obj import BoltPR2MotionObj
+import extract_features_darpa as extract_features
 import pylab
-import extract_features
 
 # Curve-fitting function
 def electrode_poly(t, p):

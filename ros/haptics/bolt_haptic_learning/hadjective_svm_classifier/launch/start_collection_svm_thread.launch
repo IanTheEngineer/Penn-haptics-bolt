@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <!--Start up master thread-->
+  <node pkg="hadjective_test_pipe" type="bolt_data_collector_thread.py" name="bolt_data_collector_thread" output="screen"/>
+
+  <!--Start up MKL Node--> 
+  <node pkg="hadjective_svm_classifier" type="svm_classifier_node.py" name="hadjective_svm_classifier" output="screen"/>
+</launch>
+

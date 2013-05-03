@@ -317,56 +317,54 @@ class LanguageTestMainThread:
 
 def main(argv):
 
+    # Establish communication queues
+    tasks = multiprocessing.Queue()
+    results = multiprocessing.Queue()
+    num_tasks = 0
+    main_thread =  LanguageTestMainThread()
+    main_thread.start_listeners()
+
     while not rospy.is_shutdown():
-        # Establish communication queues
-        tasks = multiprocessing.Queue()
-        results = multiprocessing.Queue()
-        num_tasks = 0
-        reset_flag = 0
-        main_thread =  LanguageTestMainThread()
-        main_thread.start_listeners()
+        #Acquire Lock
+        main_thread.state_lock.acquire()
 
-        while not reset_flag:
-            #Acquire Lock
-            main_thread.state_lock.acquire()
+        #If the current state is valid and the last state is valid, and its a new state...
+        if  main_thread.last_state in main_thread.valid_state_tuple and \
+            main_thread.last_state != main_thread.current_motion.state:
+            
+            print 'The state is %s' % main_thread.last_state 
+             
+            #Store off next state to see if we're done
+            next_state = main_thread.current_motion.state
+            #Close up the current current_motion and send it to a thread
+            main_thread.current_motion.state = main_thread.last_state
+            #Store the next state as the last state to be used to see when a change occurs
+            main_thread.last_state = next_state
+            #Place current_motion in the queue
+            tasks.put(main_thread.current_motion)
+            #Spin up a new thread
+            new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
+            new_process.start()
+            #Reset current_motion
+            main_thread.clear_motion(next_state)
+            num_tasks = num_tasks + 1
 
-            #If the current state is valid and the last state is valid, and its a new state...
-            if  main_thread.last_state in main_thread.valid_state_tuple and \
-                main_thread.last_state != main_thread.current_motion.state:
-                
-                print 'The state is %s' % main_thread.last_state 
-                 
-                #Store off next state to see if we're done
-                next_state = main_thread.current_motion.state
-                #Close up the current current_motion and send it to a thread
-                main_thread.current_motion.state = main_thread.last_state
-                #Store the next state as the last state to be used to see when a change occurs
-                main_thread.last_state = next_state
-                #Place current_motion in the queue
-                tasks.put(main_thread.current_motion)
-                #Spin up a new thread
-                new_process = multiprocessing.Process(target=processMotion, args=(tasks,results))
-                new_process.start()
-                #Reset current_motion
-                main_thread.clear_motion(next_state)
-                num_tasks = num_tasks + 1
+            #Check to see if the motions have finished
+            if next_state is BoltPR2MotionBuf.DONE:
+                #main_thread.reset_run()
+                reset_flag = 1
+                rospy.loginfo("Done logging Hadjective Data for now!")
 
-                #Check to see if the motions have finished
-                if next_state is BoltPR2MotionBuf.DONE:
-                    #main_thread.reset_run()
-                    reset_flag = 1
-                    rospy.loginfo("Done logging Hadjective Data for now!")
+        elif main_thread.last_state is not main_thread.current_motion.state:
+            #Simply update the last state
+            main_thread.last_state = main_thread.current_motion.state
 
-            elif main_thread.last_state is not main_thread.current_motion.state:
-                #Simply update the last state
-                main_thread.last_state = main_thread.current_motion.state
-
-            #Release Lock
-            main_thread.state_lock.release()
-        
-        #Clean up all those threads!
-        tasks.close()
-        tasks.join_thread()
+        #Release Lock
+        main_thread.state_lock.release()
+    
+    #Clean up all those threads!
+    tasks.close()
+    tasks.join_thread()
 
 if __name__ == '__main__':
     main(sys.argv[1:])
