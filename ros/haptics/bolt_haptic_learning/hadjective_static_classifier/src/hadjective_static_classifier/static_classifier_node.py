@@ -134,7 +134,7 @@ class HadjectiveStaticClassifier(object):
                 print "Results from Static Only classification"
                 #print self.mkl_results
                 print str(adjectives_found) 
-                self.adjectives_pub.publish(publish_string)
+                #self.adjectives_pub.publish(publish_string)
 
 
     def callback(self, msg):
