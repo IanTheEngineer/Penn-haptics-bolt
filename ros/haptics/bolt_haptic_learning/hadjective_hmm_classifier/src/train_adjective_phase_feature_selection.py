@@ -117,8 +117,8 @@ def train_adjective_phase_classifier(path, adjective, phase, all_features, boost
     """
 
     # File name 
-    dataset_file_name = "_".join(("trained_tree_feat_select", adjective, phase))+".pkl"
-    newpath = os.path.join(path, "trained_adjective_phase_tree_feat_select")
+    dataset_file_name = "_".join(("trained", adjective, phase))+".pkl"
+    newpath = os.path.join(path, "trained_adjective_phase_univ")
     path_name = os.path.join(newpath, dataset_file_name)
     
     if os.path.exists(path_name):
@@ -129,15 +129,16 @@ def train_adjective_phase_classifier(path, adjective, phase, all_features, boost
 
     train_set = all_features[adjective][phase]['train']
     train_X = train_set['features']
+    train_Y = train_set['labels']
+    object_ids = train_set['object_ids']
 
+    ''' Use for tree selection
     # Scale the data
     scaler = preprocessing.StandardScaler().fit(train_X)
     train_X = scaler.transform(train_X)
     all_features[adjective][phase]['scaler'] = scaler
     all_features[adjective][phase]['train'] = train_X   # store off scaled
 
-    train_Y = train_set['labels']
-    object_ids = train_set['object_ids']
 
     print "Training adjective %s and phase %s" %(adjective, phase)
 
@@ -148,7 +149,18 @@ def train_adjective_phase_classifier(path, adjective, phase, all_features, boost
 
     train_X = all_features[adjective][phase]['tree_features'][1]; # transformed features
     print np.shape(train_X)
-
+    '''
+    trained_clf, scaler = utilities.train_univariate_selection(train_X,train_Y,
+                             verbose=True,
+                             object_ids = object_ids,
+                             n_jobs = 6,
+                             scale = True 
+                             )   
+    all_features[adjective][phase]['scaler'] = scaler
+    all_features[adjective][phase]['tree_features'] = trained_clf 
+   
+    print trained_clf 
+    '''
     if not boost:
         trained_clf, scaler = utilities.train_svm_gridsearch(train_X = train_X,
                              train_Y = train_Y,
@@ -165,6 +177,7 @@ def train_adjective_phase_classifier(path, adjective, phase, all_features, boost
                                 n_jobs = 6,
                                 scale = False 
                                 )
+    '''
 
     dataset = all_features[adjective][phase]
     dataset['adjective'] = adjective

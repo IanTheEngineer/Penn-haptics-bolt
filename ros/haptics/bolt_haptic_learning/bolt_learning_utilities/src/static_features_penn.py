@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.optimize
 from scipy.signal import lfilter
 from scipy.fftpack import fft

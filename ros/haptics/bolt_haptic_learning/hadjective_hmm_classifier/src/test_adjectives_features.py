@@ -31,6 +31,7 @@ def test_adjective(classifier, adjective_report):
     
     #Pull out test features/labels
     test_X = []
+    #import pdb; pdb.set_trace()
 
     for phase in phases:
         test_set = classifier[phase]['test']
@@ -46,9 +47,16 @@ def test_adjective(classifier, adjective_report):
 
     # Predict the labels!
     if 'scaler' in classifier:
-        if type(classifier['scaler']) == preprocessing.Scaler:
+        if type(classifier['scaler']) == preprocessing.StandardScaler:
             test_X = classifier['scaler'].transform(test_X)
-            
+   
+    if 'tree_features' in classifier:
+        test_X = classifier['tree_features'][0].transform(test_X)
+   
+    if 'univ_select' in classifier:
+        # Pull out information about the univariate selection
+        clf.steps[0][-1].pvalues_
+
     output = clf.predict(test_X)
     
     # Determine if the true label and classifier prediction match

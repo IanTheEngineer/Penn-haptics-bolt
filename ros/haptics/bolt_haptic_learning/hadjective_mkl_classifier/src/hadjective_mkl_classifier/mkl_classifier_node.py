@@ -109,7 +109,7 @@ class HadjectiveMKLClassifier(object):
             # Build the static features 
             static_feature_object, self.static_features_array = upenn_features.extract_static_features(self.bolt_object, self.norm_bolt_obj)
             static_feats = upenn_features.createFeatureVector(static_feature_object)
-            
+           
             # Store all feature vectors into one large vector array
             # Technically we don't need to store the static 
             # features by adjective - but it's cleaner this way
@@ -138,7 +138,7 @@ class HadjectiveMKLClassifier(object):
 
                     # fill in dyanmic features
                     hmm_features_phase.append(hmm_chain.score(hmm_data))
-                   
+            
                 # Store the feature vector by adjective away
                 self.adjective_vectors_static[adj].append(static_feats)
                 self.adjective_vectors_dynamic[adj].append(hmm_features_phase)

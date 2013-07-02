@@ -15,7 +15,8 @@ from collections import defaultdict
 import sklearn
 from sklearn.externals.joblib import Parallel, delayed
 from sklearn.metrics import f1_score
-
+from sklearn.pipeline import Pipeline
+from safe_leave_p_out import SafeLeavePLabelOut
 
 def load_adjective_phase(base_directory):
 
@@ -62,14 +63,44 @@ def original_train_adjective_phase_classifier(path, adjective, phase, all_featur
     train_X = train_set['features']
     train_Y = train_set['labels']
     object_ids = train_set['object_ids']
+    
 
     print "Training adjective %s and phase %s" %(adjective, phase)
 
+    #magic training happening here!!!
+    leav_out = 3 
+    clf = Pipeline([
+        ('scaler', sklearn.preprocessing.StandardScaler()),
+        ('svm', sklearn.svm.LinearSVC()), 
+         ])   
+    
+    #cv = sklearn.cross_validation.LeavePLabelOut(train_ids, leav_out)
+    cv = SafeLeavePLabelOut(object_ids, leav_out, 100, train_Y)
+    parameters = { 
+        #'svm_C': np.linspace(0.001,1e6,100),
+        #'svm__C': [10101.011090909091 ],
+        'svm__C': np.linspace(1e2, 1e6, 100),    
+        #'svm__penalty': ['l2','l1'],
+        'svm__penalty': ['l2'],
+        'svm__dual': [False],
+        'svm__class_weight' : ('auto',),
+                  }
+
+    verbose = 1
+    grid = sklearn.grid_search.GridSearchCV(clf, parameters,
+                                            n_jobs=1,
+                                            cv=cv,
+                                            score_func=f1_score,
+                                            verbose=verbose)
+    grid.fit(train_X, train_Y)
+    trained_clf = grid.best_estimator_
+ 
+    '''
     if not boost:
         trained_clf, scaler = utilities.train_svm_gridsearch(train_X = train_X,
                              train_Y = train_Y,
                              verbose=True,
-                             object_ids = object_ids,
+                             #object_ids = object_ids,
                              n_jobs = 6,
                              scale = True 
                              )   
@@ -82,11 +113,12 @@ def original_train_adjective_phase_classifier(path, adjective, phase, all_featur
                                 scale = True
                                 )
 
+    '''
     dataset = all_features[adjective][phase]
     dataset['adjective'] = adjective
     dataset['phase'] = phase
     dataset['classifier'] = trained_clf
-    dataset['scaler'] = scaler
+    #dataset['scaler'] = scaler
    
     print "Saving trained_classifier" 
 
@@ -154,7 +186,7 @@ def alt_train_adjective_phase_classifier(path, adjective, phase, all_features):
         print "Saving file: ", path_name
         cPickle.dump(dataset, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
-train_adjective_phase_classifier = alt_train_adjective_phase_classifier
+train_adjective_phase_classifier = original_train_adjective_phase_classifier
 
 def main():
     if len(sys.argv) == 6:

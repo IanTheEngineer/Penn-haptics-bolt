@@ -51,7 +51,8 @@
 class biotacArmController
 {
   private:
-    EECartImpedArm::EECartImpedArm *arm_controller;       // Arm controller
+    //EECartImpedArm::EECartImpedArm *arm_controller;       // Arm controller
+    EECartImpedArm *arm_controller;       // Arm controller
     std::string ReferenceLink;
     
   public:

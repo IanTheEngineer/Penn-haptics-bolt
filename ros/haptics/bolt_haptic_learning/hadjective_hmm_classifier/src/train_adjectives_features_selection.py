@@ -103,7 +103,7 @@ def remove_feature_tree_based(train_X,train_Y):
     # Print the feature ranking
     print "Feature ranking:"
 
-    for f in xrange(46):
+    for f in xrange(16):
         print "%d. feature %s (%f)" % (f + 1, indices[f], importances[indices[f]])
 
     # Transform the data to have only the features that are important
@@ -189,7 +189,7 @@ def orig_train_adjective_phase_classifier(path, adjective, all_features):
 
     # File name 
     dataset_file_name = "_".join(("trained", adjective))+".pkl"
-    newpath = os.path.join(path, "trained_adjectives_univ")
+    newpath = os.path.join(path, "trained_adjectives_univ_deep_search")
     path_name = os.path.join(newpath, dataset_file_name)
     
     if os.path.exists(path_name):
@@ -208,7 +208,7 @@ def orig_train_adjective_phase_classifier(path, adjective, all_features):
 
     train_X = np.concatenate(train_X, axis=1)
     
-    '''
+    ''' 
     # Scale the data
     scaler = preprocessing.StandardScaler().fit(train_X)
     train_X = scaler.transform(train_X)
@@ -222,38 +222,31 @@ def orig_train_adjective_phase_classifier(path, adjective, all_features):
 
     train_X = all_features[adjective]['tree_features'][1]; # transformed features
     print np.shape(train_X)
-    '''
+   
     print "Training adjective %s" % adjective
 
-    trained_clf, scaler = utilities.train_univariate_selection(train_X,train_Y,    
-                             verbose=True,
-                             object_ids = object_ids,
-                             n_jobs = 6,
-                             scale = True 
-                             )   
-    all_features[adjective][phase]['scaler'] = scaler
-    all_features[adjective][phase]['univ_select'] = trained_clf
-
-    print trained_clf
-
     '''
-    if True:
+   
+    if sum(train_Y) < 180: 
+        trained_clf, scaler = utilities.train_univariate_selection(train_X,train_Y,    
+                                 verbose=True,
+                                 object_ids = object_ids,
+                                 n_jobs = 6,
+                                 scale = True 
+                                 )   
+        print trained_clf
+
+    else: 
         trained_clf,scaler = utilities.train_svm_gridsearch(train_X = train_X,
                              train_Y = train_Y,
                              verbose=True,
                              object_ids = object_ids,
                              n_jobs = 6,
-                             scale = False 
+                             scale = True 
                              )
-    else: 
-        trained_clf = utilities.train_gradient_boost(train_X = train_X,
-                                train_Y = train_Y,
-                                object_ids = object_ids,
-                                )
-   
-    '''
 
     dataset = all_features[adjective]
+    dataset['scaler'] = scaler
     dataset['adjective'] = adjective
     dataset['classifier'] = trained_clf
    
