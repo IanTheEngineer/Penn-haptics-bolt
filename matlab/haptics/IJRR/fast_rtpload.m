@@ -52,7 +52,11 @@ end
 
 % Move to the correct output variables.  The first column
 % is 'time', the rest are 'field.item1' 'field.item2' etc.
-time = time;
+if (exist('time'))
+    time = time;
+else
+    time = 1;
+end
 data = field;
 
 return;
