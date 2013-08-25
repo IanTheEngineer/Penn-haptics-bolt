@@ -41,6 +41,7 @@ t_format = t_format(2:end);
     
 frewind(fid); fgetl(fid); % reset the pointer to line after header
 raw = textscan(fid,t_format,'Delimiter',',');
+fclose(fid);
 
 % Restructure the data.
 column = 0;
@@ -53,6 +54,7 @@ end
 % Move to the correct output variables.  The first column
 % is 'time', the rest are 'field.item1' 'field.item2' etc.
 if (exist('time'))
+    field.time = time;
     time = time;
 else
     time = 1;
