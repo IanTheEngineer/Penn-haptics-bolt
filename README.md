@@ -7,7 +7,7 @@ Penn Haptics team's repository for BOLT related work
 --Notes for getting started--
 
 --Cheetah USB Driver--
-- wget http://www.totalphase.com/download/zip/tp-usb-drivers-v2.10.zip
+- download tp-usb-drivers-v2.10.zip from http://www.totalphase.com/products/cheetah_spi/ 
 - unzip tp-usb-drivers-v2.10.zip
 - sudo cp tp-usb-drivers-v2.10/linux/99-totalphase.rules /etc/udev/rules.d/
 
